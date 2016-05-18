@@ -31,9 +31,7 @@ function buttonClicked() {
     $.ajax({
         type : "GET",
         url: GET_REQUEST_URL,
-        // data: {"problem": problemText},
         timeout : 100000,
-
         success : function(string) {
             notify(string);
         },

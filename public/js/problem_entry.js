@@ -5,7 +5,7 @@
 
 $(init);
 
-var BUTTON_POST_URL = "/submit";
+var BUTTON_POST_URL = "/postproblem";
 var BUTTON_ID = "#submit";
 var DIV_ID = "#form-div";
 
@@ -40,9 +40,9 @@ function buttonClicked() {
     $.ajax({
         type : "POST",
         url: BUTTON_POST_URL,
-        data: {"problem": problemText},
+        data: JSON.stringify({"problem": problemText}),
+        contentType: 'application/json',
         timeout : 100000,
-         
         success : function(string) {
             notify(string);
         },

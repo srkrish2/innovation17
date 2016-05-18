@@ -9,7 +9,6 @@ To run, enter "python server.py" in terminal.
 
 import os
 import cherrypy
-import datetime
 import mturk_controller
 import mongodb_controller
 
@@ -29,7 +28,11 @@ class PostproblemHandler(object):
     exposed = True
 
     # post requests go here
-    def POST(self, problem):
+    @cherrypy.tools.json_in()
+    def POST(self):
+        data = cherrypy.request.json
+        problem = data['problem']
+        return "got it"
         [hit_id, finish_time] = mturk_controller.create_schema_making_hit(problem)
         # get user_id either from mongodb insertion or from session
         user_id = get_user_id()
@@ -60,7 +63,8 @@ class GetproblemsHandler(object):
     def GET(self):
         # get user_id either from mongodb insertion or from session
         user_id = get_user_id()
-        print "user", user_id, "wants his problems"
+        print "got a /getproblems request from", user_id
+        return
         problems = mongodb_controller.get_problems_by_user(user_id)
         return {"problems": problems}
 
@@ -71,6 +75,7 @@ class GetschemasHandler(object):
     # get requests go here
     @cherrypy.tools.json_out()
     def GET(self, problem_id):
+        print "got a /getschemas request for", problem_id
         hit_id = mongodb_controller.get_hit_id(problem_id)
         answers = mturk_controller.get_schema_making_results(hit_id)
         return answers
@@ -94,10 +99,13 @@ if __name__ == '__main__':
             'tools.staticdir.dir': './public'
         },
         # /submit is for post requests, so create a method dispatcher
-        '/submit': {
+        '/postproblem': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
-        '/getresults': {
+        '/getproblems': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/getschemas': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
