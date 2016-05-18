@@ -2,3 +2,4 @@
 .idea/
 velocity.log
 test.py
+*.pyc
