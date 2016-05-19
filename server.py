@@ -9,8 +9,9 @@ To run, enter "python server.py" in terminal.
 
 import os
 import cherrypy
-# import fake_mturk_controller as mturk_controller
-import mturk_controller
+# FOR DEBUG
+import mock_mturk_controller as mturk_controller
+# import mturk_controller
 import mongodb_controller
 import datetime
 
@@ -19,13 +20,14 @@ PROBLEM_COMPLETION_STATUS = "schema_count"
 PROBLEM_FOR_FRONTEND_ID = "problem_id"
 READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 
+
 class StaticPageLoader(object):
     # homepage
     @cherrypy.expose
     def index(self):
-        if COOKIE_NAME in cherrypy.session:
-            return open('problem_results.html')
-        return open('problem_entry.html')
+        # if COOKIE_NAME in cherrypy.session:
+        #     return open('problem_results.html')
+        return open('index.html')
 
 
 class PostproblemHandler(object):
