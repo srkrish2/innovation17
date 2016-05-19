@@ -8,7 +8,7 @@ def create_schema_making_hit(problem):
     return hit_id, datetime.datetime.now()
 
 def get_schema_making_status(hit_id):
-    return "schema count!"
+    return "schema count dummy"
 
 def get_schema_making_results(hit_id):
     schemas = []

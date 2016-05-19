@@ -10,8 +10,8 @@ To run, enter "python server.py" in terminal.
 import os
 import cherrypy
 # to not flood mturk
-import mock_mturk_controller as mturk_controller
-# import mturk_controller
+# import mock_mturk_controller as mturk_controller
+import mturk_controller
 import mongodb_controller
 import datetime
 
@@ -28,6 +28,15 @@ class StaticPageLoader(object):
         # if COOKIE_NAME in cherrypy.session:
         #     return open('problem_results.html')
         return open('index.html')
+
+    @cherrypy.expose
+    def projects(self):
+        return open('projects.html')
+
+    @cherrypy.expose
+    def newproject(self):
+        return open('newproject.html')
+
 
 
 class PostproblemHandler(object):

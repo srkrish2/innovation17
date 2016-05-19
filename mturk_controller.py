@@ -90,7 +90,7 @@ def get_schema_making_results(hit_id):
             answer_text = ""
             line = jar_output_file.readline().rstrip()
             while line != "--[ANSWER END]--":
-                answer_text += line
+                answer_text += line + '\n'
                 line = jar_output_file.readline().rstrip()
             print "ANSWER:", answer_text
 
