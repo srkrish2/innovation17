@@ -1,0 +1,13 @@
+ body {
+      background-color: #DADADA;
+     
+    }
+body > .ui.container.content {
+   padding-top:80px;
+  /*  body > .grid {
+      height: 100%;
+    }
+   
+    .column {
+      max-width: 450px;
+    }*/}
