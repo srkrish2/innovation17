@@ -9,7 +9,7 @@ To run, enter "python server.py" in terminal.
 
 import os
 import cherrypy
-# FOR DEBUG
+# to not flood mturk
 import mock_mturk_controller as mturk_controller
 # import mturk_controller
 import mongodb_controller
@@ -105,6 +105,10 @@ class GetschemasHandler(object):
             # add readable time
             schema_dict[mongodb_controller.SCHEMA_TIME] = readable_time
             mongodb_controller.add_schema(schema_dict)
+
+            # rename hit_id key to problem_id
+            schema_dict[PROBLEM_FOR_FRONTEND_ID] = hit_id
+            schema_dict.pop(mongodb_controller.PROBLEM_HIT_ID, None)
 
         return {"schemas": schema_dicts}
 

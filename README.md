@@ -46,7 +46,7 @@ Dependencies:
       "text": "solution1",
       "time": "19 May 2016 12:19 PM",
       "worker_id": "A2IG0RMLWLDY0F",
-      "hit_id": "3P6ENY9P79WU3BGAM63UL8VPD6QHIA"
+      "problem_id": "3P6ENY9P79WU3BGAM63UL8VPD6QHIA"
     }
   ]
 }
