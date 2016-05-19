@@ -9,11 +9,15 @@ To run, enter "python server.py" in terminal.
 
 import os
 import cherrypy
+# import fake_mturk_controller as mturk_controller
 import mturk_controller
 import mongodb_controller
+import datetime
 
 COOKIE_NAME = "user_id"
-
+PROBLEM_COMPLETION_STATUS = "schema_count"
+PROBLEM_FOR_FRONTEND_ID = "problem_id"
+READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 
 class StaticPageLoader(object):
     # homepage
@@ -32,7 +36,7 @@ class PostproblemHandler(object):
     def POST(self):
         data = cherrypy.request.json
         problem = data['problem']
-        return "got it"
+
         [hit_id, finish_time] = mturk_controller.create_schema_making_hit(problem)
         # get user_id either from mongodb insertion or from session
         user_id = get_user_id()
@@ -42,8 +46,8 @@ class PostproblemHandler(object):
 
         # return the finish time
         # format example: 23 Apr 2012 4:00 PM
-        readable_finish_time = finish_time.strftime("%d %b %Y %I:%M %p")
-        print "finish_time=", readable_finish_time
+        readable_finish_time = finish_time.strftime(READABLE_TIME_FORMAT)
+        print "finish_time =", readable_finish_time
         return readable_finish_time
 
 
@@ -64,21 +68,43 @@ class GetproblemsHandler(object):
         # get user_id either from mongodb insertion or from session
         user_id = get_user_id()
         print "got a /getproblems request from", user_id
-        return
         problems = mongodb_controller.get_problems_by_user(user_id)
+        print "user's problems:", problems
+        for problem in problems:
+            hit_id = problem[mongodb_controller.PROBLEM_HIT_ID]
+            schema_count = mturk_controller.get_schema_making_status(hit_id)
+            problem[PROBLEM_COMPLETION_STATUS] = schema_count
+
+            # rename hit_id key to problem_id
+            problem[PROBLEM_FOR_FRONTEND_ID] = hit_id
+            problem.pop(mongodb_controller.PROBLEM_HIT_ID, None)
         return {"problems": problems}
 
 
 class GetschemasHandler(object):
     exposed = True
 
-    # get requests go here
+    # post requests go here
     @cherrypy.tools.json_out()
-    def GET(self, problem_id):
-        print "got a /getschemas request for", problem_id
-        hit_id = mongodb_controller.get_hit_id(problem_id)
-        answers = mturk_controller.get_schema_making_results(hit_id)
-        return answers
+    @cherrypy.tools.json_in()
+    def POST(self):
+        data = cherrypy.request.json
+        hit_id = data['problem_id']
+
+        print "got a /getschemas request for", hit_id
+        schema_dicts = mturk_controller.get_schema_making_results(hit_id)
+
+        # replace time with a readable one and add to DB
+        for schema_dict in schema_dicts:
+            # pop epoch time
+            epoch_time_ms = long(schema_dict.pop(mongodb_controller.SCHEMA_TIME))
+            epoch_time = epoch_time_ms / 1000.0
+            readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
+            # add readable time
+            schema_dict[mongodb_controller.SCHEMA_TIME] = readable_time
+            mongodb_controller.add_schema(schema_dict)
+
+        return {"schemas": schema_dicts}
 
 
 if __name__ == '__main__':

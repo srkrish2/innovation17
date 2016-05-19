@@ -1,4 +1,5 @@
 import pymongo
+import copy
 
 MONGODB_ID = "_id"
 
@@ -9,6 +10,9 @@ PROBLEM_FINISH_TIME = "finish_time"
 
 SCHEMA_TEXT = "text"
 SCHEMA_HIT_ID = "hit_id"
+SCHEMA_ASSIGNMENT_ID = "assignment_id"
+SCHEMA_WORKER_ID = "worker_id"
+SCHEMA_TIME = "time"
 
 
 def add_user():
@@ -29,18 +33,20 @@ def add_problem(hit_id, description, owner_id, finish_time):
 
 
 def get_problems_by_user(user_id):
+    # pack each problem with keys: mongdb_id, hit_id, and description
     result = []
     for problem in problems_collection.find({PROBLEM_OWNER_ID: user_id}):
-        # we don't want to give away hit_id and owner_id
         for_result = {
-            PROBLEM_DESCRIPTION: problem[PROBLEM_DESCRIPTION],
-            PROBLEM_FINISH_TIME: problem[PROBLEM_FINISH_TIME],
-            MONGODB_ID: problem[MONGODB_ID]
+            PROBLEM_HIT_ID: problem[PROBLEM_HIT_ID],
+            PROBLEM_DESCRIPTION: problem[PROBLEM_DESCRIPTION]
         }
         result.append(for_result)
-    print result
+    return result
 
 
+def add_schema(schema_dict):
+    schema = copy.deepcopy(schema_dict)
+    schemas_collection.insert_one(schema)
 
 # client
 client = pymongo.MongoClient()

@@ -1,5 +1,6 @@
 import datetime
 import subprocess
+import mongodb_controller
 
 
 def create_schema_making_hit(problem):
@@ -40,6 +41,25 @@ def create_schema_making_hit(problem):
     return [hit_id, finish_time]
 
 
+def get_schema_making_status(hit_id):
+    p = subprocess.Popen(['java', '-jar', 'SchemaMakingStatus.jar', hit_id],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    # output format:
+    # submitted_assignments_count if success
+    # else:
+    # FAIL
+    # localizedMessage
+    jar_output_file = p.stdout
+    submitted_assignments_count = jar_output_file.readline().rstrip()
+    if submitted_assignments_count == "FAIL":
+        print "SchemaMakingStatus - FAIL"
+        print "message:", jar_output_file.readline().rstrip()
+        return 0
+    print "get_schema_making_status:", "count =", submitted_assignments_count
+    return submitted_assignments_count
+
+
 def get_schema_making_results(hit_id):
     p = subprocess.Popen(['java', '-jar', 'SchemaMakingResults.jar', hit_id],
                          stdout=subprocess.PIPE,
@@ -48,6 +68,8 @@ def get_schema_making_results(hit_id):
     # "SUCCESS"
     # "--[ANSWER START]--"
     #  assignment_id
+    #  worker_id
+    #  epoch_time_ms
     #  answer
     # "--[ANSWER END]--"
     # "--[END]--"
@@ -58,18 +80,30 @@ def get_schema_making_results(hit_id):
         print jar_output_file.readline().rstrip()
         return "FAIL"
 
-    answers = {}
+    schemas = []
     header = jar_output_file.readline().rstrip()
     while True:
         if header == "--[ANSWER START]--":
             assignment_id = jar_output_file.readline().rstrip()
+            worker_id = jar_output_file.readline().rstrip()
+            epoch_time_ms_string = jar_output_file.readline().rstrip()
             answer_text = ""
+            line = jar_output_file.readline().rstrip()
             while line != "--[ANSWER END]--":
                 answer_text += line
                 line = jar_output_file.readline().rstrip()
             print "ANSWER:", answer_text
-            answers[assignment_id] = answer_text
+
+            schema = {
+                mongodb_controller.SCHEMA_ASSIGNMENT_ID: assignment_id,
+                mongodb_controller.SCHEMA_HIT_ID: hit_id,
+                mongodb_controller.SCHEMA_TEXT: answer_text,
+                mongodb_controller.SCHEMA_TIME: epoch_time_ms_string,
+                mongodb_controller.SCHEMA_WORKER_ID: worker_id
+            }
+            schemas.append(schema)
+
             header = jar_output_file.readline().rstrip()
         else:
             break
-    return answers
+    return schemas
