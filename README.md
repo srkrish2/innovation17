@@ -1,11 +1,14 @@
+## Installation
 Dependencies:
  - [pip](https://pip.pypa.io/en/stable/installing/) - not required, but will save you time
  - [CherryPy](http://docs.cherrypy.org/en/latest/install.html#installation)
  - [MongoDB](http://www.mongodb.org/display/DOCS/Getting+Started)
  - [PyMongo](http://api.mongodb.com/python/current/installation.html)
 
-To run, type `python server.py` in terminal
-
+## Running the server
+1. In one terminal, type `mongod` to start the database
+2. In another terminal, go to your cloned directory of this repo and type `python server.py` to start the server
+3. In browser, go to [http://localhost:8080](http://localhost:8080)
 
 ## Frontend - server communication
 
