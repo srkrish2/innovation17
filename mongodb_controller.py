@@ -6,11 +6,9 @@ MONGODB_ID = "_id"
 PROBLEM_HIT_ID = "hit_id"
 PROBLEM_DESCRIPTION = "description"
 PROBLEM_OWNER_ID = "owner_id"
-PROBLEM_FINISH_TIME = "finish_time"
 
 SCHEMA_TEXT = "text"
 SCHEMA_HIT_ID = "hit_id"
-SCHEMA_ASSIGNMENT_ID = "assignment_id"
 SCHEMA_WORKER_ID = "worker_id"
 SCHEMA_TIME = "time"
 
@@ -22,12 +20,11 @@ def add_user():
     return user_id
 
 
-def add_problem(hit_id, description, owner_id, finish_time):
+def add_problem(hit_id, description, owner_id):
     problem = {
         PROBLEM_HIT_ID: hit_id,
         PROBLEM_DESCRIPTION: description,
-        PROBLEM_OWNER_ID: owner_id,
-        PROBLEM_FINISH_TIME: finish_time
+        PROBLEM_OWNER_ID: owner_id
     }
     problems_collection.insert_one(problem)
 

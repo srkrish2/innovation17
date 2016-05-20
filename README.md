@@ -12,11 +12,11 @@ Dependencies:
 
 ## Frontend - server communication
 
-| Command                      | Input                              | Output                                              |
-|------------------------------|------------------------------------|-----------------------------------------------------|
-| POST request to /postproblem | `{"problem": "%user's problem%"}`  | Can do success/fail or something else. Let me know. |
-| GET request to /getproblems  | No input                           | See example below                                   |
-| POST request to /getschemas  | `{"problem_id": "%problem's id%"}` | See below                                           |
+| Command                      | Input                              | Output               |
+|------------------------------|------------------------------------|----------------------|
+| POST request to /postproblem | `{"problem": "%user's problem%"}`  | {"success": boolean} |
+| GET request to /getproblems  | No input                           | See example below    |
+| POST request to /getschemas  | `{"problem_id": "%problem's id%"}` | See below            |
 
 
 ### /getproblems output example
@@ -42,7 +42,6 @@ Dependencies:
 {
   "schemas": [
     {
-      "assignment_id": "3WT783CTPBHWLFPIK62EDEQDTZ3CB3",
       "text": "solution1",
       "time": "19 May 2016 12:19 PM",
       "worker_id": "A2IG0RMLWLDY0F",

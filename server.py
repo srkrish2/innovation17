@@ -18,6 +18,7 @@ import datetime
 COOKIE_NAME = "user_id"
 PROBLEM_COMPLETION_STATUS = "schema_count"
 PROBLEM_FOR_FRONTEND_ID = "problem_id"
+# format example: 23 Apr 2012 4:00 PM
 READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 
 
@@ -37,6 +38,10 @@ class StaticPageLoader(object):
     def newproject(self):
         return open('newproject.html')
 
+    @cherrypy.expose
+    def login(self):
+        return open('login.html')
+
 
 
 class PostproblemHandler(object):
@@ -48,18 +53,17 @@ class PostproblemHandler(object):
         data = cherrypy.request.json
         problem = data['problem']
 
-        [hit_id, finish_time] = mturk_controller.create_schema_making_hit(problem)
+        hit_id = mturk_controller.create_schema_making_hit(problem)
+        if hit_id == "FAIL":
+            return {"success": False}
         # get user_id either from mongodb insertion or from session
         user_id = get_user_id()
         print "user", user_id, "posted a problem"
         # add problem to the database
-        mongodb_controller.add_problem(hit_id, problem, user_id, finish_time)
+        mongodb_controller.add_problem(hit_id, problem, user_id)
 
-        # return the finish time
-        # format example: 23 Apr 2012 4:00 PM
-        readable_finish_time = finish_time.strftime(READABLE_TIME_FORMAT)
-        print "finish_time =", readable_finish_time
-        return readable_finish_time
+        return {"success": True}
+
 
 
 def get_user_id():

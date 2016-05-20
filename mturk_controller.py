@@ -12,7 +12,6 @@ def create_schema_making_hit(problem):
     # output format:
     #  * "SUCCESS"
     #  * HIT_ID
-    #  * DURATION (in seconds)
     #  * URL
 
     jar_output_file = p.stdout
@@ -28,17 +27,12 @@ def create_schema_making_hit(problem):
     print "SchemaMaking.jar first line:", first_line
 
     hit_id = jar_output_file.readline().rstrip()
-    duration = jar_output_file.readline().rstrip()
     url = jar_output_file.readline().rstrip()
 
     print "hit_id =", hit_id
-    print "duration =", duration
     print "url =", url
 
-    # get finish time
-    current_time = datetime.datetime.now()
-    finish_time = current_time + datetime.timedelta(0, int(duration))
-    return [hit_id, finish_time]
+    return hit_id
 
 
 def get_schema_making_status(hit_id):
@@ -67,7 +61,6 @@ def get_schema_making_results(hit_id):
     # output format:
     # "SUCCESS"
     # "--[ANSWER START]--"
-    #  assignment_id
     #  worker_id
     #  epoch_time_ms
     #  answer
@@ -84,7 +77,6 @@ def get_schema_making_results(hit_id):
     header = jar_output_file.readline().rstrip()
     while True:
         if header == "--[ANSWER START]--":
-            assignment_id = jar_output_file.readline().rstrip()
             worker_id = jar_output_file.readline().rstrip()
             epoch_time_ms_string = jar_output_file.readline().rstrip()
             answer_text = ""
@@ -95,7 +87,6 @@ def get_schema_making_results(hit_id):
             print "ANSWER:", answer_text
 
             schema = {
-                mongodb_controller.SCHEMA_ASSIGNMENT_ID: assignment_id,
                 mongodb_controller.SCHEMA_HIT_ID: hit_id,
                 mongodb_controller.SCHEMA_TEXT: answer_text,
                 mongodb_controller.SCHEMA_TIME: epoch_time_ms_string,
@@ -107,3 +98,44 @@ def get_schema_making_results(hit_id):
         else:
             break
     return schemas
+
+"""
+def get_schema_ranking_results(hit_id):
+    p = subprocess.Popen(['java', '-jar', 'SchemaMakingResults.jar', hit_id],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    # output format:
+    # "SUCCESS"
+    # "--[ANSWER START]--"
+    #  worker_id
+    #  epoch_time_ms
+    #  answer: GOOD or BAD
+    # "--[ANSWER END]--"
+    # "--[END]--"
+
+    jar_output_file = p.stdout
+    if jar_output_file.readline().rstrip() == "FAIL":
+        print "SchemaRankingResults.jar: FAIL"
+        print jar_output_file.readline().rstrip()
+        return "FAIL"
+
+    ranks = []
+    header = jar_output_file.readline().rstrip()
+    while True:
+        if header == "--[ANSWER START]--":
+            worker_id = jar_output_file.readline().rstrip()
+            epoch_time_ms_string = jar_output_file.readline().rstrip()
+            rank = jar_output_file.readline().rstrip()
+
+            print "RANK:", rank
+
+            rank = {
+
+            }
+            ranks.append(rank)
+
+            header = jar_output_file.readline().rstrip()
+        else:
+            break
+    return ranks
+"""
