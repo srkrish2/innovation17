@@ -37,6 +37,18 @@ var VALIDATION_RULES = {
 function init() {
     $(SELECTOR).form(VALIDATION_RULES);
     $('.ui.fluid.search.selection.dropdown').dropdown();
+    $('#addtags').keyup(function(e){
+        if (e.which == 13) {
+            $("<div class = 'ui olive new-tag label'>"+this.value+" <i class='delete icon'></i></div>").insertAfter(".icon.tags");
+            console.log("this is");
+            console.log(this);
+            $(this).val('');
+        }
+    });
+    $(document).on('click', 'i.delete', function(e){
+        console.log(e);
+        $(this).parent().remove();
+    });
 }
 
 function submitForm(e) {

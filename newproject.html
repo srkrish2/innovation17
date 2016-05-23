@@ -38,9 +38,9 @@
       <div class="field">
         <label class="title">
           <div class="ui transparent input">
-          <h3 class="title italic content">
-            <input type="text" name="title" placeholder="Enter title...">
-          </h3>
+            <h3 class="title italic content">
+              <input type="text" name="title" placeholder="Enter title...">
+            </h3>
           </div>
         </label> 
       </div>
@@ -59,13 +59,20 @@
           </div>
         </div>
         <div class="field">
-          <div class="ui right labeled left icon multiselect input">
+          <div class="ui right labeled left icon input">
+            <i class="tags icon"></i>
+            <input type="text" id="addtags" placeholder="Enter more tags">
+            <a class="ui tag blue pointing label">
+              Add Tag
+            </a>
+          </div>
+          <!-- <div class="ui right labeled left icon multiple selection input">
             <i class="tags icon"></i>
             <input type="text" class="ui dropdown search multiple selection" placeholder="Enter tags">
             <a class="ui tag label">
               Add Tag
             </a>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="two fields">
@@ -79,15 +86,15 @@
             <button class="ui teal button right submit">Submit</button>
           </div>
         </div>
-      <div class="ui error message"></div>
+        <div class="ui error message"></div>
       </div>
-    <div class='ui grid'>
-      <div class="five wide column">
+      <div class='ui grid'>
+        <div class="five wide column">
+        </div>
+        <div class="ui seven wide column">Copyright ©2016, RTC3 Crowdsourcing Innovation Lab @ Bosch</div>
       </div>
-      <div class="ui seven wide column">Copyright ©2016, RTC3 Crowdsourcing Innovation Lab @ Bosch</div>
-    </div>
-    <script src="/static/semantic/dist/semantic.js"></script>
-    <script src="/static/assets/js/newproject.js"></script>
+      <script src="/static/semantic/dist/semantic.js"></script>
+      <script src="/static/assets/js/newproject.js"></script>
     </div>
   </body>
   </html>
