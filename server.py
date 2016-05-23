@@ -42,6 +42,14 @@ class StaticPageLoader(object):
     def login(self):
         return open('login.html')
 
+    @cherrypy.expose
+    def schemas(self):
+        return open('schemas.html')
+
+    @cherrypy.expose
+    def newschema(self):
+        return open('newschema.html')
+
 
 
 class PostproblemHandler(object):

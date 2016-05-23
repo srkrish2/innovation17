@@ -40,62 +40,53 @@
   </div>
   <div class="ui middle aligned center container content">
     <div class="ui project form">
-      <h4 class="ui diving header">Project Information</h4>
-      <div class="field"><label class="title"><div class="ui transparent input">
-        <input type="text" placeholder="Title...">
-      </div></label> </div>
-      <div class="field"><textarea type="text" placeholder="Project description..."></textarea></div>
+      <h4 class="ui diving header">Schema</h4>
+      <div class="field"><label class="title">A schema should abstract away surface details to focus on the underlying structure. E.g. reaching hard-to-access parts of an object by making part of the object removable</label> </div>
+      <div class="field">
+        <textarea type="text" class="ui three line" placeholder="Project description..."></textarea>
+      </div>
       <div class="two fields">
         <div class="field">
-          <div class="ui fluid search selection dropdown">
-            <i class="tag icon"></i>
-            <span class="text">Category</span>
-            <div class="menu">
-              <div class="item">Problem</div>
-              <div class="item">Method/Technology</div>
-              <div class="item">What's next</div>
-            </div>
-
+          <div class="ui left labeled left icon input">
+            <i class="tags icon"></i>
+            <input type="text" placeholder="Enter domain tags">
+            <a class="ui tag left label">
+              Source Domain Tag
+            </a>
           </div>
         </div>
         <div class="field">
           <div class="ui right labeled left icon input">
             <i class="tags icon"></i>
-            <input type="text" placeholder="Enter tags">
+            <input type="text" placeholder="Enter search tags for inspiration">
             <a class="ui tag label">
-              Add Tag
+              Suggesting Search Tag
             </a>
           </div>
         </div>
       </div>
       
       
-      <div class="two fields">
-        <div class="field">
-          <label for="file" class="ui icon button">
-            <i class="file icon"></i>
-            Open File</label>
-            <input type="file" id="file" style="display:none">
-          </div>
-          <div class="field">
-            <button class="ui teal button right">Submit</button>
-          </div>
 
-
-        </div>
+      <div class="field"><textarea type="text" placeholder="Additional explanations"></textarea></div>
+      <div class="field">
+        <button class="ui teal button right">Submit</button>
       </div>
 
-      <div class='ui grid'>
-        <div class="five wide column">
-        </div>
-        <div class="ui seven wide column">Copyright ©2016, RTC3 Crowdsourcing Innovation Lab @ Bosch</div>
-      </div>
-      <script src="/static/semantic/dist/semantic.js"></script>
-      <script src="/static/assets/js/newproject.js"></script>
+
+
     </div>
-    <style type="text/css">
+  </div>
+  <div class='ui grid'>
+    <div class="five wide column">
+    </div>
+    <div class="ui seven wide column">Copyright ©2016, RTC3 Crowdsourcing Innovation Lab @ Bosch</div>
+  </div>
+  <script src="/static/semantic/dist/semantic.js"></script>
+  <script src="/static/assets/js/newproject.js"></script>
+  <style type="text/css">
 
-    </style>
-  </body>
+  </style>
+</body>
 
-  </html>
+</html>
