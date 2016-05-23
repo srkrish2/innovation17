@@ -150,6 +150,19 @@ class AuthorizationHandler(object):
         result["success"] = success
         return result
 
+class SubmitNewProjectHandler(object):
+    exposed = True
+
+    # post requests go here
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def POST(self):
+        data = cherrypy.request.json
+        title = data['title']
+        description = data['description']
+        category = data['category']
+        return {"url": "index"}
+
 if __name__ == '__main__':
     # server configurations
     conf = {
@@ -179,6 +192,9 @@ if __name__ == '__main__':
         },
         '/authorize': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/submit_newproject': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -191,5 +207,7 @@ if __name__ == '__main__':
     webapp.getschemas = GetschemasHandler()
     # all requests sent to /authorize go to this class
     webapp.authorize = AuthorizationHandler()
+    # all requests sent to /submit_newproject go to this class
+    webapp.submit_newproject = SubmitNewProjectHandler()
     # start the server
     cherrypy.quickstart(webapp, '/', conf)

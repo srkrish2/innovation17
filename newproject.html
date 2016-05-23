@@ -34,13 +34,13 @@
   </div>
   <div class="ui middle aligned center container content">
     <div class="ui project form">
-      <h2 class="ui diving header">Project Information</h4>
+      <h2 class="ui diving header">Project Information</h2>
       <div class="field">
         <label class="title">
           <div class="ui transparent input">
           <h3 class="title italic content">
             <input type="text" name="title" placeholder="Enter title...">
-          </h5>
+          </h3>
           </div>
         </label> 
       </div>
@@ -49,13 +49,13 @@
         <div class="field">
           <div class="ui fluid search selection dropdown">
             <i class="tag icon"></i>
+            <input type="hidden" name="category">
             <span class="text">Category</span>
             <div class="menu">
               <div class="item">Problem</div>
               <div class="item">Method/Technology</div>
               <div class="item">What's next</div>
             </div>
-
           </div>
         </div>
         <div class="field">
@@ -68,8 +68,6 @@
           </div>
         </div>
       </div>
-      
-      
       <div class="two fields">
         <div class="field">
           <label for="file" class="ui icon button">
@@ -78,20 +76,18 @@
             <input type="file" id="file" style="display:none">
           </div>
           <div class="field">
-            <button class="ui teal button right">Submit</button>
+            <button class="ui teal button right submit">Submit</button>
           </div>
-
-
         </div>
+      <div class="ui error message"></div>
       </div>
-
-      <div class='ui grid'>
-        <div class="five wide column">
-        </div>
-        <div class="ui seven wide column">Copyright ©2016, RTC3 Crowdsourcing Innovation Lab @ Bosch</div>
+    <div class='ui grid'>
+      <div class="five wide column">
       </div>
-      <script src="/static/semantic/dist/semantic.js"></script>
-      <script src="/static/assets/js/newproject.js"></script>
+      <div class="ui seven wide column">Copyright ©2016, RTC3 Crowdsourcing Innovation Lab @ Bosch</div>
+    </div>
+    <script src="/static/semantic/dist/semantic.js"></script>
+    <script src="/static/assets/js/newproject.js"></script>
     </div>
   </body>
   </html>
