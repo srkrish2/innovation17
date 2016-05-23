@@ -35,7 +35,7 @@ function submitForm(e) {
     var data = {
             "name": name,
             "password": password
-        }
+        };
     $.ajax({
         type : "POST",
         url: POST_URL,

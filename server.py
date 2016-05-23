@@ -150,6 +150,7 @@ class AuthorizationHandler(object):
         result["success"] = success
         return result
 
+
 class SubmitNewProjectHandler(object):
     exposed = True
 
