@@ -57,10 +57,10 @@ function submitForm(e) {
     var category = $(SELECTOR).form("get value", "category");
 
     var data = {
-            "title": title,
-            "description": description,
-            "category": category
-        }
+        "title": title,
+        "description": description,
+        "category": category
+    }
     $.ajax({
         type : "POST",
         url: POST_URL,
