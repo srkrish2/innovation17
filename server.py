@@ -26,8 +26,6 @@ class StaticPageLoader(object):
     # homepage
     @cherrypy.expose
     def index(self):
-        # if COOKIE_NAME in cherrypy.session:
-        #     return open('problem_results.html')
         return open('index.html')
 
     @cherrypy.expose
@@ -51,7 +49,6 @@ class StaticPageLoader(object):
         return open('newschema.html')
 
 
-
 class PostproblemHandler(object):
     exposed = True
 
@@ -71,7 +68,6 @@ class PostproblemHandler(object):
         mongodb_controller.add_problem(hit_id, problem, user_id)
 
         return {"success": True}
-
 
 
 def get_user_id():
@@ -134,6 +130,26 @@ class GetschemasHandler(object):
         return {"schemas": schema_dicts}
 
 
+class AuthorizationHandler(object):
+    exposed = True
+
+    # post requests go here
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def POST(self):
+        data = cherrypy.request.json
+        name = data['name']
+        password = data['password']
+
+        result = {}
+        success = False
+        if name == "lol":
+            success = True
+            result["url"] = "index"
+
+        result["success"] = success
+        return result
+
 if __name__ == '__main__':
     # server configurations
     conf = {
@@ -160,6 +176,9 @@ if __name__ == '__main__':
         },
         '/getschemas': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/authorize': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -170,5 +189,7 @@ if __name__ == '__main__':
     webapp.getproblems = GetproblemsHandler()
     # all requests sent to /getschemas go to this class
     webapp.getschemas = GetschemasHandler()
+    # all requests sent to /authorize go to this class
+    webapp.authorize = AuthorizationHandler()
     # start the server
     cherrypy.quickstart(webapp, '/', conf)

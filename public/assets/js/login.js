@@ -1,15 +1,15 @@
-//(function(global){
-//	$('.ui.fluid.search.selection.dropdown').dropdown();
-//	console.log($('.ui .dropdown'));
-//}(window));
-
 $(init);
 
-var POST_URL = "/submit_newproject";
+var POST_URL = "/authorize";
+var SELECTOR = ".ui.form";
+
+function init() {
+    $(SELECTOR).form(VALIDATION_RULES)
+}
 
 var VALIDATION_RULES = {
     fields: {
-        title: {
+        name: {
             rules: [
                 {
                     type   : 'empty',
@@ -17,7 +17,7 @@ var VALIDATION_RULES = {
                 }
             ]
         },
-        description: {
+        password: {
             rules: [
                 {
                     type   : 'empty',
@@ -28,11 +28,6 @@ var VALIDATION_RULES = {
     },
     onSuccess: submitForm
 };
-
-
-function init() {
-    $(SELECTOR).form(VALIDATION_RULES)
-}
 
 function submitForm(e) {
     var name = $(SELECTOR).form("get value", "name");
