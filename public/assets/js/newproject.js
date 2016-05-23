@@ -1,11 +1,7 @@
-//(function(global){
-//	$('.ui.fluid.search.selection.dropdown').dropdown();
-//	console.log($('.ui .dropdown'));
-//}(window));
-
 $(init);
 
 var POST_URL = "/submit_newproject";
+var SELECTOR = ".ui.form";
 
 var VALIDATION_RULES = {
     fields: {
@@ -24,6 +20,14 @@ var VALIDATION_RULES = {
                     prompt : 'Please enter your password'
                 }
             ]
+        },
+        category: {
+            rules: [
+                {
+                    type   : 'empty',
+                    prompt : 'Please choose a category'
+                }
+            ]
         }
     },
     onSuccess: submitForm
@@ -31,15 +35,19 @@ var VALIDATION_RULES = {
 
 
 function init() {
-    $(SELECTOR).form(VALIDATION_RULES)
+    $(SELECTOR).form(VALIDATION_RULES);
+    $('.ui.fluid.search.selection.dropdown').dropdown();
 }
 
 function submitForm(e) {
-    var name = $(SELECTOR).form("get value", "name");
-    var password = $(SELECTOR).form("get value", "password");
+    var title = $(SELECTOR).form("get value", "title");
+    var description = $(SELECTOR).form("get value", "description");
+    var category = $(SELECTOR).form("get value", "category");
+
     var data = {
-            "name": name,
-            "password": password
+            "title": title,
+            "description": description,
+            "category": category
         }
     $.ajax({
         type : "POST",
@@ -49,11 +57,7 @@ function submitForm(e) {
         timeout : 100000,
 
         success : function(data) {
-            if (data["success"]) {
-                window.location.replace("/"+data["url"]);
-            } else {
-                $(SELECTOR).form("add errors", ["Your email or password was incorrect. Please try again."]);
-            }
+            window.location.replace("/"+data["url"]);
         },
 
         error : function(e) {

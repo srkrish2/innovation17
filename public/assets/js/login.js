@@ -4,7 +4,7 @@ var POST_URL = "/authorize";
 var SELECTOR = ".ui.form";
 
 function init() {
-    $(SELECTOR).form(VALIDATION_RULES)
+    $(SELECTOR).form(VALIDATION_RULES);
 }
 
 var VALIDATION_RULES = {
