@@ -15,7 +15,9 @@ import mturk_controller
 import mongodb_controller
 import datetime
 from jinja2 import Environment, PackageLoader
+import passlib.hash
 env = Environment(loader=PackageLoader('server', '/templates'))
+sha256_crypt = passlib.hash.sha256_crypt
 
 
 COOKIE_NAME = "user_id"
@@ -55,11 +57,6 @@ class HtmlPageLoader(object):
     def account_edit(self):
         return render_account_edit_page()
         # return open('account_edit.html')
-
-
-def render_account_edit_page():
-    template = env.get_template('my_template.html')
-    return template.render(message='lololol server can change this')
 
 
 class PostProblemHandler(object):
@@ -169,7 +166,10 @@ class NewAccountHandler(object):
             result["username_taken"] = True
             return result
 
-        mongodb_controller.new_account(username, email, password)
+        # encrypt the password
+        password_hash = sha256_crypt.encrypt(password)
+
+        mongodb_controller.new_account(username, email, password_hash)
         result["success"] = True
         return result
 
@@ -185,14 +185,18 @@ class SignInHandler(object):
         name = data['name']
         password = data['password']
 
-        result = {}
-        success = False
-        if name == "lol":
-            success = True
-            result["url"] = "index"
+        if '@' in name:
+            if mongodb_controller.is_email_in_use(name):
+                hashed_password = mongodb_controller.get_password_for_email(name)
+                if sha256_crypt.verify(password, hashed_password):
+                    return {"success": True}
+            return {"success": False}
 
-        result["success"] = success
-        return result
+        if mongodb_controller.is_username_taken(name):
+            hashed_password = mongodb_controller.get_password_for_username(name)
+            if sha256_crypt.verify(password, hashed_password):
+                return {"success": True}
+        return {"success": False}
 
 
 class NewProjectHandler(object):
@@ -215,6 +219,11 @@ class IsLoggedInHandler(object):
     @cherrypy.tools.json_out()
     def GET(self):
         return {"is_logged_in": COOKIE_NAME in cherrypy.session}
+
+
+def render_account_edit_page():
+    template = env.get_template('my_template.html')
+    return template.render(link="https://realpython.com/blog/python/primer-on-jinja-templating")
 
 
 if __name__ == '__main__':

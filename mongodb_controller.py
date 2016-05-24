@@ -67,6 +67,21 @@ def is_username_taken(username):
     return users_collection.find_one({USER_USERNAME: username}) is not None
 
 
+def get_password_for_email(email):
+    user_entry = users_collection.find_one({USER_EMAIL: email})
+    if user_entry is None:
+        print "MONGODB: no user with email %s" % email
+        return ""
+    return user_entry[USER_PASSWORD]
+
+
+def get_password_for_username(username):
+    user_entry = users_collection.find_one({USER_USERNAME: username})
+    if user_entry is None:
+        print "MONGODB: no user with name %s" % username
+        return ""
+    return user_entry[USER_PASSWORD]
+
 
 # client
 client = pymongo.MongoClient()
