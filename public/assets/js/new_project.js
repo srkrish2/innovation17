@@ -38,10 +38,19 @@ function init() {
     $(SELECTOR).form(VALIDATION_RULES);
     $('.ui.fluid.search.selection.dropdown').dropdown();
     $('#addtags').keyup(function(e){
-        if (e.which == 188) {
-            var tag = this.value.trim().substring(0,this.value.length-1)
+        if (e.which == 188 || e.which == 13) {
+            var tag = "";
+            if (e.which == 188) tag = this.value.trim().substring(0,this.value.length-1), REF = "";
+            else tag = this.value.trim();
+            if($('.new-tag.label').length === 0) {
+                REF = ".icon.tags";
+            }
+            else {
+                var InsIdx = $('.new-tag.label').length-1;
+                REF = $('.new-tag.label')[InsIdx];
+            }
             $("<div class = 'ui olive new-tag label'>" + tag
-                                                       + " <i class='delete icon'></i></div>").insertAfter(".icon.tags");
+                                                       + " <i class='delete icon'></i></div>").insertAfter(REF);
             console.log("this is");
             console.log(this);
             $(this).val('');

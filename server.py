@@ -48,6 +48,10 @@ class StaticPageLoader(object):
     def new_schema(self):
         return open('new_schema.html')
 
+    @cherrypy.expose
+    def account_edit(self):
+        return open('account_edit.html')
+
 
 class PostProblemHandler(object):
     exposed = True
