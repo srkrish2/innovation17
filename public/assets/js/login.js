@@ -1,6 +1,6 @@
 $(init);
 
-var POST_URL = "/authorize";
+var POST_URL = "/sign_in";
 var SELECTOR = ".ui.form";
 
 function init() {

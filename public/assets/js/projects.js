@@ -1,5 +1,5 @@
 $(init);
-URL = "/getproblems";
+URL = "/get_problems";
 
 function init() {
     $.ajax({

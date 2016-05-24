@@ -1,5 +1,5 @@
 $(init);
-POST_URL = "/getschemas";
+POST_URL = "/get_schemas";
 PROBLEM_ID = "3P6ENY9P79WU3BGAM63UL8VPD6QHIA";
 
 function init() {

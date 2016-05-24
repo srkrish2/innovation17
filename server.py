@@ -130,7 +130,7 @@ class GetschemasHandler(object):
         return {"schemas": schema_dicts}
 
 
-class AuthorizationHandler(object):
+class SignInHandler(object):
     exposed = True
 
     # post requests go here
@@ -151,7 +151,28 @@ class AuthorizationHandler(object):
         return result
 
 
-class SubmitNewProjectHandler(object):
+class NewAccountHandler(object):
+    exposed = True
+
+    # post requests go here
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def POST(self):
+        data = cherrypy.request.json
+        name = data['name']
+        password = data['password']
+
+        result = {}
+        success = False
+        if name == "lol":
+            success = True
+            result["url"] = "index"
+
+        result["success"] = success
+        return result
+
+
+class NewProjectHandler(object):
     exposed = True
 
     # post requests go here
@@ -182,33 +203,33 @@ if __name__ == '__main__':
             'tools.staticdir.dir': './public'
         },
         # /submit is for post requests, so create a method dispatcher
-        '/postproblem': {
+        '/post_problem': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
-        '/getproblems': {
+        '/get_problems': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
-        '/getschemas': {
+        '/get_schemas': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
-        '/authorize': {
+        '/sign_in': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
-        '/submit_newproject': {
+        '/new_project': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/new_account': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
     webapp = StaticPageLoader()
-    # all requests sent to /postproblem go to this class
+    # all requests sent to /postproblem go to this class. The rest work the same way.
     webapp.postproblem = PostproblemHandler()
-    # all requests sent to /getproblems go to this class
     webapp.getproblems = GetproblemsHandler()
-    # all requests sent to /getschemas go to this class
     webapp.getschemas = GetschemasHandler()
-    # all requests sent to /authorize go to this class
-    webapp.authorize = AuthorizationHandler()
-    # all requests sent to /submit_newproject go to this class
-    webapp.submit_newproject = SubmitNewProjectHandler()
+    webapp.sign_in = SignInHandler()
+    webapp.new_project = NewProjectHandler()
+    webapp.new_account = NewAccountHandler()
     # start the server
     cherrypy.quickstart(webapp, '/', conf)
