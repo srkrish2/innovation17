@@ -14,6 +14,9 @@ import cherrypy
 import mturk_controller
 import mongodb_controller
 import datetime
+from jinja2 import Environment, PackageLoader
+env = Environment(loader=PackageLoader('server', '/templates'))
+
 
 COOKIE_NAME = "user_id"
 PROBLEM_COMPLETION_STATUS = "schema_count"
@@ -22,7 +25,7 @@ PROBLEM_FOR_FRONTEND_ID = "problem_id"
 READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 
 
-class StaticPageLoader(object):
+class HtmlPageLoader(object):
     # homepage
     @cherrypy.expose
     def index(self):
@@ -50,7 +53,13 @@ class StaticPageLoader(object):
 
     @cherrypy.expose
     def account_edit(self):
-        return open('account_edit.html')
+        return render_account_edit_page()
+        # return open('account_edit.html')
+
+
+def render_account_edit_page():
+    template = env.get_template('my_template.html')
+    return template.render(message='lololol server can change this')
 
 
 class PostProblemHandler(object):
@@ -249,7 +258,7 @@ if __name__ == '__main__':
         }
     }
     # class for serving static homepage
-    webapp = StaticPageLoader()
+    webapp = HtmlPageLoader()
     # all requests sent to /postproblem go to this class. The rest work the same way.
     webapp.post_problem = PostProblemHandler()
     webapp.get_problems = GetProblemsHandler()
