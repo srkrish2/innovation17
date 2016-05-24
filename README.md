@@ -67,7 +67,6 @@ Dependencies:
 ### /post_new_project output
 ```json
 {
-  "success": boolean,
   "url": string
 }
 ```
@@ -85,6 +84,7 @@ Dependencies:
 ```json
 {
   "success": boolean,
+  "fail_reason": string,
   "url": string
 }
 ```
