@@ -142,16 +142,26 @@ class NewAccountHandler(object):
     @cherrypy.tools.json_in()
     def POST(self):
         data = cherrypy.request.json
-        name = data['name']
+        username = data['username']
+        email = data['email']
         password = data['password']
 
-        result = {}
-        success = False
-        if name == "lol":
-            success = True
-            result["url"] = "index"
+        result = {
+            "success": False,
+            "username_taken": False,
+            "email_in_use": False
+        }
 
-        result["success"] = success
+        if mongodb_controller.is_email_in_use(email):
+            result["email_in_use"] = True
+            return result
+
+        if mongodb_controller.is_username_taken(username):
+            result["username_taken"] = True
+            return result
+
+        mongodb_controller.new_account(username, email, password)
+        result["success"] = True
         return result
 
 
@@ -189,6 +199,15 @@ class NewProjectHandler(object):
         category = data['category']
         return {"url": "index"}
 
+
+class IsLoggedInHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_out()
+    def GET(self):
+        return {"is_logged_in": COOKIE_NAME in cherrypy.session}
+
+
 if __name__ == '__main__':
     # server configurations
     conf = {
@@ -224,6 +243,9 @@ if __name__ == '__main__':
         },
         '/post_new_account': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/is_logged_in': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -235,5 +257,6 @@ if __name__ == '__main__':
     webapp.post_sign_in = SignInHandler()
     webapp.post_new_project = NewProjectHandler()
     webapp.post_new_account = NewAccountHandler()
+    webapp.is_logged_in = IsLoggedInHandler()
     # start the server
     cherrypy.quickstart(webapp, '/', conf)

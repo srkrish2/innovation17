@@ -38,10 +38,11 @@ function init() {
     $(SELECTOR).form(VALIDATION_RULES);
     $('.ui.fluid.search.selection.dropdown').dropdown();
     $('#addtags').keyup(function(e){
-        if (e.which == 188 || e.which == 13) {
+        if (e.which == 188 || e.which == 13 || e.which == 186) { // , enter ;
             var tag = "";
-            if (e.which == 188) tag = this.value.trim().substring(0,this.value.length-1), REF = "";
+            if (e.which == 188 || e.which == 186) tag = this.value.trim().substring(0,this.value.length-1), REF = "";
             else tag = this.value.trim();
+            if (tag.length == 0) return;
             if($('.new-tag.label').length === 0) {
                 REF = ".icon.tags";
             }
@@ -51,13 +52,10 @@ function init() {
             }
             $("<div class = 'ui olive new-tag label'>" + tag
                                                        + " <i class='delete icon'></i></div>").insertAfter(REF);
-            console.log("this is");
-            console.log(this);
             $(this).val('');
         }
     });
     $(document).on('click', 'i.delete', function(e){
-        console.log(e);
         $(this).parent().remove();
     });
 }

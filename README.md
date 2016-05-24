@@ -12,14 +12,15 @@ Dependencies:
 
 ## Frontend - server communication
 
-| Command                         | Input                              | Output               |
-|---------------------------------|------------------------------------|----------------------|
-| POST request to `/post_problem` | `{"problem": "%user's problem%"}`  | {"success": boolean} |
-| GET request to `/get_problems`  | No input                           | See example below    |
-| POST request to `/get_schemas`  | `{"problem_id": "%problem's id%"}` | See below            |
-| POST request to `new_project`   | See below                          | See below            |
-| POST request to `new_account`   | See below                          | See below            |
-| POST request to `/sign_in`      | See below                          | See below            |
+| Command                         | Input                              | Output                      |
+|---------------------------------|------------------------------------|-----------------------------|
+| POST request to `/post_problem` | `{"problem": "%user's problem%"}`  | {"success": boolean}        |
+| GET request to `/get_problems`  | No input                           | See example below           |
+| POST request to `/get_schemas`  | `{"problem_id": "%problem's id%"}` | See below                   |
+| GET request to `/is_logged_in`  | No input                           | `{"is_logged_in": boolean}` |
+| POST request to `new_project`   | See below                          | See below                   |
+| POST request to `new_account`   | See below                          | See below                   |
+| POST request to `/sign_in`      | See below                          | See below                   |
 
 
 ### /get_problems output example
@@ -67,7 +68,7 @@ Dependencies:
 ### /post_new_project output
 ```json
 {
-  "url": string
+  "success": boolean
 }
 ```
 
@@ -84,8 +85,8 @@ Dependencies:
 ```json
 {
   "success": boolean,
-  "fail_reason": string,
-  "url": string
+  "email_in_use": boolean, // if fail, check these two
+  "username_taken": boolean
 }
 ```
 
@@ -100,7 +101,6 @@ Dependencies:
 ### /post_sign_in output
 ```json
 {
-    "success": boolean,
-    "url": string
+    "success": boolean
 }
 ```

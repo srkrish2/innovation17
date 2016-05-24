@@ -3,6 +3,10 @@ import copy
 
 MONGODB_ID = "_id"
 
+USER_USERNAME = "username"
+USER_EMAIL = "email"
+USER_PASSWORD = "password"
+
 PROBLEM_HIT_ID = "hit_id"
 PROBLEM_DESCRIPTION = "description"
 PROBLEM_OWNER_ID = "owner_id"
@@ -44,6 +48,25 @@ def get_problems_by_user(user_id):
 def add_schema(schema_dict):
     schema = copy.deepcopy(schema_dict)
     schemas_collection.insert_one(schema)
+
+
+def new_account(username, email, password):
+    new_user = {
+        USER_USERNAME: username,
+        USER_EMAIL: email,
+        USER_PASSWORD: password
+    }
+    users_collection.insert_one(new_user)
+
+
+def is_email_in_use(email):
+    return users_collection.find_one({USER_EMAIL: email}) is not None
+
+
+def is_username_taken(username):
+    return users_collection.find_one({USER_USERNAME: username}) is not None
+
+
 
 # client
 client = pymongo.MongoClient()
