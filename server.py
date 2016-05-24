@@ -33,8 +33,8 @@ class StaticPageLoader(object):
         return open('projects.html')
 
     @cherrypy.expose
-    def newproject(self):
-        return open('newproject.html')
+    def new_project(self):
+        return open('new_project.html')
 
     @cherrypy.expose
     def login(self):
@@ -45,11 +45,11 @@ class StaticPageLoader(object):
         return open('schemas.html')
 
     @cherrypy.expose
-    def newschema(self):
-        return open('newschema.html')
+    def new_schema(self):
+        return open('new_schema.html')
 
 
-class PostproblemHandler(object):
+class PostProblemHandler(object):
     exposed = True
 
     # post requests go here
@@ -78,7 +78,7 @@ def get_user_id():
     return user_id
 
 
-class GetproblemsHandler(object):
+class GetProblemsHandler(object):
     exposed = True
 
     # get requests go here
@@ -86,7 +86,7 @@ class GetproblemsHandler(object):
     def GET(self):
         # get user_id either from mongodb insertion or from session
         user_id = get_user_id()
-        print "got a /getproblems request from", user_id
+        print "got a /get_problems request from", user_id
         problems = mongodb_controller.get_problems_by_user(user_id)
         print "user's problems:", problems
         for problem in problems:
@@ -100,7 +100,7 @@ class GetproblemsHandler(object):
         return {"problems": problems}
 
 
-class GetschemasHandler(object):
+class GetSchemasHandler(object):
     exposed = True
 
     # post requests go here
@@ -110,7 +110,7 @@ class GetschemasHandler(object):
         data = cherrypy.request.json
         hit_id = data['problem_id']
 
-        print "got a /getschemas request for", hit_id
+        print "got a /get_schemas request for", hit_id
         schema_dicts = mturk_controller.get_schema_making_results(hit_id)
 
         # replace time with a readable one and add to DB
@@ -130,7 +130,7 @@ class GetschemasHandler(object):
         return {"schemas": schema_dicts}
 
 
-class SignInHandler(object):
+class NewAccountHandler(object):
     exposed = True
 
     # post requests go here
@@ -151,7 +151,7 @@ class SignInHandler(object):
         return result
 
 
-class NewAccountHandler(object):
+class SignInHandler(object):
     exposed = True
 
     # post requests go here
@@ -202,7 +202,7 @@ if __name__ == '__main__':
             'tools.staticdir.on': True,
             'tools.staticdir.dir': './public'
         },
-        # /submit is for post requests, so create a method dispatcher
+        # these are for requests, not html pages, so create method dispatchers
         '/post_problem': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
@@ -211,23 +211,24 @@ if __name__ == '__main__':
         },
         '/get_schemas': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        },
-        '/sign_in': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        },
-        '/new_project': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        },
-        '/new_account': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
+        # },
+        # '/sign_in': {
+        #     'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        # },
+        # '/new_project': {
+        #     'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        # },
+        # '/new_account': {
+        #     'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        # }
     }
     # class for serving static homepage
     webapp = StaticPageLoader()
     # all requests sent to /postproblem go to this class. The rest work the same way.
-    webapp.postproblem = PostproblemHandler()
-    webapp.getproblems = GetproblemsHandler()
-    webapp.getschemas = GetschemasHandler()
+    webapp.post_problem = PostProblemHandler()
+    webapp.get_problems = GetProblemsHandler()
+    webapp.get_schemas = GetSchemasHandler()
     webapp.sign_in = SignInHandler()
     webapp.new_project = NewProjectHandler()
     webapp.new_account = NewAccountHandler()
