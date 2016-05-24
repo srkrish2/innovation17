@@ -211,17 +211,16 @@ if __name__ == '__main__':
         },
         '/get_schemas': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/post_sign_in': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/post_new_project': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/post_new_account': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
-        # },
-        # '/sign_in': {
-        #     'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        # },
-        # '/new_project': {
-        #     'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        # },
-        # '/new_account': {
-        #     'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        # }
     }
     # class for serving static homepage
     webapp = StaticPageLoader()
@@ -229,8 +228,8 @@ if __name__ == '__main__':
     webapp.post_problem = PostProblemHandler()
     webapp.get_problems = GetProblemsHandler()
     webapp.get_schemas = GetSchemasHandler()
-    # webapp.sign_in = SignInHandler()
-    # webapp.new_project = NewProjectHandler()
-    # webapp.new_account = NewAccountHandler()
+    webapp.post_sign_in = SignInHandler()
+    webapp.post_new_project = NewProjectHandler()
+    webapp.post_new_account = NewAccountHandler()
     # start the server
     cherrypy.quickstart(webapp, '/', conf)

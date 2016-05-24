@@ -54,7 +54,7 @@ Dependencies:
 }
 ```
 
-### /new_project input
+### /post_new_project input
 ```json
 {
   "title": string,
@@ -64,7 +64,7 @@ Dependencies:
 }
 ```
 
-### /new_project output
+### /post_new_project output
 ```json
 {
   "success": boolean,
@@ -72,7 +72,7 @@ Dependencies:
 }
 ```
 
-### /new_account input
+### /post_new_account input
 ```json
 {
   "username": string,
@@ -81,7 +81,7 @@ Dependencies:
 }
 ```
 
-### /new_account output
+### /post_new_account output
 ```json
 {
   "success": boolean,
@@ -89,7 +89,7 @@ Dependencies:
 }
 ```
 
-### /sign_in input
+### /post_sign_in input
 ```json
 {
     "name": username or email string,
@@ -97,7 +97,7 @@ Dependencies:
 }
 ```
 
-### /sign_in output
+### /post_sign_in output
 ```json
 {
     "success": boolean,
