@@ -229,8 +229,8 @@ if __name__ == '__main__':
     webapp.post_problem = PostProblemHandler()
     webapp.get_problems = GetProblemsHandler()
     webapp.get_schemas = GetSchemasHandler()
-    webapp.sign_in = SignInHandler()
-    webapp.new_project = NewProjectHandler()
-    webapp.new_account = NewAccountHandler()
+    # webapp.sign_in = SignInHandler()
+    # webapp.new_project = NewProjectHandler()
+    # webapp.new_account = NewAccountHandler()
     # start the server
     cherrypy.quickstart(webapp, '/', conf)
