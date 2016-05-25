@@ -1,9 +1,11 @@
 ## Installation
 Dependencies:
- - [pip](https://pip.pypa.io/en/stable/installing/) - not required, but will save you time
+ - [pip](https://pip.pypa.io/en/stable/installing/) - will save you time installing the ones below 
  - [CherryPy](http://docs.cherrypy.org/en/latest/install.html#installation)
  - [MongoDB](http://www.mongodb.org/display/DOCS/Getting+Started)
  - [PyMongo](http://api.mongodb.com/python/current/installation.html)
+ - [Jinja2](http://jinja.pocoo.org/docs/dev/intro/#installation)
+ - [PassLib](https://pythonhosted.org/passlib/install.html#installation-instructions)
 
 ## Running the server
 1. In one terminal, type `mongod` to start the database
@@ -18,9 +20,9 @@ Dependencies:
 | GET request to `/get_problems`  | No input                           | See example below           |
 | POST request to `/get_schemas`  | `{"problem_id": "%problem's id%"}` | See below                   |
 | GET request to `/is_logged_in`  | No input                           | `{"is_logged_in": boolean}` |
-| POST request to `new_project`   | See below                          | See below                   |
+| POST request to `new_project`   | See below                          | `{"success": boolean}`      |
 | POST request to `new_account`   | See below                          | See below                   |
-| POST request to `/sign_in`      | See below                          | See below                   |
+| POST request to `/sign_in`      | See below                          | `{"success": boolean}`      |
 
 
 ### /get_problems output example
@@ -56,7 +58,7 @@ Dependencies:
 ```
 
 ### /post_new_project input
-```json
+```
 {
   "title": string,
   "description": string,
@@ -65,15 +67,8 @@ Dependencies:
 }
 ```
 
-### /post_new_project output
-```json
-{
-  "success": boolean
-}
-```
-
 ### /post_new_account input
-```json
+```
 {
   "username": string,
   "email": string,
@@ -82,25 +77,18 @@ Dependencies:
 ```
 
 ### /post_new_account output
-```json
+```
 {
   "success": boolean,
-  "email_in_use": boolean, // if fail, check these two
+  "email_in_use": boolean,
   "username_taken": boolean
 }
 ```
 
 ### /post_sign_in input
-```json
+```
 {
     "name": username or email string,
     "password": string
-}
-```
-
-### /post_sign_in output
-```json
-{
-    "success": boolean
 }
 ```
