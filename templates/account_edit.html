@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% set sidebar = [
+  ('/projects', 'projects', 'My projects'),
+  ('/starredprj', 'starredprj','Starred projects'),
+  ('/following','following','Following'),
+  ('/follower/', 'follower','Follower'),
+  ('/messages/', 'messages','Messages')
+  ] -%}
+  {% set active_tab = active_tab|default('profile') -%}
+
+{% block content %}
+
+  <div class="ui middle large aligned center first-page-element grid">
+    <div class="four wide column">
+
+      <div class="ui  fluid tabular menu vertical">
+      {% for href, id, caption in sidebar %}
+        <a href="{{ href|e }}" 
+          {% if id == active_tab %} class="active red item"
+          {% else %}
+          class="item"
+          {% endif%}>{{ caption|e }}</a>
+      {% endfor %}
+
+      </div>
+    </div>
+    <div class="twelve wide stretched column">
+      <div class="ui segment">
+        {% block account_content %} {% endblock %}
+       
+      </div>
+    </div>
+    
+    
+  </div>
+
+{% endblock %}

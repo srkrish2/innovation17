@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="ui middle first-page-element aligned center container content">
+  <div class="ui project form">
+    <h2 class="ui diving header">Project Information</h2>
+    <div class="field">
+      <label class="title">
+        <div class="ui transparent input">
+          <h3 class="title italic content">
+            <input type="text" name="title" placeholder="Enter title...">
+          </h3>
+        </div>
+      </label> 
+    </div>
+    <div class="field"><textarea type="text" name="description" placeholder="Project description..."></textarea></div>
+    <div class="two fields">
+      <div class="field">
+        <div class="ui fluid search selection dropdown">
+          <i class="tag icon"></i>
+          <input type="hidden" name="category">
+          <span class="text">Category</span>
+          <div class="menu">
+            <div class="item">Problem</div>
+            <div class="item">Method/Technology</div>
+            <div class="item">What's next</div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="ui right labeled left icon input">
+          <i class="tags icon"></i>
+          <input type="text" id="addtags" placeholder="Separate with commas">
+          <a class="ui tag blue pointing label">
+            Add Tag
+          </a>
+        </div>
+          <!-- <div class="ui right labeled left icon multiple selection input">
+            <i class="tags icon"></i>
+            <input type="text" class="ui dropdown search multiple selection" placeholder="Enter tags">
+            <a class="ui tag label">
+              Add Tag
+            </a>
+          </div> -->
+        </div>
+      </div>
+      <div class="two fields">
+        <div class="field">
+          <label for="file" class="ui icon button">
+            <i class="file icon"></i>
+            Open File</label>
+            <input type="file" id="file" style="display:none">
+          </div>
+          <div class="field">
+            <button class="ui teal button right submit">Submit</button>
+          </div>
+        </div>
+      </div>
+
+      <script src="/static/semantic/dist/semantic.js"></script>
+      <script src="/static/assets/js/new_project.js"></script>
+    </div>
+
+    {% endblock %}

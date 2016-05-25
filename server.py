@@ -26,18 +26,28 @@ READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 
 
 class HtmlPageLoader(object):
-    # homepage
+
+    # index
     @cherrypy.expose
     def index(self):
-        return open('index.html')
+        return render_homepage()
+        # return open('home.html')
+
+    # homepage
+    @cherrypy.expose
+    def home(self):
+        return render_homepage()
+        # return open('home.html')
 
     @cherrypy.expose
     def projects(self):
-        return open('projects.html')
+        return render_projects()
+        # return open('projects.html')
 
     @cherrypy.expose
     def new_project(self):
-        return open('new_project.html')
+        return render_new_project()
+        # return open('new_project.html')
 
     @cherrypy.expose
     def login(self):
@@ -45,11 +55,13 @@ class HtmlPageLoader(object):
 
     @cherrypy.expose
     def schemas(self):
-        return open('schemas.html')
+        return render_schemas()
+        # return open('schemas.html')
 
     @cherrypy.expose
     def new_schema(self):
-        return open('new_schema.html')
+        return render_new_schema()
+        # return open('new_schema.html')
 
     @cherrypy.expose
     def account_edit(self):
@@ -57,10 +69,27 @@ class HtmlPageLoader(object):
         # return open('account_edit.html')
 
 
+def render_homepage():
+    template = env.get_template('home.html')
+    return template.render()
 def render_account_edit_page():
-    template = env.get_template('my_template.html')
-    return template.render(message='lololol server can change this')
+    template = env.get_template('account_edit.html')
+    return template.render()
 
+def render_new_project():
+    template = env.get_template('new_project.html');
+    return template.render()
+
+def render_projects():
+    template = env.get_template('projects.html')
+    return template.render()
+def render_new_schema():
+    template = env.get_template('new_schema.html')
+    return template.render()
+
+def render_schemas():
+    template = env.get_template('schemas.html')
+    return template.render()
 
 class PostProblemHandler(object):
     exposed = True

@@ -2,9 +2,22 @@
       background-color: #DADADA;
      
     }
-body > .ui.container.content {
-   padding-top:80px;
+body .first-page-element {
+   padding-top:80px!important;
 	}
+/*
+div.fixed.menu {
+  position:relative;
+  margin-bottom: 80px;
+}
+*/
+div.footer {
+    position: absolute;
+    z-index: 10;
+    bottom:0em;
+    height: 3em;
+    margin-top: -3em;
+}
 
 div.ui.icon.input {
   padding-left: 2em;

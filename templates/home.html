@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% set active_page = "home" %}
+{% block content %}
+<div class="ui pushable first-page-element sidebar-context equal width grid">
+  <div class="ui first-page-element home sidebar visible vertical menu left">
+  <a href="/projects" class="teal item">My projects <i class="plus icon"></i></a>
+    <a href="" class="teal item">Starred projects</a>
+    <a href="" class="item">Following</a>
+    <a href="" class="item">Follower</a>
+    <a href="" class="item">Messages</a>
+
+  </div>
+  <div class="pusher">
+    <div class="ten wide column">
+      <div class="ui text container">
+        <h1 class="ui header">Welcome to Crowd Innovator!</h1>
+        <img alt="" class="ui fluid image" src="/static/assets/images/banner-bulb.png">
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/static/semantic/dist/semantic.js"></script>
+<script type="text/javascript" src="/static/assets/js/home.js"></script>
+
+{% endblock %}
