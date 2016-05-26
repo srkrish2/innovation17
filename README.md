@@ -14,15 +14,15 @@ Dependencies:
 
 ## Frontend - server communication
 
-| Command                         | Input                              | Output                      |
-|---------------------------------|------------------------------------|-----------------------------|
-| POST request to `/post_problem` | `{"problem": "%user's problem%"}`  | {"success": boolean}        |
-| GET request to `/get_problems`  | No input                           | See example below           |
-| POST request to `/get_schemas`  | `{"problem_id": "%problem's id%"}` | See below                   |
-| GET request to `/is_logged_in`  | No input                           | `{"is_logged_in": boolean}` |
-| POST request to `new_project`   | See below                          | `{"success": boolean}`      |
-| POST request to `new_account`   | See below                          | See below                   |
-| POST request to `/sign_in`      | See below                          | `{"success": boolean}`      |
+| Command                              | Input                              | Output                      |
+|--------------------------------------|------------------------------------|-----------------------------|
+| POST request to `/post_problem`      | `{"problem": "%user's problem%"}`  | {"success": boolean}        |
+| GET request to `/get_problems`       | No input                           | See example below           |
+| POST request to `/get_schemas`       | `{"problem_id": "%problem's id%"}` | See below                   |
+| POST request to `post_new_project`   | See below                          | `{"success": boolean}`      |
+| POST request to `post_new_account`   | See below                          | See below                   |
+| POST request to `/post_sign_in`      | See below                          | See below                   |
+| POST request to `/post_go_to_sign_in`| `{"previous_url": string}`         | `{"url": string}`           |
 
 
 ### /get_problems output example
@@ -67,7 +67,8 @@ Dependencies:
 }
 ```
 
-### /post_new_account input
+### /post_new_account 
+*input*
 ```
 {
   "username": string,
@@ -76,7 +77,7 @@ Dependencies:
 }
 ```
 
-### /post_new_account output
+*output*
 ```
 {
   "success": boolean,
@@ -85,10 +86,36 @@ Dependencies:
 }
 ```
 
-### /post_sign_in input
+    
+### /post_go_to_sign_in 
+*input*
+```
+{
+    "previous_url": string
+}
+```
+
+*output*
+```
+{
+    "url": string
+}
+```
+
+
+### /post_sign_in 
+*input*
 ```
 {
     "name": username or email string,
     "password": string
+}
+```
+
+*output*
+```
+{
+    "success": boolean,
+    "url": string
 }
 ```
