@@ -109,12 +109,12 @@ def get_schemas(username, problem_title_slug):
 
 
 def update_schema_count(generate_schema_hit_id, schema_count):
-    problem = problems_collection.find_one({GENERATE_SCHEMA_HIT_ID: generate_schema_hit_id})
-    problem[SCHEMA_COUNT] = SCHEMA_COUNT
+    query_filter = {GENERATE_SCHEMA_HIT_ID: generate_schema_hit_id}
+    update = {'$set': {SCHEMA_COUNT: schema_count}}
+    problems_collection.update_one(query_filter, update)
 
 
-def add_schema(schema_dict):
-    schema = copy.deepcopy(schema_dict)
+def add_schema(schema):
     schemas_collection.insert_one(schema)
 
 

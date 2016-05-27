@@ -26,7 +26,7 @@ array of maps (dictionaries). each map has the following format:
 }
 ```
 
-### /%problem_title%/schemas page parser input
+### /{{problem_title}}/schemas page parser input
 ```
 array of maps (dictionaries). each map has the following format:
 {
@@ -85,35 +85,3 @@ output
   "username_taken": boolean   //only if success=false
 }
 ```
-
-
-
-
-
-<!---
-# disregard this for now, still in development
-## Frontend - server communication
-
-| Command                              | Input                              | Output                      |
-|--------------------------------------|------------------------------------|-----------------------------|
-| POST request to `/get_schemas`       | `{"problem_id": "%problem's id%"}` | See below                   |
-| POST request to `post_new_project`   | See below                          | `{"success": boolean}`      |
-| POST request to `post_new_account`   | See below                          | See below                   |
-| POST request to `/post_sign_in`      | See below                          | See below                   |
-| POST request to `/post_go_to_sign_in`| `{"previous_url": string}`         | `{"url": string}`           |
-    
-### /post_go_to_sign_in 
-*input*
-```
-{
-    "previous_url": string
-}
-```
-
-*output*
-```
-{
-    "url": string
-}
-```
--->

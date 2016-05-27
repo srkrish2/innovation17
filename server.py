@@ -81,8 +81,7 @@ def render_problems_page():
         template = env.get_template('sign_in.html')
         return template.render()
     problems = mongodb_controller.get_problems_by_user(cherrypy.session[USERNAME_KEY])
-    print "rendering problems =", problems
-    return "problems page.implement me."
+    return str(problems)
     template = env.get_template('projects.html')
     return template.render(problems)
 
@@ -94,8 +93,7 @@ def render_schemas_page(problem_slug):
             if not mongodb_controller.are_all_schemas_generated(username, problem_slug):
                 update_schema_making_results(username, problem_slug)
             schemas = mongodb_controller.get_schemas(username, problem_slug)
-            print "rendering schemas =", schemas
-            return "schemas page.implement me."
+            return str(schemas)
             template = env.get_template('schemas.html')
             return template.render(schemas)
         else:
@@ -170,7 +168,7 @@ class UpdateSchemaCountHandler(object):
         data = cherrypy.request.json
 
         generate_schema_hit_id = data["problem_id"]
-        schema_count = mturk_controller.get_schema_making_status(generate_schema_hit_id)
+        schema_count = int(mturk_controller.get_schema_making_status(generate_schema_hit_id))
 
         mongodb_controller.update_schema_count(generate_schema_hit_id, schema_count)
 
