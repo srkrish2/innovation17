@@ -12,16 +12,27 @@ Dependencies:
 2. In another terminal, go to your cloned directory of this repo and type `python server.py` to start the server
 3. In browser, go to [http://localhost:8080](http://localhost:8080)
 
-
+## Frontend - server communication
 ### /problems page parser input
 ```
 array of maps (dictionaries). each map has the following format:
 {
-  "problem_id": string,
   "title": string,
   "description": string,
   "schema_count": int,
-  "schema_count_goal": int
+  "schema_count_goal": int,
+  "problem_id": string,
+  "schemas_page_link": string
+}
+```
+
+### /%problem_title%/schemas page parser input
+```
+array of maps (dictionaries). each map has the following format:
+{
+    "text": string,
+    "time": "19 May 2016 12:19 PM",
+    "worker_id": string
 }
 ```
 
@@ -69,8 +80,9 @@ output
 ```
 {
   "success": boolean,
-  "email_in_use": boolean,
-  "username_taken": boolean
+  "url": string,              
+  "email_in_use": boolean,    //only if success=false
+  "username_taken": boolean   //only if success=false
 }
 ```
 
@@ -89,39 +101,6 @@ output
 | POST request to `post_new_account`   | See below                          | See below                   |
 | POST request to `/post_sign_in`      | See below                          | See below                   |
 | POST request to `/post_go_to_sign_in`| `{"previous_url": string}`         | `{"url": string}`           |
-
-
-### /get_problems output example
-```json
-{
-  "problems": [
-    {
-      "problem_id": "3P6ENY9P79WU3BGAM63UL8VPD6QHIA",
-      "schema_count": "1",
-      "description": "problem1"
-    },
-    {
-      "problem_id": "3JYPJ2TAYI8261C84B5ERKKOJ58PFW",
-      "schema_count": "1",
-      "description": "problem2"
-    }
-  ]
-}
-```
-
-### /get_schemas output example
-```json
-{
-  "schemas": [
-    {
-      "text": "solution1",
-      "time": "19 May 2016 12:19 PM",
-      "worker_id": "A2IG0RMLWLDY0F",
-      "problem_id": "3P6ENY9P79WU3BGAM63UL8VPD6QHIA"
-    }
-  ]
-}
-```
     
 ### /post_go_to_sign_in 
 *input*

@@ -55,6 +55,7 @@ def get_schema_making_status(hit_id):
 
 
 def get_schema_making_results(hit_id):
+    print "hi from mturk get_schema_making_results"
     p = subprocess.Popen(['java', '-jar', 'SchemaMakingResults.jar', hit_id],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
