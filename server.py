@@ -83,7 +83,7 @@ def render_homepage():
 
 
 def render_account_edit_page():
-    template = env.get_template('account_edit.html')
+    template = env.get_template('profile_info.html')
     return template.render()
 
 

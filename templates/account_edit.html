@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 {% set sidebar = [
-  ('/projects', 'projects', 'My projects'),
-  ('/starredprj', 'starredprj','Starred projects'),
-  ('/following','following','Following'),
-  ('/follower/', 'follower','Follower'),
-  ('/messages/', 'messages','Messages')
+  ('/profile_info', 'profile', 'Profile'),
+  ('/privacy', 'privacy','Privacy'),
+  ('/notification','notification','Notification')
   ] -%}
   {% set active_tab = active_tab|default('profile') -%}
 

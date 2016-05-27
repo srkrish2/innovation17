@@ -1,7 +1,7 @@
 {% extends "account_edit.html" %}
 {% set active_page = "home" %}
 {% set active_tab = "profile" %}
-{% block profile %}
+{% block account_content %}
 <form action="" class="ui form">
   <h3 class="dividing header">
     <div class="field">
@@ -9,7 +9,44 @@
       <div class="three fields">
         <div class="field"><input type="text" name="" id="" placeholder="First Name"></div>
         <div class="field"><input type="text" name="" id="" placeholder="Last Name"></div>
-        <div class="field"><input type="text" name="" id="" placeholder="Nick Name"></div>
+        <div class="field"><input type="text" name="" id="" placeholder="Username Name"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Contact</label>
+      <div class="two fields">
+        <div class="field"><input type="text" name="" id="" placeholder="Email"></div>
+        <div class="field"><input type="text" name="" id="" placeholder="Phone"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label for="">More</label>
+      <div class="two fields">
+        <div class="field">
+          <div class="ui dropdown search multiple selection domain">
+            <i class="tag icon"></i>
+            <input type="hidden" name="domain">
+            <span class="text">Domain Expertise</span>
+            <div class="menu">
+              <div class="item">Programming</div>
+              <div class="item">Data mining</div>
+              <div class="item">Human Computer Interaction</div>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui dropdown search multiple selection interets">
+            
+            <i class="tag icon"></i>
+          <input type="hidden" name="interets">
+          <span class="text">Interets</span>
+          <div class="menu">
+            <div class="item">Community</div>
+            <div class="item">Swimming</div>
+            <div class="item">Sky diving</div>
+          </div>
+          </div>
+        </div>
       </div>
     </div>
   </h3>

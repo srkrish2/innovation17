@@ -23,11 +23,6 @@
   <body>
     <div class="ui container">
       <div class="ui inverted top fixed large menu">
-      <!-- <a href="/home" class="active red item">Home</a>
-      <a href="" class=" olive item">How it works</a>
-      <a href="" class=" yellow item">Explore</a>
-      <a href="" class=" green item">About Us</a> -->
-      
       {% for href, id, caption in navigation_bar %}
         <a href="{{ href|e }}" 
           {% if id == active_page %} class="active red item"
@@ -35,8 +30,6 @@
           class="item"
           {% endif%}>{{ caption|e }}</a>
       {% endfor %}
-
-
       <div class="right item">
         <div class="ui icon input">
           <input type="text" placeholder="Search...">
@@ -49,14 +42,6 @@
     </div>
   </div>
   {% block content %}{% endblock %}
-  <!-- <div class="ui middle aligned center container content">
-    
-    <div class='ui grid'>
-      <div class="five wide column">
-      </div>
-      <div class="ui seven wide column">Copyright ©2016, RTC3 Crowdsourcing Innovation Lab @ Bosch</div>
-    </div>
-  </div> -->
   <script src="/static/semantic/dist/semantic.js"></script>
   <div class='ui grid bottom attach footer'>
     <div class="five wide column">
