@@ -12,11 +12,11 @@ div.fixed.menu {
 }
 */
 div.footer {
-    position: absolute;
-    z-index: 10;
-    bottom:0em;
-    height: 3em;
-    margin-top: -3em;
+    /*position: fixed;*/
+    /*z-index: 10;*/
+    bottom:2em;
+    /*height: 3em;*/
+    /*margin-top: -3em;*/
 }
 
 div.ui.icon.input {
