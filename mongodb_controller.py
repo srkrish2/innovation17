@@ -16,6 +16,11 @@ SCHEMA_HIT_ID = "hit_id"
 SCHEMA_WORKER_ID = "worker_id"
 SCHEMA_TIME = "time"
 
+PROJECT_OWNER_ID = "owner_id"
+PROJECT_TITLE = "title"
+PROJECT_DESCRIPTION = "description"
+PROJECT_CATEGORY = "category"
+
 
 def add_user():
     user = {}
@@ -34,7 +39,7 @@ def add_problem(hit_id, description, owner_id):
 
 
 def get_problems_by_user(user_id):
-    # pack each problem with keys: mongdb_id, hit_id, and description
+    # pack each problem with keys: mongodb_id, hit_id, and description
     result = []
     for problem in problems_collection.find({PROBLEM_OWNER_ID: user_id}):
         for_result = {
@@ -83,6 +88,16 @@ def get_password_for_username(username):
     return user_entry[USER_PASSWORD]
 
 
+def add_project(owner_id, title, description, category):
+    project = {
+        PROJECT_OWNER_ID: owner_id,
+        PROJECT_TITLE: title,
+        PROJECT_DESCRIPTION: description,
+        PROJECT_CATEGORY: category
+    }
+    projects_collection.insert_one(project)
+
+
 # client
 client = pymongo.MongoClient()
 # database
@@ -91,3 +106,4 @@ db = client.crowd_db
 users_collection = db.users
 problems_collection = db.problems
 schemas_collection = db.schemas
+projects_collection = db.projects

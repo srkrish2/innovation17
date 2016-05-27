@@ -25,73 +25,87 @@ PROBLEM_COMPLETION_STATUS = "schema_count"
 PROBLEM_FOR_FRONTEND_ID = "problem_id"
 # format example: 23 Apr 2012 4:00 PM
 READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
+PREVIOUS_URL_KEY = "previous_url"
+USERNAME_KEY = "username"
 
 
+@cherrypy.popargs('username', 'title')
 class HtmlPageLoader(object):
 
-    # index
     @cherrypy.expose
     def index(self):
         return render_homepage()
-        # return open('home.html')
 
-    # homepage
     @cherrypy.expose
     def home(self):
         return render_homepage()
-        # return open('home.html')
 
     @cherrypy.expose
     def projects(self):
         return render_projects()
-        # return open('projects.html')
 
     @cherrypy.expose
     def new_project(self):
         return render_new_project()
-        # return open('new_project.html')
-
-    @cherrypy.expose
-    def login(self):
-        return open('login.html')
 
     @cherrypy.expose
     def schemas(self):
         return render_schemas()
-        # return open('schemas.html')
 
     @cherrypy.expose
     def new_schema(self):
         return render_new_schema()
-        # return open('new_schema.html')
 
     @cherrypy.expose
     def account_edit(self):
         return render_account_edit_page()
-        # return open('account_edit.html')
+
+    @cherrypy.expose
+    def edit(self, username, title):
+        return render_project_edit_page(username, title)
+
+
+def render_project_edit_page(username, title):
+    if USERNAME_KEY in cherrypy.session:
+        if cherrypy.session[USERNAME_KEY] == username:
+            return "project edit page"
+        else:
+            raise cherrypy.HTTPError(403, "You are not allowed to access this page. Make sure you are " +
+                                          "logged in with the right account.")
+    else:
+        cherrypy.session[PREVIOUS_URL_KEY] = "/{}/{}/edit".format(username, title)
+        return open('sign_in.html')
 
 
 def render_homepage():
     template = env.get_template('home.html')
     return template.render()
+
+
 def render_account_edit_page():
     template = env.get_template('account_edit.html')
     return template.render()
+
 
 def render_new_project():
     template = env.get_template('new_project.html');
     return template.render()
 
+
 def render_projects():
     template = env.get_template('projects.html')
     return template.render()
+
+
 def render_new_schema():
     template = env.get_template('new_schema.html')
     return template.render()
 
+
 def render_schemas():
     template = env.get_template('schemas.html')
     return template.render()
+
 
 class PostProblemHandler(object):
     exposed = True
@@ -219,18 +233,31 @@ class SignInHandler(object):
         name = data['name']
         password = data['password']
 
-        if '@' in name:
+        is_email = '@' in name
+        success = False
+        if is_email:
             if mongodb_controller.is_email_in_use(name):
                 hashed_password = mongodb_controller.get_password_for_email(name)
                 if sha256_crypt.verify(password, hashed_password):
-                    return {"success": True}
-            return {"success": False}
+                    success = True
 
-        if mongodb_controller.is_username_taken(name):
+        if not is_email and mongodb_controller.is_username_taken(name):
             hashed_password = mongodb_controller.get_password_for_username(name)
             if sha256_crypt.verify(password, hashed_password):
-                return {"success": True}
-        return {"success": False}
+                success = True
+
+        result = {}
+        if not success:
+            result["success"] = False
+            result["url"] = "index"
+            return result
+        else:
+            result["success"] = True
+            if PREVIOUS_URL_KEY in cherrypy.session:
+                result["url"] = cherrypy.session[PREVIOUS_URL_KEY]
+            else:
+                result["url"] = "index"
+            return result
 
 
 class NewProjectHandler(object):
@@ -247,17 +274,30 @@ class NewProjectHandler(object):
         return {"url": "index"}
 
 
-class IsLoggedInHandler(object):
+class GoToSignInHandler(object):
     exposed = True
 
     @cherrypy.tools.json_out()
-    def GET(self):
-        return {"is_logged_in": COOKIE_NAME in cherrypy.session}
+    @cherrypy.tools.json_in()
+    def POST(self):
+        data = cherrypy.request.json
+        cherrypy.session[PREVIOUS_URL_KEY] = data[PREVIOUS_URL_KEY]
+        return {"url": "sign_in"}
 
 
-def render_account_edit_page():
-    template = env.get_template('my_template.html')
-    return template.render(link="https://realpython.com/blog/python/primer-on-jinja-templating")
+def error_page_404(status, message, traceback, version):
+    return "Page not found!"
+
+
+def error_page_403(status, message, traceback, version):
+    return "403 Forbidden! Message: {}".format(message)
+
+
+def unanticipated_error():
+    cherrypy.response.status = 500
+    cherrypy.response.body = [
+        "<html><body>Sorry, an error occured. Please contact the admin</body></html>"
+    ]
 
 
 if __name__ == '__main__':
@@ -268,14 +308,10 @@ if __name__ == '__main__':
         '/': {
             'tools.sessions.on': True,
             'tools.sessions.storage_type': "file",
-            'tools.sessions.storage_path': "./session_data/"
-        },
-        # configuration for serving static files like css/js that the html uses
-        # e.g. http://hostname/static/js/my.js would go to ./public/js/my.js
-        '/static': {
-            'tools.staticdir.root': os.path.abspath(os.getcwd()),  # cherrypy requires absolute path
-            'tools.staticdir.on': True,
-            'tools.staticdir.dir': './public'
+            'tools.sessions.storage_path': "./session_data/",
+            'error_page.404': error_page_404,
+            'error_page.403': error_page_403,
+            'request.error_response': unanticipated_error
         },
         # these are for requests, not html pages, so create method dispatchers
         '/post_problem': {
@@ -287,6 +323,9 @@ if __name__ == '__main__':
         '/get_schemas': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
+        '/post_go_to_sign_in': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
         '/post_sign_in': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
@@ -294,9 +333,6 @@ if __name__ == '__main__':
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
         '/post_new_account': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        },
-        '/is_logged_in': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
@@ -306,9 +342,23 @@ if __name__ == '__main__':
     webapp.post_problem = PostProblemHandler()
     webapp.get_problems = GetProblemsHandler()
     webapp.get_schemas = GetSchemasHandler()
+    webapp.post_go_to_sign_in = GoToSignInHandler()
     webapp.post_sign_in = SignInHandler()
     webapp.post_new_project = NewProjectHandler()
     webapp.post_new_account = NewAccountHandler()
-    webapp.is_logged_in = IsLoggedInHandler()
-    # start the server
-    cherrypy.quickstart(webapp, '/', conf)
+
+    cherrypy.tree.mount(webapp, '/', conf)
+
+    static_conf = {
+        '/': {
+            'tools.staticdir.root': os.path.abspath(os.getcwd()),  # cherrypy requires absolute path
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': './public'
+        }
+    }
+    cherrypy.tree.mount(None, '/static', static_conf)
+
+    cherrypy.engine.signals.subscribe()
+    cherrypy.engine.start()
+    cherrypy.engine.block()
+

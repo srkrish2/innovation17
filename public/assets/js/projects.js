@@ -1,3 +1,5 @@
+/*
+DOING THIS WITH TEMPLATE ENGINE
 $(init);
 URL = "/get_problems";
 
@@ -22,3 +24,4 @@ function init() {
         }
     });
 }
+*/
