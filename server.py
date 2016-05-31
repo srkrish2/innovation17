@@ -48,7 +48,7 @@ class HtmlPageLoader(object):
     @cherrypy.expose
     def log_out(self):
         cherrypy.session.pop(USERNAME_KEY)
-        return open("sign_in.html")
+        return open("index.html")
 
     @cherrypy.expose
     def sign_in(self):
@@ -246,7 +246,6 @@ class SignInHandler(object):
             if password == hashed_password:
                 # if sha256_crypt.verify(password, hashed_password):
                 success = True
-
         result = {}
         if not success:
             result["success"] = False

@@ -1,61 +1,11 @@
-{% extends "base.html" %}
-{% set active_page = "home" %}
-{% block content %}
-  <div class="ui middle aligned center container content first-page-element">
-    <div class="ui project-list equal width grid">
-      <table class="ui celled padded table">
-        <thead>
-          <tr>
-            <th>Project Name</th>
-            <th>Created</th>
-            <th>Last updated</th>
-            <th>Action</th>
-            <th class="social">Brief Summary</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <h2 class="ui aligned sortable centered header"><a href="project-id" class="project-name">Solve wind noise</a></h2>
-            </td>
-            <td>September 14, 2015</td>
-            <td>May 14, 2016</td>
-            <td><div class="ui button">Edit</div>
-              <div class="ui button">Delete</div>
-              <div class="ui button">Publish</div></td>
-              <td>
-                <div class="ui label">
-                  <i class="heart icon"></i> 
-                  <a class="ui small basic class='label'">200</a>
-                </div>
-                <div class="ui label">
-                  <i class="star icon"></i> 
-                  <a class="ui small basic class='label'">50</a>
-                </div>
-                <div class="ui label">
-                  <i class="unhide icon"></i> 
-                  <a class="ui small basic class='label'">20</a>
-                </div>
-                <div class="ui label">
-                  <i class="paw icon"></i> 
-                  <a class="ui small basic class='label'">600</a>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-          <tfoot class="full-width">
-            <tr class="padded">
-
-              <th colspan="5">
-              <div class="ui button">Publish all</div>
-                <div class="ui button colspan-btn">Delete all</div>
-                <div class="ui float right blue button colspan-btn ">New Project</div>
-              </th>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-</div>
-  <script src="/static/assets/js/projects.js"></script>
-
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Webpage</title>
+</head>
+<body>
+    {% for problem in problems %}
+        <p>{{ problem.description }}</p>
+    {% endfor %}
+</body>
+</html>
