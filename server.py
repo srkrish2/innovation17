@@ -82,13 +82,13 @@ def render_homepage():
         template = env.get_template('home.html')
         return template.render()
     else:
-        return open('sign_in.html')
+        raise cherrypy.HTTPRedirect("sign_in")
 
 
 def render_problems_page():
     if USERNAME_KEY not in cherrypy.session:
-        template = env.get_template('sign_in.html')
-        return template.render()
+        cherrypy.session[PREVIOUS_URL_KEY] = "/problems"
+        raise cherrypy.HTTPRedirect("sign_in")
     problems = mongodb_controller.get_problems_by_user(cherrypy.session[USERNAME_KEY])
     template = env.get_template('problems.html')
     return template.render(problems=problems)
@@ -108,7 +108,7 @@ def render_schemas_page(problem_slug):
             raise cherrypy.HTTPError(404, "You, {}, don't have a problem named like {}".format(username, problem_slug))
     else:
         cherrypy.session[PREVIOUS_URL_KEY] = "/{}/schemas".format(problem_slug)
-        return open('sign_in.html')
+        raise cherrypy.HTTPRedirect("sign_in")
 
 
 def update_schema_making_results(username, problem_slug):
@@ -311,8 +311,8 @@ def render_schemas():
 
 
 def error_page_404(status, message, traceback, version):
-    if message is not None:
-        return "404 Page not found! Message: {}".format(message)
+    # if message is not None:
+    #     return "404 Page not found! Message: {}".format(message)
     return "404 Page not found!"
 
 
