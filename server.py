@@ -48,7 +48,7 @@ class HtmlPageLoader(object):
     @cherrypy.expose
     def log_out(self):
         cherrypy.session.pop(USERNAME_KEY)
-        return open("index.html")
+        return render_homepage()
 
     @cherrypy.expose
     def sign_in(self):
@@ -86,13 +86,10 @@ def render_homepage():
 
 
 def render_problems_page():
-    # if USERNAME_KEY not in cherrypy.session:
-    #     template = env.get_template('sign_in.html')
-    #     return template.render()
-    
-    problems = mongodb_controller.get_problems_by_user("dummy")#cherrypy.session[USERNAME_KEY]
-    print "Problems are"
-    print problems
+    if USERNAME_KEY not in cherrypy.session:
+        template = env.get_template('sign_in.html')
+        return template.render()
+    problems = mongodb_controller.get_problems_by_user(cherrypy.session[USERNAME_KEY])
     template = env.get_template('problems.html')
     return template.render(problems=problems)
 
@@ -139,10 +136,9 @@ class NewProblemHandler(object):
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):
-        #if USERNAME_KEY not in cherrypy.session:
-        #    raise cherrypy.HTTPError(403)
-        #owner_username = cherrypy.session[USERNAME_KEY]
-        owner_username = "dummy"
+        if USERNAME_KEY not in cherrypy.session:
+           raise cherrypy.HTTPError(403)
+        owner_username = cherrypy.session[USERNAME_KEY]
         data = cherrypy.request.json
         title = data["title"]
         description = data["description"]
@@ -151,9 +147,6 @@ class NewProblemHandler(object):
         schema_count_goal = data["schema_count_goal"]
         if not isinstance(schema_count_goal, int):
             try:
-                print "HIIIIIIII"
-                print schema_count_goal
-                print "BYEEEEEE"
                 schema_count_goal = int(schema_count_goal)
             except ValueError:
                 casting_fail = False
@@ -166,7 +159,7 @@ class NewProblemHandler(object):
 
         result = {}
         if hit_id != "FAIL" and not casting_fail:
-            time_created = datetime.now().strftime(READABLE_TIME_FORMAT)
+            time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
             mongodb_controller.add_problem(hit_id, title, description, owner_username, schema_count_goal, time_created)
             result["success"] = True
             result["url"] = "/problems"
