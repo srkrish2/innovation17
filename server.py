@@ -152,12 +152,16 @@ class NewProblemHandler(object):
             except ValueError:
                 casting_fail = False
 
-        hit_id = mturk_controller.create_schema_making_hit(description)
-        print "MTurk controller output:", hit_id
+        if not casting_fail:
+            hit_id = mturk_controller.create_schema_making_hit(description)
+            print "MTurk controller output:", hit_id
+        else:
+            print "Casting fail!!!"
 
         result = {}
         if hit_id != "FAIL" and not casting_fail:
-            mongodb_controller.add_problem(hit_id, title, description, owner_username, schema_count_goal)
+            time_created = datetime.now().strftime(READABLE_TIME_FORMAT)
+            mongodb_controller.add_problem(hit_id, title, description, owner_username, schema_count_goal, time_created)
             result["success"] = True
             result["url"] = "/problems"
             return result
