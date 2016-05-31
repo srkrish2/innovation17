@@ -17,7 +17,7 @@ SCHEMA_COUNT = "schema_count"
 GENERATE_SCHEMA_HIT_ID = "generate_schema_hit_id"
 SCHEMA_COUNT_GOAL = "schema_count_goal"
 SCHEMAS_PAGE_LINK = "schemas_page_link"
-# PROBLEM_OWNER_ID = "owner_id"
+TIME_CREATED = "time_created"
 
 SCHEMA_TEXT = "text"
 SCHEMA_HIT_ID = "hit_id"
@@ -36,7 +36,7 @@ def add_user():
     return user_id
 
 
-def add_problem(generate_schema_hit_id, title, description, owner_username, schema_count_goal):
+def add_problem(generate_schema_hit_id, title, description, owner_username, schema_count_goal, time_created):
     problem = {
         GENERATE_SCHEMA_HIT_ID: generate_schema_hit_id,
         TITLE: title,
@@ -44,7 +44,8 @@ def add_problem(generate_schema_hit_id, title, description, owner_username, sche
         OWNER_USERNAME: owner_username,
         SCHEMA_COUNT: 0,
         SCHEMA_COUNT_GOAL: schema_count_goal,
-        SLUG: slugify(title)
+        SLUG: slugify(title),
+        TIME_CREATED: time_created
     }
     problems_collection.insert_one(problem)
 
@@ -70,7 +71,8 @@ def get_problems_by_user(username):
             SCHEMA_COUNT: problem[SCHEMA_COUNT],
             SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
             GENERATE_SCHEMA_HIT_ID: problem[GENERATE_SCHEMA_HIT_ID],
-            SCHEMAS_PAGE_LINK: "/{}/schemas".format(problem[SLUG])
+            SCHEMAS_PAGE_LINK: "/{}/schemas".format(problem[SLUG]),
+            TIME_CREATED: problem[TIME_CREATED]
         }
         result.append(for_result)
     return result

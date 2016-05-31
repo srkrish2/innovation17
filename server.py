@@ -48,7 +48,7 @@ class HtmlPageLoader(object):
     @cherrypy.expose
     def log_out(self):
         cherrypy.session.pop(USERNAME_KEY)
-        return open("index.html")
+        return render_homepage()
 
     @cherrypy.expose
     def sign_in(self):
@@ -95,17 +95,14 @@ def render_homepage():
         template = env.get_template('home.html')
         return template.render()
     else:
-        return open('sign_in.html')
+        raise cherrypy.HTTPRedirect("sign_in")
 
 
 def render_problems_page():
-    # if USERNAME_KEY not in cherrypy.session:
-    #     template = env.get_template('sign_in.html')
-    #     return template.render()
-    
-    problems = mongodb_controller.get_problems_by_user("dummy")#cherrypy.session[USERNAME_KEY]
-    print "Problems are"
-    print problems
+    if USERNAME_KEY not in cherrypy.session:
+        cherrypy.session[PREVIOUS_URL_KEY] = "problems"
+        raise cherrypy.HTTPRedirect("sign_in")
+    problems = mongodb_controller.get_problems_by_user(cherrypy.session[USERNAME_KEY])
     template = env.get_template('problems.html')
     return template.render(problems=problems)
 
@@ -123,8 +120,8 @@ def render_schemas_page(problem_slug):
         else:
             raise cherrypy.HTTPError(404, "You, {}, don't have a problem named like {}".format(username, problem_slug))
     else:
-        cherrypy.session[PREVIOUS_URL_KEY] = "/{}/schemas".format(problem_slug)
-        return open('sign_in.html')
+        cherrypy.session[PREVIOUS_URL_KEY] = "{}/schemas".format(problem_slug)
+        raise cherrypy.HTTPRedirect("sign_in")
 
 
 def update_schema_making_results(username, problem_slug):
@@ -152,10 +149,9 @@ class NewProblemHandler(object):
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):
-        #if USERNAME_KEY not in cherrypy.session:
-        #    raise cherrypy.HTTPError(403)
-        #owner_username = cherrypy.session[USERNAME_KEY]
-        owner_username = "dummy"
+        if USERNAME_KEY not in cherrypy.session:
+           raise cherrypy.HTTPError(403)
+        owner_username = cherrypy.session[USERNAME_KEY]
         data = cherrypy.request.json
         title = data["title"]
         description = data["description"]
@@ -164,19 +160,20 @@ class NewProblemHandler(object):
         schema_count_goal = data["schema_count_goal"]
         if not isinstance(schema_count_goal, int):
             try:
-                print "HIIIIIIII"
-                print schema_count_goal
-                print "BYEEEEEE"
                 schema_count_goal = int(schema_count_goal)
             except ValueError:
                 casting_fail = False
 
-        hit_id = mturk_controller.create_schema_making_hit(description)
-        print "MTurk controller output:", hit_id
+        if not casting_fail:
+            hit_id = mturk_controller.create_schema_making_hit(description)
+            print "MTurk controller output:", hit_id
+        else:
+            print "Casting fail!!!"
 
         result = {}
         if hit_id != "FAIL" and not casting_fail:
-            mongodb_controller.add_problem(hit_id, title, description, owner_username, schema_count_goal)
+            time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
+            mongodb_controller.add_problem(hit_id, title, description, owner_username, schema_count_goal, time_created)
             result["success"] = True
             result["url"] = "/problems"
             return result
@@ -280,6 +277,7 @@ class SignInHandler(object):
                 result["url"] = "index"
             return result
 
+
 def render_new_problem():
     template = env.get_template('new_problem.html');
     return template.render()
@@ -289,45 +287,15 @@ def render_account_edit_page():
     template = env.get_template('account_edit.html')
     return template.render()
 
+
 def render_profile():
     template = env.get_template('profile_info.html')
     return template.render()
-    
-    
-"""
-class GoToSignInHandler(object):
-    exposed = True
-
-    @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def POST(self):
-        data = cherrypy.request.json
-        cherrypy.session[PREVIOUS_URL_KEY] = data[PREVIOUS_URL_KEY]
-        return {"url": "sign_in"}
-
-
-def render_account_edit_page():
-    template = env.get_template('account_edit.html')
-    return template.render()
-
-
-
-
-
-def render_new_schema():
-    template = env.get_template('new_schema.html')
-    return template.render()
-
-
-def render_schemas():
-    template = env.get_template('schemas.html')
-    return template.render()
-"""
 
 
 def error_page_404(status, message, traceback, version):
-    if message is not None:
-        return "404 Page not found! Message: {}".format(message)
+    # if message is not None:
+    #     return "404 Page not found! Message: {}".format(message)
     return "404 Page not found!"
 
 

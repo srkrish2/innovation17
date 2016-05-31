@@ -22,7 +22,8 @@ array of maps (dictionaries). each map has the following format:
   "schema_count": int,
   "schema_count_goal": int,
   "problem_id": string,
-  "schemas_page_link": string
+  "schemas_page_link": string,
+  "time_created": string
 }
 ```
 
@@ -83,5 +84,19 @@ output
   "success": boolean,
   "url": string,       //only if success 
   "issue": string
+}
+```
+
+### /update_schema_count POST request
+input
+```
+{
+    "problem_id": string
+}
+```
+output
+```
+{
+    "count": int
 }
 ```
