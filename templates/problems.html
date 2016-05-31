@@ -14,9 +14,9 @@
       </thead>
       <tbody>
         {% for problem in problems%}
-        <tr class={{problem.problem_id}}>
+        <tr class={{problem.problem_id|e}} >
           <td>
-            <h2 class="ui aligned sortable centered header">{{problem.title}}</h2>
+            <h2 class="ui aligned sortable centered header "+{{problem.problem_id|e}} >{{problem.problem_id}} +'we'+{{problem.title}}</h2>
           </td>
           <td>create</td>
           <td>
@@ -27,7 +27,7 @@
           <td>
             <div class="ui label">
               <i class="paw icon"></i> 
-              <a class="ui small basic class='label'">{{problem.schema_count}}</a>
+              <a href={{problem.schemas_page_link}} class="ui small basic schema-list">{{problem.schema_count}}</a>
             </div>
           </td>
         </tr>
@@ -46,6 +46,6 @@
     </table>
   </div>
 </div>
-<script src="/static/assets/js/projects.js"></script>
+<script src="/static/assets/js/problems.js"></script>
 
 {% endblock %}

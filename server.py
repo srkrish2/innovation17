@@ -58,6 +58,19 @@ class HtmlPageLoader(object):
     def register(self):
         return open("register.html")
 
+    @cherrypy.expose
+    def new_problem(self):
+        return render_new_problem()
+
+    @cherrypy.expose
+    def account_edit(self):
+        return render_account_edit_page()
+
+    @cherrypy.expose
+    def profile_info(self):
+        return render_profile()
+
+
     """
     @cherrypy.expose
     def schemas(self):
@@ -162,7 +175,7 @@ class NewProblemHandler(object):
             time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
             mongodb_controller.add_problem(hit_id, title, description, owner_username, schema_count_goal, time_created)
             result["success"] = True
-            result["url"] = "/problems"
+            result["url"] = "problems"
             return result
         else:
             result["success"] = False

@@ -7,48 +7,43 @@
     <div class="field">
       <label >Name</label>
       <div class="three fields">
-        <div class="field"><input type="text" name="" id="" placeholder="First Name"></div>
-        <div class="field"><input type="text" name="" id="" placeholder="Last Name"></div>
-        <div class="field"><input type="text" name="" id="" placeholder="Username Name"></div>
+        <div class="field required"><input type="text" name="username" id="" placeholder="Username Name"></div>
+        <div class="field"><input type="text" name="firstname" id="" placeholder="First Name"></div>
+        <div class="field"><input type="text" name="lastname" id="" placeholder="Last Name"></div>
       </div>
     </div>
     <div class="field">
       <label>Contact</label>
       <div class="two fields">
-        <div class="field"><input type="text" name="" id="" placeholder="Email"></div>
-        <div class="field"><input type="text" name="" id="" placeholder="Phone"></div>
+        <div class="required field"><input type="text" name="email" id="" placeholder="Email"></div>
+        <div class="field"><input type="text" name="phone" id="" placeholder="Phone"></div>
       </div>
+      <div class="field required"><input type="text" class="password profile" name="password" placeholder="Enter your password"></div>
     </div>
     <div class="field">
       <label for="">More</label>
       <div class="two fields">
         <div class="field">
-          <div class="ui dropdown search multiple selection domain">
-            <i class="tag icon"></i>
-            <input type="hidden" name="domain">
-            <span class="text">Domain Expertise</span>
-            <div class="menu">
-              <div class="item">Programming</div>
-              <div class="item">Data mining</div>
-              <div class="item">Human Computer Interaction</div>
-            </div>
+          <div class="ui right labeled left icon input">
+            <i class="tags icon"></i>
+            <input type="text" id="addtags" placeholder="Enter your Domains of expertise">
+            <a class="ui tag blue label">
+              Add Tag
+            </a>
           </div>
         </div>
         <div class="field">
-          <div class="ui dropdown search multiple selection interets">
-            
-            <i class="tag icon"></i>
-          <input type="hidden" name="interets">
-          <span class="text">Interets</span>
-          <div class="menu">
-            <div class="item">Community</div>
-            <div class="item">Swimming</div>
-            <div class="item">Sky diving</div>
-          </div>
+          <div class="ui right labeled left icon input">
+            <i class="tags icon"></i>
+            <input type="text" id="addtags" placeholder="Enter your fields of interests">
+            <a class="ui tag blue label">
+              Add Tag
+            </a>
           </div>
         </div>
       </div>
     </div>
   </h3>
 </form>
+<script type="text/javascript" src="/static/assets/js/account.js"></script>
 {% endblock %}
