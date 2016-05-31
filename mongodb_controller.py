@@ -18,6 +18,7 @@ GENERATE_SCHEMA_HIT_ID = "generate_schema_hit_id"
 SCHEMA_COUNT_GOAL = "schema_count_goal"
 SCHEMAS_PAGE_LINK = "schemas_page_link"
 TIME_CREATED = "time_created"
+PROBLEM_ID_FOR_USER = "problem_id"
 
 SCHEMA_TEXT = "text"
 SCHEMA_HIT_ID = "hit_id"
@@ -70,7 +71,7 @@ def get_problems_by_user(username):
             DESCRIPTION: problem[DESCRIPTION],
             SCHEMA_COUNT: problem[SCHEMA_COUNT],
             SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
-            GENERATE_SCHEMA_HIT_ID: problem[GENERATE_SCHEMA_HIT_ID],
+            PROBLEM_ID_FOR_USER: problem[GENERATE_SCHEMA_HIT_ID],
             SCHEMAS_PAGE_LINK: "/{}/schemas".format(problem[SLUG]),
             TIME_CREATED: problem[TIME_CREATED]
         }
@@ -119,7 +120,8 @@ def update_schema_count(generate_schema_hit_id, schema_count):
 
 
 def add_schema(schema):
-    schemas_collection.insert_one(schema)
+    if schemas_collection.find_one(schema) is None:
+        schemas_collection.insert_one(schema)
 
 
 def are_all_schemas_generated(username, problem_title_slug):

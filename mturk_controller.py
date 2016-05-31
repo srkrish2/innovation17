@@ -87,6 +87,7 @@ def get_schema_making_results(hit_id):
             while line != "--[ANSWER END]--":
                 answer_text += line + '\n'
                 line = jar_output_file.readline().rstrip()
+            answer_text = answer_text.rstrip()
             print "ANSWER:", answer_text
 
             schema = {
