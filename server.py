@@ -87,7 +87,7 @@ def render_homepage():
 
 def render_problems_page():
     if USERNAME_KEY not in cherrypy.session:
-        cherrypy.session[PREVIOUS_URL_KEY] = "/problems"
+        cherrypy.session[PREVIOUS_URL_KEY] = "problems"
         raise cherrypy.HTTPRedirect("sign_in")
     problems = mongodb_controller.get_problems_by_user(cherrypy.session[USERNAME_KEY])
     template = env.get_template('problems.html')
@@ -107,7 +107,7 @@ def render_schemas_page(problem_slug):
         else:
             raise cherrypy.HTTPError(404, "You, {}, don't have a problem named like {}".format(username, problem_slug))
     else:
-        cherrypy.session[PREVIOUS_URL_KEY] = "/{}/schemas".format(problem_slug)
+        cherrypy.session[PREVIOUS_URL_KEY] = "{}/schemas".format(problem_slug)
         raise cherrypy.HTTPRedirect("sign_in")
 
 
