@@ -264,6 +264,7 @@ class SignInHandler(object):
                 result["url"] = "index"
             return result
 
+
 def render_new_problem():
     template = env.get_template('new_problem.html');
     return template.render()
@@ -273,41 +274,10 @@ def render_account_edit_page():
     template = env.get_template('account_edit.html')
     return template.render()
 
+
 def render_profile():
     template = env.get_template('profile_info.html')
     return template.render()
-    
-"""
-class GoToSignInHandler(object):
-    exposed = True
-
-    @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def POST(self):
-        data = cherrypy.request.json
-        cherrypy.session[PREVIOUS_URL_KEY] = data[PREVIOUS_URL_KEY]
-        return {"url": "sign_in"}
-
-
-def render_account_edit_page():
-    template = env.get_template('account_edit.html')
-    return template.render()
-
-
-def render_new_project():
-    template = env.get_template('new_project.html');
-    return template.render()
-
-
-def render_new_schema():
-    template = env.get_template('new_schema.html')
-    return template.render()
-
-
-def render_schemas():
-    template = env.get_template('schemas.html')
-    return template.render()
-"""
 
 
 def error_page_404(status, message, traceback, version):

@@ -86,3 +86,17 @@ output
   "issue": string
 }
 ```
+
+### /update_schema_count POST request
+input
+```
+{
+    "problem_id": string
+}
+```
+output
+```
+{
+    "count": int
+}
+```
