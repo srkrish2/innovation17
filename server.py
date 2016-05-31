@@ -58,6 +58,19 @@ class HtmlPageLoader(object):
     def register(self):
         return open("register.html")
 
+    @cherrypy.expose
+    def new_problem(self):
+        return render_new_problem()
+
+    @cherrypy.expose
+    def account_edit(self):
+        return render_account_edit_page()
+
+    @cherrypy.expose
+    def profile_info(self):
+        return render_profile()
+
+
     """
     @cherrypy.expose
     def schemas(self):
@@ -280,6 +293,7 @@ def render_profile():
     template = env.get_template('profile_info.html')
     return template.render()
     
+    
 """
 class GoToSignInHandler(object):
     exposed = True
@@ -297,9 +311,7 @@ def render_account_edit_page():
     return template.render()
 
 
-def render_new_project():
-    template = env.get_template('new_project.html');
-    return template.render()
+
 
 
 def render_new_schema():
