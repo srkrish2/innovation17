@@ -23,6 +23,7 @@ SCHEMA_TEXT = "text"
 SCHEMA_HIT_ID = "hit_id"
 SCHEMA_WORKER_ID = "worker_id"
 SCHEMA_TIME = "time"
+SCHEMA_ASSIGNMENT_ID = "assignment_id"
 
 PROJECT_OWNER_ID = "owner_id"
 PROJECT_CATEGORY = "category"
@@ -102,7 +103,8 @@ def get_schemas(username, problem_title_slug):
         for_result = {
             SCHEMA_TEXT: schema[SCHEMA_TEXT],
             SCHEMA_TIME: schema[SCHEMA_TIME],
-            SCHEMA_WORKER_ID: schema[SCHEMA_WORKER_ID]
+            SCHEMA_WORKER_ID: schema[SCHEMA_WORKER_ID],
+            SCHEMA_ASSIGNMENT_ID: schema[SCHEMA_ASSIGNMENT_ID]
         }
         result.append(for_result)
     return result
@@ -159,6 +161,9 @@ def get_password_for_username(username):
         return ""
     return user_entry[USER_PASSWORD]
 
+
+def get_username_from_email(email):
+    return users_collection.find_one({USER_EMAIL: email})[USER_USERNAME]
 
 # client
 client = pymongo.MongoClient()
