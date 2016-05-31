@@ -115,7 +115,6 @@ def render_schemas_page(problem_slug):
             if not mongodb_controller.are_all_schemas_generated(username, problem_slug):
                 update_schema_making_results(username, problem_slug)
             schemas = mongodb_controller.get_schemas(username, problem_slug)
-            return str(schemas)
             template = env.get_template('schemas.html')
             return template.render(schemas)
         else:
