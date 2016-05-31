@@ -103,6 +103,7 @@ def render_problems_page():
         cherrypy.session[PREVIOUS_URL_KEY] = "problems"
         raise cherrypy.HTTPRedirect("sign_in")
     problems = mongodb_controller.get_problems_by_user(cherrypy.session[USERNAME_KEY])
+    print problems
     template = env.get_template('problems.html')
     return template.render(problems=problems)
 
