@@ -1,46 +1,59 @@
 {% extends "base.html" %}
 {% set active_page = "home" %}
 {% block content %}
-  <div class="ui middle aligned center container content first-page-element">
-    <div class="ui schema-list equal width grid">
-      <table class="ui fixed celled padded table">
-        <thead>
-          <tr>
-            <th>Schema Content</th>
-            <th>Date</th>
-            <th>By</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <h2 class="ui aligned sortable centered header">
-                <a href="schema-id" class="schema-content">reaching hard-to-access parts of an object by making part of the object removable</a>
-              </h2>
-            </td>
-            <td>September 14, 2015</td>
-            <td>Minnow</td>
-            <td><div class="ui button">Accept</div>
-              <div class="ui button">Reject</div>
-            </td>
-          </tr>
-        </tbody>
-        <tfoot class="full-width">
-          <tr class="padded">
+<div class="ui middle aligned center container content first-page-element">
+  <div class="ui schema-list equal width grid">
+    <table class="ui fixed celled padded table">
+      <thead>
+        <tr>
+          <th>Schema Content</th>
+          <th>Date</th>
+          <th>By</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for schema in schemas %}
+        <tr class='schema-id-' {{schema.id}}>
+          <td>
+            <h2 class="ui aligned sortable centered header">
+              <a href="get_schema" class="schema-content">schema.content</a>
+            </h2>
+          </td>
+        </tr>
+        <td>schema.date</td>
+        <td>schema.author</td>
+        <td><div class="ui button">Accept</div>
+          <div class="ui button">Reject</div>
+        </td>
+        {% endfor %}
+        <tr>
+          <td>
+            <h2 class="ui aligned sortable centered header">
+              <a href="schema-id" class="schema-content">reaching hard-to-access parts of an object by making part of the object removable</a>
+            </h2>
+          </td>
+          <td>September 14, 2015</td>
+          <td>Minnow</td>
+          <td>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot class="full-width">
+        <tr class="padded">
 
-            <th colspan="4">
-              <div class="ui button">Accept all</div>
-              <div class="ui button colspan-btn">Reject all</div>
-              <div class="ui float right blue button colspan-btn ">Relaunch</div>
-            </th>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
+          <th colspan="4">
+            <div class="ui button">Accept all</div>
+            <div class="ui button colspan-btn">Reject all</div>
+            <div class="ui float right blue button colspan-btn ">Relaunch</div>
+          </th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
 </div>
-  
-  <script src="/static/assets/js/schemas.js"></script>
+
+<script src="/static/assets/js/schemas.js"></script>
 </body>
 </html>
 

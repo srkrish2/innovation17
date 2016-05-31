@@ -45,10 +45,16 @@ class HtmlPageLoader(object):
     def schemas(self, problem_slug):
         return render_schemas_page(problem_slug)
 
-    """
     @cherrypy.expose
-    def new_project(self):
-        return render_new_project()
+    def new_problem(self):
+        return render_new_problem()
+
+    @cherrypy.expose
+    def account_edit(self):
+        return render_account_edit_page()
+
+    """
+    
 
     @cherrypy.expose
     def schemas(self):
@@ -77,13 +83,15 @@ def render_homepage():
 
 
 def render_problems_page():
-    if USERNAME_KEY not in cherrypy.session:
-        template = env.get_template('sign_in.html')
-        return template.render()
-    problems = mongodb_controller.get_problems_by_user(cherrypy.session[USERNAME_KEY])
-    return str(problems)
-    template = env.get_template('projects.html')
-    return template.render(problems)
+    # if USERNAME_KEY not in cherrypy.session:
+    #     template = env.get_template('sign_in.html')
+    #     return template.render()
+    
+    problems = mongodb_controller.get_problems_by_user("dummy")#cherrypy.session[USERNAME_KEY]
+    print "Problems are"
+    print problems
+    template = env.get_template('problems.html')
+    return template.render(problems=problems)
 
 
 def render_schemas_page(problem_slug):
@@ -128,10 +136,10 @@ class NewProblemHandler(object):
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):
-        if USERNAME_KEY not in cherrypy.session:
-            raise cherrypy.HTTPError(403)
-        owner_username = cherrypy.session[USERNAME_KEY]
-
+        #if USERNAME_KEY not in cherrypy.session:
+        #    raise cherrypy.HTTPError(403)
+        #owner_username = cherrypy.session[USERNAME_KEY]
+        owner_username = "dummy"
         data = cherrypy.request.json
         title = data["title"]
         description = data["description"]
@@ -140,6 +148,9 @@ class NewProblemHandler(object):
         schema_count_goal = data["schema_count_goal"]
         if not isinstance(schema_count_goal, int):
             try:
+                print "HIIIIIIII"
+                print schema_count_goal
+                print "BYEEEEEE"
                 schema_count_goal = int(schema_count_goal)
             except ValueError:
                 casting_fail = False
@@ -250,7 +261,19 @@ class SignInHandler(object):
                 result["url"] = "index"
             return result
 
+def render_new_problem():
+    template = env.get_template('new_problem.html');
+    return template.render()
 
+
+def render_account_edit_page():
+    template = env.get_template('account_edit.html')
+    return template.render()
+
+def render_profile():
+    template = env.get_template('profile_info.html')
+    return template.render()
+    
 """
 def render_project_edit_page(username, title):
     if USERNAME_KEY in cherrypy.session:
@@ -264,14 +287,8 @@ def render_project_edit_page(username, title):
         return open('sign_in.html')
 
 
-def render_account_edit_page():
-    template = env.get_template('account_edit.html')
-    return template.render()
 
 
-def render_new_project():
-    template = env.get_template('new_project.html');
-    return template.render()
 
 
 def render_new_schema():
