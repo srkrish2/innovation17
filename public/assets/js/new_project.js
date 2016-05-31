@@ -1,6 +1,6 @@
 $(init);
 
-var POST_URL = "/new_project";
+var POST_URL = "/post_new_problem";
 var SELECTOR = ".ui.form";
 
 var VALIDATION_RULES = {
@@ -38,7 +38,7 @@ function init() {
     $(SELECTOR).form(VALIDATION_RULES);
     $('.ui.fluid.search.selection.dropdown').dropdown();
     $('#addtags').keyup(function(e){
-        if (e.which == 188 || e.which == 13 || e.which == 186) { // , enter ;
+        if (e.which == 188 || e.which == 13 || e.which == 186) { 
             var tag = "";
             if (e.which == 188 || e.which == 186) tag = this.value.trim().substring(0,this.value.length-1), REF = "";
             else tag = this.value.trim();
@@ -63,12 +63,12 @@ function init() {
 function submitForm(e) {
     var title = $(SELECTOR).form("get value", "title");
     var description = $(SELECTOR).form("get value", "description");
-    var category = $(SELECTOR).form("get value", "category");
+    var schemagoal = $(SELECTOR).form("get value", "schemagoal");
 
     var data = {
         "title": title,
         "description": description,
-        "category": category
+        "schema_count_goal": schemagoal
     }
     $.ajax({
         type : "POST",
@@ -78,7 +78,13 @@ function submitForm(e) {
         timeout : 100000,
 
         success : function(data) {
-            window.location.replace("/"+data["url"]);
+            var success = data["success"]
+            if (success) {
+                window.location.replace('/'+data['url']);
+            } else {
+                console.log("UNEXPECTED ERROR")
+            }
+            
         },
 
         error : function(e) {
