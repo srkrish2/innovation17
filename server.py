@@ -175,7 +175,7 @@ class NewProblemHandler(object):
             time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
             mongodb_controller.add_problem(hit_id, title, description, owner_username, schema_count_goal, time_created)
             result["success"] = True
-            result["url"] = "/problems"
+            result["url"] = "problems"
             return result
         else:
             result["success"] = False
