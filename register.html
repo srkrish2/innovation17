@@ -1,0 +1,28 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+<script>
+  var data = {
+      "username": "a",
+      "email": "a@a.com",
+      "password": "123"
+  };
+  $.ajax({
+      type : "POST",
+      url: "/post_new_account",
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      timeout : 100000,
+
+      success : function(data) {
+          if (data["success"]) {
+              window.location.replace("/"+data["url"]);
+          } else {
+              console.log("success=false");
+          }
+      },
+
+      error : function(e) {
+          console.log("ERROR: ", e);
+      }
+  });
+</script>
+done!

@@ -62,6 +62,7 @@ def get_schema_making_results(hit_id):
     # output format:
     # "SUCCESS"
     # "--[ANSWER START]--"
+    #  assignment_id
     #  worker_id
     #  epoch_time_ms
     #  answer
@@ -78,6 +79,7 @@ def get_schema_making_results(hit_id):
     header = jar_output_file.readline().rstrip()
     while True:
         if header == "--[ANSWER START]--":
+            assignment_id = jar_output_file.readline().rstrip()
             worker_id = jar_output_file.readline().rstrip()
             epoch_time_ms_string = jar_output_file.readline().rstrip()
             answer_text = ""
@@ -91,7 +93,8 @@ def get_schema_making_results(hit_id):
                 mongodb_controller.SCHEMA_HIT_ID: hit_id,
                 mongodb_controller.SCHEMA_TEXT: answer_text,
                 mongodb_controller.SCHEMA_TIME: epoch_time_ms_string,
-                mongodb_controller.SCHEMA_WORKER_ID: worker_id
+                mongodb_controller.SCHEMA_WORKER_ID: worker_id,
+                mongodb_controller.SCHEMA_ASSIGNMENT_ID: assignment_id
             }
             schemas.append(schema)
 

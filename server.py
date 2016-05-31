@@ -16,9 +16,9 @@ import mongodb_controller
 import datetime
 
 from jinja2 import Environment, PackageLoader
-import passlib.hash
+# import passlib.hash
 env = Environment(loader=PackageLoader('server', '/templates'))
-sha256_crypt = passlib.hash.sha256_crypt
+# sha256_crypt = passlib.hash.sha256_crypt
 
 
 COOKIE_NAME = "user_id"
@@ -45,11 +45,20 @@ class HtmlPageLoader(object):
     def schemas(self, problem_slug):
         return render_schemas_page(problem_slug)
 
-    """
     @cherrypy.expose
-    def new_project(self):
-        return render_new_project()
+    def log_out(self):
+        cherrypy.session.pop(USERNAME_KEY)
+        return open("sign_in.html")
 
+    @cherrypy.expose
+    def sign_in(self):
+        return open("sign_in.html")
+
+    @cherrypy.expose
+    def register(self):
+        return open("register.html")
+
+    """
     @cherrypy.expose
     def schemas(self):
         return render_schemas()
@@ -78,8 +87,7 @@ def render_homepage():
 
 def render_problems_page():
     if USERNAME_KEY not in cherrypy.session:
-        template = env.get_template('sign_in.html')
-        return template.render()
+        return open('sign_in.html')
     problems = mongodb_controller.get_problems_by_user(cherrypy.session[USERNAME_KEY])
     return str(problems)
     template = env.get_template('projects.html')
@@ -188,25 +196,27 @@ class NewAccountHandler(object):
         password = data['password']
 
         result = {
-            "success": False,
-            "username_taken": False,
-            "email_in_use": False
+            "success": False
         }
+        if "@" not in email:
+            result["issue"] = "Illegal email"
+            return result
         if mongodb_controller.is_email_in_use(email):
-            result["email_in_use"] = True
+            result["issue"] = "Email already in use"
             return result
         if mongodb_controller.is_username_taken(username):
-            result["username_taken"] = True
+            result["issue"] = "This username is already taken"
             return result
 
         # encrypt the password
-        password_hash = sha256_crypt.encrypt(password)
+        # password_hash = sha256_crypt.encrypt(password)
 
-        mongodb_controller.new_account(username, email, password_hash)
+        mongodb_controller.new_account(username, email,password)# password_hash)
         result["success"] = True
         cherrypy.session[USERNAME_KEY] = username
         if PREVIOUS_URL_KEY in cherrypy.session:
             result["url"] = cherrypy.session[PREVIOUS_URL_KEY]
+            cherrypy.session.pop(PREVIOUS_URL_KEY)
         else:
             result["url"] = "index"
         return result
@@ -215,7 +225,6 @@ class NewAccountHandler(object):
 class SignInHandler(object):
     exposed = True
 
-    # post requests go here
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):
@@ -225,15 +234,17 @@ class SignInHandler(object):
 
         is_email = '@' in name
         success = False
-        # if is_email:
-        #     if mongodb_controller.is_email_in_use(name):
-        #         hashed_password = mongodb_controller.get_password_for_email(name)
-        #         if sha256_crypt.verify(password, hashed_password):
-        #             success = True
-
-        if not is_email and mongodb_controller.is_username_taken(name):
+        if is_email:
+            if mongodb_controller.is_email_in_use(name):
+                hashed_password = mongodb_controller.get_password_for_email(name)
+                if password == hashed_password:
+                    # if sha256_crypt.verify(password, hashed_password):
+                    success = True
+                    name = mongodb_controller.get_username_from_email(name)
+        elif mongodb_controller.is_username_taken(name):
             hashed_password = mongodb_controller.get_password_for_username(name)
-            if sha256_crypt.verify(password, hashed_password):
+            if password == hashed_password:
+                # if sha256_crypt.verify(password, hashed_password):
                 success = True
 
         result = {}
@@ -246,22 +257,22 @@ class SignInHandler(object):
             cherrypy.session[USERNAME_KEY] = name
             if PREVIOUS_URL_KEY in cherrypy.session:
                 result["url"] = cherrypy.session[PREVIOUS_URL_KEY]
+                cherrypy.session.pop(PREVIOUS_URL_KEY)
             else:
                 result["url"] = "index"
             return result
 
 
 """
-def render_project_edit_page(username, title):
-    if USERNAME_KEY in cherrypy.session:
-        if cherrypy.session[USERNAME_KEY] == username:
-            return "project edit page"
-        else:
-            raise cherrypy.HTTPError(403, "You are not allowed to access this page. Make sure you are " +
-                                          "logged in with the right account.")
-    else:
-        cherrypy.session[PREVIOUS_URL_KEY] = "/{}/{}/edit".format(username, title)
-        return open('sign_in.html')
+class GoToSignInHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def POST(self):
+        data = cherrypy.request.json
+        cherrypy.session[PREVIOUS_URL_KEY] = data[PREVIOUS_URL_KEY]
+        return {"url": "sign_in"}
 
 
 def render_account_edit_page():
@@ -282,43 +293,13 @@ def render_new_schema():
 def render_schemas():
     template = env.get_template('schemas.html')
     return template.render()
-
-
-class GetProblemsHandler(object):
-    exposed = True
-
-    # get requests go here
-    @cherrypy.tools.json_out()
-    def GET(self):
-        # get user_id either from mongodb insertion or from session
-        user_id = get_user_id()
-        print "got a /get_problems request from", user_id
-        problems = mongodb_controller.get_problems_by_user(user_id)
-        print "user's problems:", problems
-        for problem in problems:
-            hit_id = problem[mongodb_controller.PROBLEM_HIT_ID]
-            schema_count = mturk_controller.get_schema_making_status(hit_id)
-            problem[PROBLEM_COMPLETION_STATUS] = schema_count
-
-            # rename hit_id key to problem_id
-            problem[PROBLEM_FOR_FRONTEND_ID] = hit_id
-            problem.pop(mongodb_controller.PROBLEM_HIT_ID, None)
-        return {"problems": problems}
-
-class GoToSignInHandler(object):
-    exposed = True
-
-    @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def POST(self):
-        data = cherrypy.request.json
-        cherrypy.session[PREVIOUS_URL_KEY] = data[PREVIOUS_URL_KEY]
-        return {"url": "sign_in"}
 """
 
 
 def error_page_404(status, message, traceback, version):
-    return "Page not found!"
+    if message is not None:
+        return "404 Page not found! Message: {}".format(message)
+    return "404 Page not found!"
 
 
 def error_page_403(status, message, traceback, version):
@@ -328,7 +309,7 @@ def error_page_403(status, message, traceback, version):
 def unanticipated_error():
     cherrypy.response.status = 500
     cherrypy.response.body = [
-        "<html><body>Sorry, an error occured. Please contact the admin</body></html>"
+        "<html><body>Sorry, an error occurred. Please contact the admin</body></html>"
     ]
 
 
@@ -350,6 +331,12 @@ if __name__ == '__main__':
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
         '/update_schema_count': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        # '/post_go_to_sign_in': {
+        #     'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        # },
+        '/post_sign_in': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
@@ -379,4 +366,3 @@ if __name__ == '__main__':
 
     cherrypy.engine.start()
     cherrypy.engine.block()
-

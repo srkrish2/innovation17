@@ -32,7 +32,8 @@ array of maps (dictionaries). each map has the following format:
 {
     "text": string,
     "time": "19 May 2016 12:19 PM",
-    "worker_id": string
+    "worker_id": string,
+    "assignment_id": string         // use this as id for further steps
 }
 ```
 
@@ -80,8 +81,7 @@ output
 ```
 {
   "success": boolean,
-  "url": string,              
-  "email_in_use": boolean,    //only if success=false
-  "username_taken": boolean   //only if success=false
+  "url": string,       //only if success 
+  "issue": string
 }
 ```
