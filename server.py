@@ -38,6 +38,10 @@ class HtmlPageLoader(object):
         return render_homepage()
 
     @cherrypy.expose
+    def home(self):
+        return render_homepage()
+
+    @cherrypy.expose
     def problems(self):
         return render_problems_page()
 
