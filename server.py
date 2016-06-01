@@ -134,11 +134,13 @@ class SchemaCountUpdatesHandler(object):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
         username = cherrypy.session[USERNAME_KEY]
+        update_schemas_for_user(username)
         return mongodb_controller.get_schema_counts_for_user(username)
 
 
 class NewProblemHandler(object):
     exposed = True
+
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):

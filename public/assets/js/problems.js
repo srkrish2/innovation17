@@ -28,11 +28,11 @@
             type: "GET",
             url: '/get_schema_count_updates',
             success:function(sdata){
-                console.log('suc');
+                console.log('data = '+sdata);
                 for (var i= 0;i<sdata.length; i++){
                     $('tr.'+sdata[i]['problem_id']+' > .schema-list').innerHTML=10;
-                }            
+                }
             }
         })
-    },3000);
+    },10000);
 }(window))
