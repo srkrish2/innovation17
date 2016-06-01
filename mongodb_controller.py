@@ -25,6 +25,7 @@ SCHEMA_HIT_ID = "hit_id"
 SCHEMA_WORKER_ID = "worker_id"
 SCHEMA_TIME = "time"
 SCHEMA_ASSIGNMENT_ID = "assignment_id"
+SCHEMA_ID_FOR_USER = "schema_id"
 
 PROJECT_OWNER_ID = "owner_id"
 PROJECT_CATEGORY = "category"
@@ -103,7 +104,7 @@ def get_schemas(hit_id):
             SCHEMA_TEXT: schema[SCHEMA_TEXT],
             SCHEMA_TIME: schema[SCHEMA_TIME],
             SCHEMA_WORKER_ID: schema[SCHEMA_WORKER_ID],
-            SCHEMA_ASSIGNMENT_ID: schema[SCHEMA_ASSIGNMENT_ID]
+            SCHEMA_ID_FOR_USER: schema[SCHEMA_ASSIGNMENT_ID]
         }
         result.append(for_result)
     return result

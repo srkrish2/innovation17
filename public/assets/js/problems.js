@@ -31,8 +31,8 @@
                 console.log('data = '+sdata);
                 for (var i= 0;i<sdata.length; i++){
                     $('tr.'+sdata[i]['problem_id']+' .schema-list')[0].innerHTML=sdata[i]['schema_count'];
-                }            
+                }
             }
         })
-    },3000);
+    },30000);
 }(window))
