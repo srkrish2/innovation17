@@ -30,9 +30,14 @@
             success:function(sdata){
                 console.log('data = '+sdata);
                 for (var i= 0;i<sdata.length; i++){
+<<<<<<< HEAD
                     $('tr.'+sdata[i]['problem_id']+' .schema-list')[0].innerHTML=sdata[i]['schema_count'];
                 }            
+=======
+                    $('tr.'+sdata[i]['problem_id']+' > .schema-list').innerHTML=10;
+                }
+>>>>>>> 53be21da85aa49ded1292ffe242af751fd131b4c
             }
         })
-    },3000);
+    },10000);
 }(window))

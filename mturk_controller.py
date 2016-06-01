@@ -56,7 +56,6 @@ def get_schema_making_status(hit_id):
 
 
 def get_schema_making_results(hit_id):
-    print "hi from mturk get_schema_making_results"
     p = subprocess.Popen(['java', '-jar', 'SchemaMakingResults.jar', hit_id],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
@@ -89,7 +88,6 @@ def get_schema_making_results(hit_id):
                 answer_text += line + '\n'
                 line = jar_output_file.readline().rstrip()
             answer_text = answer_text.rstrip()
-            print "ANSWER:", answer_text
 
             schema = {
                 mongodb_controller.SCHEMA_HIT_ID: hit_id,

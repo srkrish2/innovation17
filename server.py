@@ -95,7 +95,7 @@ def render_schemas_page(problem_slug):
             hit_id = mongodb_controller.get_generate_schema_hit_id(username, problem_slug)
             schemas = mongodb_controller.get_schemas(hit_id)
             template = env.get_template('schemas.html')
-            return template.render(schemas)
+            return template.render(schemas=schemas)
         else:
             raise cherrypy.HTTPError(404, "You, {}, don't have a problem named like {}".format(username, problem_slug))
     else:
@@ -134,11 +134,13 @@ class SchemaCountUpdatesHandler(object):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
         username = cherrypy.session[USERNAME_KEY]
+        update_schemas_for_user(username)
         return mongodb_controller.get_schema_counts_for_user(username)
 
 
 class NewProblemHandler(object):
     exposed = True
+
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):
