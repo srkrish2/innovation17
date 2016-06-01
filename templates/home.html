@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% set sidebar = [
-  ('/projects', 'projects', 'My projects'),
-  ('/starredprj', 'starredprj','Starred projects'),
+  ('/problems', 'problems', 'My problems'),
+  ('/starredprj', 'starredprj','Starred problems'),
   ('/following','following','Following'),
   ('/follower/', 'follower','Follower'),
   ('/messages/', 'messages','Messages'),
   ('/new_project', 'new_project','Add Project')
   ] -%}
 {% set active_page = "home" %}
-{% set active_tab = active_tab|default('projects') -%}
+{% set active_tab = active_tab|default('problems') -%}
 {% block content %}
 <div class="ui pushable first-page-element sidebar-context equal width grid">
   <div class="ui first-page-element home sidebar visible vertical menu left">
@@ -33,4 +33,4 @@
 <script src="/static/semantic/dist/semantic.js"></script>
 <script type="text/javascript" src="/static/assets/js/home.js"></script>
 
-{% endblock %}
+{% endblock %}H.5 [Information Interfaces and Presentation] (e.g. HCI); K.3.1 [Computer Uses in Education]: Distance Learning; J.4 [Social and Behavioral Sciences]

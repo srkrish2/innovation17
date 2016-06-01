@@ -14,30 +14,20 @@
       </thead>
       <tbody>
         {% for schema in schemas %}
-        <tr class='schema-id-' {{schema.id}}>
+        <tr class='schema-id-' {{schema.assignment_id}}>
           <td>
             <h2 class="ui aligned sortable centered header">
-              <a href="get_schema" class="schema-content">schema.content</a>
+              <a href="get_schema" class="schema-content">schema.text</a>
             </h2>
           </td>
         </tr>
-        <td>schema.date</td>
-        <td>schema.author</td>
+        <td>schema.time</td>
+        <td>schema.worker_id</td>
         <td><div class="ui button">Accept</div>
           <div class="ui button">Reject</div>
         </td>
         {% endfor %}
-        <tr>
-          <td>
-            <h2 class="ui aligned sortable centered header">
-              <a href="schema-id" class="schema-content">reaching hard-to-access parts of an object by making part of the object removable</a>
-            </h2>
-          </td>
-          <td>September 14, 2015</td>
-          <td>Minnow</td>
-          <td>
-          </td>
-        </tr>
+        
       </tbody>
       <tfoot class="full-width">
         <tr class="padded">
