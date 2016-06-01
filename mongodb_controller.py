@@ -96,13 +96,9 @@ def get_generate_schema_hit_id(username, problem_title_slug):
     return problem[GENERATE_SCHEMA_HIT_ID]
 
 
-def get_schemas(username, problem_title_slug):
+def get_schemas(hit_id):
     result = []
-    query = {
-        OWNER_USERNAME: username,
-        SLUG: problem_title_slug
-    }
-    for schema in schemas_collection.find(query):
+    for schema in schemas_collection.find({SCHEMA_HIT_ID: hit_id}):
         for_result = {
             SCHEMA_TEXT: schema[SCHEMA_TEXT],
             SCHEMA_TIME: schema[SCHEMA_TIME],
@@ -124,13 +120,13 @@ def add_schema(schema):
         schemas_collection.insert_one(schema)
 
 
-def are_all_schemas_generated(username, problem_title_slug):
-    query = {
-        OWNER_USERNAME: username,
-        SLUG: problem_title_slug
-    }
-    problem = problems_collection.find_one(query)
-    return problem[SCHEMA_COUNT] == problem[SCHEMA_COUNT_GOAL]
+# def are_all_schemas_generated(username, problem_title_slug):
+#     query = {
+#         OWNER_USERNAME: username,
+#         SLUG: problem_title_slug
+#     }
+#     problem = problems_collection.find_one(query)
+#     return problem[SCHEMA_COUNT] == problem[SCHEMA_COUNT_GOAL]
 
 
 def new_account(username, email, password):
@@ -168,6 +164,25 @@ def get_password_for_username(username):
 
 def get_username_from_email(email):
     return users_collection.find_one({USER_EMAIL: email})[USER_USERNAME]
+
+
+def get_users_gen_schema_hit_ids(username):
+    hit_ids = []
+    for problem in problems_collection.find({OWNER_USERNAME: username}):
+        hit_ids.append(problem[GENERATE_SCHEMA_HIT_ID])
+    return hit_ids
+
+
+def get_schema_counts_for_user(username):
+    result = []
+    for problem in problems_collection.find({OWNER_USERNAME: username}):
+        for_result = {
+            PROBLEM_ID_FOR_USER: problem[GENERATE_SCHEMA_HIT_ID],
+            SCHEMA_COUNT: problem[SCHEMA_COUNT]
+        }
+        result.append(for_result)
+    return result
+
 
 # client
 client = pymongo.MongoClient()
