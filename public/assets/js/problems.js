@@ -1,24 +1,5 @@
 (function(global){
-    // $(document).on('click','.schema-list',function(e){
-    //     e.preventDefault();
-    //     console.log('we enter schemalist-'+e);
-    //     $.ajax({
-    //         type: 'GET',
-    //         URL:'/getschema',
-    //         data: $(this).url,
-    //         success: function(sdata){
-    //             console.log('get schema!');
-    //         },
-    //         error: function(e){
-    //             console.log(e);
-    //         }
-    //     });
-    // });
-    // for (pid in {'sdata':"hello",'spanish':'halo'}){
-    //                 console.log(pid);
-    //                 //$('tr.'+pid).innerHTML=0;
-    //             }
-    setInterval(function(){
+    var interval = setInterval(function(){
         // var project_num = $('tr').length-2, project_ids = [];
         // for (var i=0; i<project_num; i+=1) {
         //     project_ids.push($('tr')[i+1]);
@@ -34,5 +15,10 @@
                 }            
             }
         })
-    },3000);
-}(window))
+    },30000);
+    $(document).on('click', 'a.schemalist', function(e){
+        clearInterval(interval);
+    });
+    
+
+}(window));
