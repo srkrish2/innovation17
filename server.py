@@ -303,7 +303,7 @@ if __name__ == '__main__':
         '/post_new_account': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
-        '/update_schema_count': {
+        '/get_schema_count_updates': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
         # '/post_go_to_sign_in': {

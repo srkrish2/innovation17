@@ -26,13 +26,12 @@
         console.log('setInterval');
         $.ajax({
             type: "GET",
-            URL: '/get_schema_count_updates',
-            sucess:function(sdata){
+            url: '/get_schema_count_updates',
+            success:function(sdata){
                 console.log('suc');
                 for (var i= 0;i<sdata.length; i++){
                     $('tr.'+sdata[i]['problem_id']+' > .schema-list').innerHTML=10;
-                }
-                
+                }            
             }
         })
     },3000);
