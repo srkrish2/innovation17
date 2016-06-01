@@ -34,7 +34,7 @@ array of maps (dictionaries). each map has the following format:
     "text": string,
     "time": "19 May 2016 12:19 PM",
     "worker_id": string,
-    "assignment_id": string         // use this as id for further steps
+    "schema_id": string
 }
 ```
 
@@ -94,5 +94,16 @@ array of maps. each map has the following format:
 {
     "problem_id": string,
     "schema_count": int
+}
+```
+
+### /post_schemas_for_inspiration POST request
+input
+```
+{
+    "schemas": [
+        {"schema_id":string},
+        {"schema_id":string}
+    ]
 }
 ```
