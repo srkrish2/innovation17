@@ -24,12 +24,9 @@ def create_schema_making_hit(problem):
         print "UNEXPECTED! neither fail/success"
         return "FAIL"
 
-    print "SchemaMaking.jar first line:", first_line
-
     hit_id = jar_output_file.readline().rstrip()
     url = jar_output_file.readline().rstrip()
 
-    print "hit_id =", hit_id
     print "url =", url
 
     return hit_id
