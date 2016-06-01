@@ -34,7 +34,7 @@ def create_schema_making_hit(problem):
 
     return hit_id
 
-
+"""
 def get_schema_making_status(hit_id):
     p = subprocess.Popen(['java', '-jar', 'SchemaMakingStatus.jar', hit_id],
                          stdout=subprocess.PIPE,
@@ -52,6 +52,7 @@ def get_schema_making_status(hit_id):
         return 0
     print "get_schema_making_status:", "count =", submitted_assignments_count
     return submitted_assignments_count
+"""
 
 
 def get_schema_making_results(hit_id):

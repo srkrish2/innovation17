@@ -87,16 +87,12 @@ output
 }
 ```
 
-### /update_schema_count POST request
-input
-```
-{
-    "problem_id": string
-}
-```
+### /get_schema_count_updates GET request
 output
 ```
+array of maps. each map has the following format:
 {
-    "count": int
+    "problem_id": string,
+    "schema_count": int
 }
 ```

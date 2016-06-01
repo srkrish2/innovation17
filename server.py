@@ -71,25 +71,6 @@ class HtmlPageLoader(object):
         return render_profile()
 
 
-    """
-    @cherrypy.expose
-    def schemas(self):
-        return render_schemas()
-
-    @cherrypy.expose
-    def new_schema(self):
-        return render_new_schema()
-
-    @cherrypy.expose
-    def account_edit(self):
-        return render_account_edit_page()
-
-    @cherrypy.expose
-    def edit(self, username, title):
-        return render_project_edit_page(username, title)
-    """
-
-
 def render_homepage():
     if USERNAME_KEY in cherrypy.session:
         template = env.get_template('home.html')
@@ -103,7 +84,6 @@ def render_problems_page():
         cherrypy.session[PREVIOUS_URL_KEY] = "problems"
         raise cherrypy.HTTPRedirect("sign_in")
     problems = mongodb_controller.get_problems_by_user(cherrypy.session[USERNAME_KEY])
-    print problems
     template = env.get_template('problems.html')
     return template.render(problems=problems)
 
@@ -112,9 +92,8 @@ def render_schemas_page(problem_slug):
     if USERNAME_KEY in cherrypy.session:
         username = cherrypy.session[USERNAME_KEY]
         if mongodb_controller.does_user_have_problem(username, problem_slug):
-            if not mongodb_controller.are_all_schemas_generated(username, problem_slug):
-                update_schema_making_results(username, problem_slug)
-            schemas = mongodb_controller.get_schemas(username, problem_slug)
+            hit_id = mongodb_controller.get_generate_schema_hit_id(username, problem_slug)
+            schemas = mongodb_controller.get_schemas(hit_id)
             template = env.get_template('schemas.html')
             return template.render(schemas)
         else:
@@ -124,23 +103,38 @@ def render_schemas_page(problem_slug):
         raise cherrypy.HTTPRedirect("sign_in")
 
 
-def update_schema_making_results(username, problem_slug):
-    # get hit_id
-    hit_id = mongodb_controller.get_generate_schema_hit_id(username, problem_slug)
+def update_schemas_for_user(username):
+    for generate_schema_hit_id in mongodb_controller.get_users_gen_schema_hit_ids(username):
+        update_schemas_for_problem(generate_schema_hit_id)
+
+
+def update_schemas_for_problem(hit_id):
     schema_dicts = mturk_controller.get_schema_making_results(hit_id)
 
+    schema_count = 0
     # replace time with a readable one and add to DB
     for schema_dict in schema_dicts:
+        schema_count += 1
         # pop epoch time
         epoch_time_ms = long(schema_dict.pop(mongodb_controller.SCHEMA_TIME))
         epoch_time = epoch_time_ms / 1000.0
         readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
         # add readable time
         schema_dict[mongodb_controller.SCHEMA_TIME] = readable_time
-        # add username and slug
-        schema_dict[mongodb_controller.OWNER_USERNAME] = username
-        schema_dict[mongodb_controller.SLUG] = problem_slug
         mongodb_controller.add_schema(schema_dict)
+    mongodb_controller.update_schema_count(hit_id, schema_count)
+
+
+class SchemaCountUpdatesHandler(object):
+    exposed = True
+
+    # post requests go here
+    @cherrypy.tools.json_out()
+    def GET(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+        username = cherrypy.session[USERNAME_KEY]
+        return mongodb_controller.get_schema_counts_for_user(username)
 
 
 class NewProblemHandler(object):
@@ -150,7 +144,7 @@ class NewProblemHandler(object):
     @cherrypy.tools.json_in()
     def POST(self):
         if USERNAME_KEY not in cherrypy.session:
-           raise cherrypy.HTTPError(403)
+            raise cherrypy.HTTPError(403)
         owner_username = cherrypy.session[USERNAME_KEY]
         data = cherrypy.request.json
         title = data["title"]
@@ -182,23 +176,6 @@ class NewProblemHandler(object):
             return result
 
 
-class UpdateSchemaCountHandler(object):
-    exposed = True
-
-    # post requests go here
-    @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def POST(self):
-        data = cherrypy.request.json
-
-        generate_schema_hit_id = data["problem_id"]
-        schema_count = int(mturk_controller.get_schema_making_status(generate_schema_hit_id))
-
-        mongodb_controller.update_schema_count(generate_schema_hit_id, schema_count)
-
-        return {"count": schema_count}
-
-
 class NewAccountHandler(object):
     exposed = True
 
@@ -227,7 +204,7 @@ class NewAccountHandler(object):
         # encrypt the password
         # password_hash = sha256_crypt.encrypt(password)
 
-        mongodb_controller.new_account(username, email,password)# password_hash)
+        mongodb_controller.new_account(username, email, password)  # password_hash)
         result["success"] = True
         cherrypy.session[USERNAME_KEY] = username
         if PREVIOUS_URL_KEY in cherrypy.session:
@@ -343,7 +320,7 @@ if __name__ == '__main__':
     webapp.post_sign_in = SignInHandler()
     webapp.post_new_problem = NewProblemHandler()
     webapp.post_new_account = NewAccountHandler()
-    webapp.update_schema_count = UpdateSchemaCountHandler()
+    webapp.get_schema_count_updates = SchemaCountUpdatesHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 
