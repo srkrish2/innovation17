@@ -61,6 +61,7 @@ function init() {
 }
 
 function submitForm(e) {
+    $('.ui.loader.submit-loader').addClass('active');
     var title = $(SELECTOR).form("get value", "title");
     var description = $(SELECTOR).form("get value", "description");
     var schemagoal = $(SELECTOR).form("get value", "schemagoal");
@@ -75,8 +76,6 @@ function submitForm(e) {
         url: POST_URL,
         data: JSON.stringify(data),
         contentType: 'application/json; charset=utf-8',
-        timeout : 100000,
-
         success : function(data) {
             var success = data["success"]
             if (success) {

@@ -145,7 +145,6 @@ def update_schema_making_results(username, problem_slug):
 
 class NewProblemHandler(object):
     exposed = True
-
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):

@@ -27,6 +27,14 @@ function init() {
     $(document).on('click', 'i.delete', function(e){
         $(this).parent().remove();
     });
+    $(document).on('click', 'div.button.profilesubmit', function(e){
+        $.ajax({
+            type: 'POST',
+            data:{
+                
+            }
+        })
+    });
 }
 
 var VALIDATION_RULES = {
