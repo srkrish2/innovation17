@@ -337,9 +337,9 @@ if __name__ == '__main__':
 
     cherrypy.config.update({'error_page.404': error_page_404,
                             'error_page.403': error_page_403,
-                            'request.error_response': unanticipated_error,
-                            'server.socket_host': '192.168.1.100',
-                            'server.socket_port': 8080
+                            'request.error_response': unanticipated_error#,
+                            # 'server.socket_host': '192.168.1.85',
+                            # 'server.socket_port': 8080
                             })
 
     cherrypy.engine.start()

@@ -42,45 +42,56 @@
       margin-top: -100px;
     }
     .column {
-      max-width: 450px;
+      max-width: 80%;
     }
   </style>
 </head>
 <body>
   <div class="ui middle aligned center aligned grid">
     <div class="column">
-      <h2 class="ui black image header">
-        <img src="/static/assets/images/logo.png" class="image">
-        <div class="content">
-          Sign in
-        </div>
-      </h2>
-      <form class="ui large form">
-        <div class="ui stacked segment">
-          <div class="field">
-            <div class="ui left icon input">
-              <i class="user icon"></i>
-              <input type="text" name="name" placeholder="Email or username">
-            </div>
+      <div class="row">
+        <div class="ui black image header middle aligned center">
+          <img src="/static/assets/images/logo.png" class="image">
+          <div class="content">
+            Sign in
           </div>
-          <div class="field">
-            <div class="ui left icon input">
-              <i class="lock icon"></i>
-              <input type="password" name="password" placeholder="Password">
-            </div>
-          </div>
-          <div class="ui fluid large black submit button">Login</div>
         </div>
-
-        <div class="ui error message"></div>
-
-      </form>
-
-      <div class="ui message">
-        New to us? <a href="/registration.html">Create a new account</a>
       </div>
+      <div class="ui two column relative middle aligned stackable grid">
+        <div class="column">
+          <form class="ui large form">
+            <div class="ui stacked segment">
+              <div class="field">
+                <div class="ui left icon input">
+                  <i class="user icon"></i>
+                  <input type="text" name="name" placeholder="Email or username">
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui left icon input">
+                  <i class="lock icon"></i>
+                  <input type="password" name="password" placeholder="Password">
+                </div>
+              </div>
+              <div class="ui fluid large black submit button">Login</div>
+            </div>
+            <div class="ui error message"></div>
+          </form>
+        </div>
+        <div class="ui vertical fitted divider">
+          Or
+        </div>
+        <div class="center aligned column">
+          <div class="ui big teal labeled icon button">
+            <a href="/register">Register<i class="signup icon"></i></a>
+          </div>
+        </div>
+      </div>
+
+
+
     </div>
   </div>
-<script src="/static/assets/js/sign_in.js"></script>
+  <script src="/static/assets/js/sign_in.js"></script>
 </body>
 </html>

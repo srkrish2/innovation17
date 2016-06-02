@@ -23,7 +23,9 @@ array of maps (dictionaries). each map has the following format:
   "schema_count_goal": int,
   "problem_id": string,
   "schemas_page_link": string,
-  "time_created": string
+  "time_created": string,
+  "stage": string,
+  "inspiration_count": int
 }
 ```
 
@@ -93,7 +95,7 @@ output
 array of maps. each map has the following format:
 {
     "problem_id": string,
-    "schema_count": int
+    "count": int
 }
 ```
 
