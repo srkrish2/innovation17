@@ -109,7 +109,12 @@ def render_inspirations_page(problem_slug):
         problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
         inspirations = mongodb_controller.get_inspirations(problem_id)
         template = env.get_template('inspirations.html')
-        return template.render(inspirations=inspirations, problem_id=problem_id)
+        for inspiration in inspirations:
+            problem_text = mongodb_controller.get_problem_text(inspiration[mongodb_controller.PROBLEM_ID])
+            schema_text = mongodb_controller.get_schema_text(inspiration[mongodb_controller.SCHEMA_ID])
+            inspiration["problem_text"] = problem_text
+            inspiration["schema_text"] = schema_text
+        return template.render(inspirations=inspirations)
 
 
 def check_problem_access(problem_slug):
@@ -121,7 +126,7 @@ def check_problem_access(problem_slug):
             raise cherrypy.HTTPError(404, "You, {}, don't have a problem named like {}".format(username, problem_slug))
     else:
         cherrypy.session[PREVIOUS_URL_KEY] = "problems"
-        raise cherrypy.HTTPRedirect("sign_in")
+        raise cherrypy.HTTPRedirect("/sign_in")
 
 
 class CountUpdatesHandler(object):
@@ -160,20 +165,23 @@ def update_schemas_for_problem(hit_id):
 
 
 def update_inspirations_for_problem(problem_id):
-    for inspiration_hit_id in mongodb_controller.get_problems_inspiration_hit_ids(problem_id):
-        inspirations = mturk_controller.get_inspiration_hit_results(inspiration_hit_id)
-        inspiration_count = 0
-        # replace time with a readable one and add to DB
-        for inspiration in inspirations:
-            inspiration_count += 1
-            # pop epoch time
-            epoch_time_ms = long(inspiration.pop(mongodb_controller.TIME_CREATED))
-            epoch_time = epoch_time_ms / 1000.0
-            readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
-            # add readable time
-            inspiration[mongodb_controller.TIME_CREATED] = readable_time
-            mongodb_controller.add_inspiration(inspiration)
-        mongodb_controller.update_inspiration_count(problem_id, inspiration_count)
+    # get schema ids instead
+    for schema_id in mongodb_controller.get_schema_ids(problem_id):
+        for inspiration_hit_id in mongodb_controller.get_inspiration_hit_id(schema_id):
+            inspirations = mturk_controller.get_inspiration_hit_results(inspiration_hit_id)
+            inspiration_count = 0
+            for inspiration in inspirations:
+                inspiration_count += 1
+                # replace time with a readable one and add to DB
+                epoch_time_ms = long(inspiration.pop(mongodb_controller.TIME_CREATED))
+                epoch_time = epoch_time_ms / 1000.0
+                readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
+                inspiration[mongodb_controller.TIME_CREATED] = readable_time
+                # add problem/schema id/text
+                inspiration[mongodb_controller.PROBLEM_ID] = problem_id
+                inspiration[mongodb_controller.SCHEMA_ID] = schema_id
+                mongodb_controller.add_inspiration(inspiration)
+            mongodb_controller.update_inspiration_count(problem_id, inspiration_count)
 
 
 class NewProblemHandler(object):

@@ -14,7 +14,7 @@ def get_schema_making_results(hit_id):
     schemas = []
     schema1 = {
         mongodb_controller.SCHEMA_ASSIGNMENT_ID: ''.join(random.sample(string.hexdigits, 8)),
-        mongodb_controller.SCHEMA_HIT_ID: hit_id,
+        mongodb_controller.HIT_ID: hit_id,
         mongodb_controller.SCHEMA_TEXT: "answer text1",
         mongodb_controller.SCHEMA_TIME: "1463622677000",
         mongodb_controller.SCHEMA_WORKER_ID: ''.join(random.sample(string.hexdigits, 8))
@@ -23,7 +23,7 @@ def get_schema_making_results(hit_id):
 
     schema2 = {
         mongodb_controller.SCHEMA_ASSIGNMENT_ID: ''.join(random.sample(string.hexdigits, 8)),
-        mongodb_controller.SCHEMA_HIT_ID: hit_id,
+        mongodb_controller.HIT_ID: hit_id,
         mongodb_controller.SCHEMA_TEXT: "answer text2",
         mongodb_controller.SCHEMA_TIME: "1463622960000",
         mongodb_controller.SCHEMA_WORKER_ID: ''.join(random.sample(string.hexdigits, 8))
