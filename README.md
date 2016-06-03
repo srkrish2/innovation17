@@ -25,7 +25,9 @@ array of maps (dictionaries). each map has the following format:
   "schemas_page_link": string,
   "time_created": string,
   "stage": string,
-  "inspiration_count": int
+  "inspirations_page_link",
+  "inspiration_count": int,        // only if stage=inspiration
+  "inspiration_count_goal": int    // only if stage=inspiration
 }
 ```
 
@@ -38,6 +40,7 @@ array of maps (dictionaries). each map has the following format:
     "worker_id": string,
     "schema_id": string
 }
+also problem_id. see render_schemas_page in server.py
 ```
 
 ### /{{problem_title}}/inspiration page parser input
@@ -106,7 +109,7 @@ output
 }
 ```
 
-### /get_schema_count_updates GET request
+### /get_count_updates GET request
 output
 ```
 array of maps. each map has the following format:

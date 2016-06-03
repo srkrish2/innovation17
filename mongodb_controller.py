@@ -1,8 +1,5 @@
 import pymongo
-import copy
 import re
-
-MONGODB_ID = "_id"
 
 TITLE = "title"
 DESCRIPTION = "description"
@@ -14,40 +11,40 @@ USER_PASSWORD = "password"
 
 OWNER_USERNAME = "owner_username"
 SCHEMA_COUNT = "schema_count"
-GENERATE_SCHEMA_HIT_ID = "generate_schema_hit_id"
 SCHEMA_COUNT_GOAL = "schema_count_goal"
 SCHEMAS_PAGE_LINK = "schemas_page_link"
 TIME_CREATED = "time_created"
-PROBLEM_ID_FOR_USER = "problem_id"
+PROBLEM_ID = "problem_id"
+STAGE = "stage"
+STAGE_SCHEMA = "schema"
+COUNT = "count"
+STAGE_INSPIRATION = "inspiration"
+INSPIRATIONS_PAGE_LINK = "inspirations_page_link"
+INSPIRATION_COUNT = "inspiration_count"
+INSPIRATION_COUNT_GOAL = "inspiration_count_goal"
 
 SCHEMA_TEXT = "text"
-SCHEMA_HIT_ID = "hit_id"
-SCHEMA_WORKER_ID = "worker_id"
+HIT_ID = "hit_id"
+INSPIRATION_HIT_ID = "inspiration_hit_id"
+WORKER_ID = "worker_id"
 SCHEMA_TIME = "time"
-SCHEMA_ASSIGNMENT_ID = "assignment_id"
-SCHEMA_ID_FOR_USER = "schema_id"
+SCHEMA_ID = "schema_id"
 
 PROJECT_OWNER_ID = "owner_id"
 PROJECT_CATEGORY = "category"
 
 
-def add_user():
-    user = {}
-    # insert user to collection and get generated id
-    user_id = users_collection.insert_one(user).inserted_id
-    return user_id
-
-
 def add_problem(generate_schema_hit_id, title, description, owner_username, schema_count_goal, time_created):
     problem = {
-        GENERATE_SCHEMA_HIT_ID: generate_schema_hit_id,
+        PROBLEM_ID: generate_schema_hit_id,
         TITLE: title,
         DESCRIPTION: description,
         OWNER_USERNAME: owner_username,
         SCHEMA_COUNT: 0,
         SCHEMA_COUNT_GOAL: schema_count_goal,
         SLUG: slugify(title),
-        TIME_CREATED: time_created
+        TIME_CREATED: time_created,
+        STAGE: STAGE_SCHEMA
     }
     problems_collection.insert_one(problem)
 
@@ -72,9 +69,13 @@ def get_problems_by_user(username):
             DESCRIPTION: problem[DESCRIPTION],
             SCHEMA_COUNT: problem[SCHEMA_COUNT],
             SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
-            PROBLEM_ID_FOR_USER: problem[GENERATE_SCHEMA_HIT_ID],
+            PROBLEM_ID: problem[PROBLEM_ID],
             SCHEMAS_PAGE_LINK: "/{}/schemas".format(problem[SLUG]),
-            TIME_CREATED: problem[TIME_CREATED]
+            TIME_CREATED: problem[TIME_CREATED],
+            STAGE: problem[STAGE],
+            INSPIRATIONS_PAGE_LINK: "/{}/schemas".format(problem[SLUG]),
+            INSPIRATION_COUNT: problem[INSPIRATION_COUNT],
+            INSPIRATION_COUNT_GOAL: problem[INSPIRATION_COUNT_GOAL]
         }
         result.append(for_result)
     return result
@@ -88,31 +89,45 @@ def does_user_have_problem(username, problem_slug):
     return problems_collection.find_one(query) is not None
 
 
-def get_generate_schema_hit_id(username, problem_title_slug):
+def does_user_have_problem_with_id(username, problem_id):
+    query = {
+        OWNER_USERNAME: username,
+        PROBLEM_ID: problem_id
+    }
+    return problems_collection.find_one(query) is not None
+
+
+def get_problem_id(username, problem_title_slug):
     query = {
         OWNER_USERNAME: username,
         SLUG: problem_title_slug
     }
     problem = problems_collection.find_one(query)
-    return problem[GENERATE_SCHEMA_HIT_ID]
+    return problem[PROBLEM_ID]
 
 
 def get_schemas(hit_id):
     result = []
-    for schema in schemas_collection.find({SCHEMA_HIT_ID: hit_id}):
+    for schema in schemas_collection.find({HIT_ID: hit_id}):
         for_result = {
             SCHEMA_TEXT: schema[SCHEMA_TEXT],
             SCHEMA_TIME: schema[SCHEMA_TIME],
-            SCHEMA_WORKER_ID: schema[SCHEMA_WORKER_ID],
-            SCHEMA_ID_FOR_USER: schema[SCHEMA_ASSIGNMENT_ID]
+            WORKER_ID: schema[WORKER_ID],
+            SCHEMA_ID: schema[SCHEMA_ID]
         }
         result.append(for_result)
     return result
 
 
-def update_schema_count(generate_schema_hit_id, schema_count):
-    query_filter = {GENERATE_SCHEMA_HIT_ID: generate_schema_hit_id}
+def update_schema_count(problem_id, schema_count):
+    query_filter = {PROBLEM_ID: problem_id}
     update = {'$set': {SCHEMA_COUNT: schema_count}}
+    problems_collection.update_one(query_filter, update)
+
+
+def update_inspiration_count(problem_id, inspiration_count):
+    query_filter = {PROBLEM_ID: problem_id}
+    update = {'$set': {INSPIRATION_COUNT: inspiration_count}}
     problems_collection.update_one(query_filter, update)
 
 
@@ -121,13 +136,9 @@ def add_schema(schema):
         schemas_collection.insert_one(schema)
 
 
-# def are_all_schemas_generated(username, problem_title_slug):
-#     query = {
-#         OWNER_USERNAME: username,
-#         SLUG: problem_title_slug
-#     }
-#     problem = problems_collection.find_one(query)
-#     return problem[SCHEMA_COUNT] == problem[SCHEMA_COUNT_GOAL]
+def add_inspiration(inspiration):
+    if inspirations_collection.find_one(inspiration) is None:
+        inspirations_collection.insert_one(inspiration)
 
 
 def new_account(username, email, password):
@@ -167,23 +178,74 @@ def get_username_from_email(email):
     return users_collection.find_one({USER_EMAIL: email})[USER_USERNAME]
 
 
-def get_users_gen_schema_hit_ids(username):
+def get_users_problem_ids(username):
     hit_ids = []
     for problem in problems_collection.find({OWNER_USERNAME: username}):
-        hit_ids.append(problem[GENERATE_SCHEMA_HIT_ID])
+        hit_ids.append(problem[PROBLEM_ID])
     return hit_ids
 
 
-def get_schema_counts_for_user(username):
+def get_counts_for_user(username):
     result = []
     for problem in problems_collection.find({OWNER_USERNAME: username}):
+        stage = problem[STAGE]
+        if stage == STAGE_INSPIRATION:
+            count = problem[SCHEMA_COUNT]
+        else:
+            count = problem[INSPIRATION_COUNT]
         for_result = {
-            PROBLEM_ID_FOR_USER: problem[GENERATE_SCHEMA_HIT_ID],
-            SCHEMA_COUNT: problem[SCHEMA_COUNT]
+            PROBLEM_ID: problem[PROBLEM_ID],
+            COUNT: count
         }
         result.append(for_result)
     return result
 
+
+def get_stage(problem_id):
+    return problems_collection.find_one({PROBLEM_ID: problem_id})[STAGE]
+
+
+def get_schema_ids(problem_id):
+    result = []
+    for schema in schemas_collection.find({PROBLEM_ID: problem_id}):
+        result.append(schema[SCHEMA_ID])
+    return result
+
+
+def get_inspiration_hit_id(schema_id):
+    return schemas_collection.find_one({SCHEMA_ID: schema_id})[INSPIRATION_HIT_ID]
+
+
+def set_inspiration_stage(problem_id, count_goal):
+    query_filter = {PROBLEM_ID: problem_id}
+    new_fields = {
+        STAGE: STAGE_INSPIRATION,
+        INSPIRATION_COUNT: 0,
+        INSPIRATION_COUNT_GOAL: count_goal
+    }
+    update = {'$set': new_fields}
+    problems_collection.update_one(query_filter, update)
+
+
+def add_inspiration_hit_id_to_schema(hit_id, schema_id):
+    query_filter = {SCHEMA_ID: schema_id}
+    new_fields = {
+        INSPIRATION_HIT_ID: hit_id
+    }
+    update = {'$set': new_fields}
+    schemas_collection.update_one(query_filter, update)
+
+
+def get_inspirations(problem_id):
+    return inspirations_collection.find({PROBLEM_ID: problem_id})
+
+
+def get_problem_text(problem_id):
+    return problems_collection.find_one({PROBLEM_ID: problem_id})[DESCRIPTION]
+
+
+def get_schema_text(schema_id):
+    return problems_collection.find_one({SCHEMA_ID: schema_id})[SCHEMA_TEXT]
 
 # client
 client = pymongo.MongoClient()
@@ -193,4 +255,4 @@ db = client.crowd_db
 users_collection = db.users
 problems_collection = db.problems
 schemas_collection = db.schemas
-projects_collection = db.projects
+inspirations_collection = db.inspirations
