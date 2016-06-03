@@ -4,18 +4,7 @@
 	});
 	$(document).on('click','.startinspiration',function(e){
 		$('.ui.modal').hide();
-		$.ajax({
-			type: 'POST',
-			data: {
-				'problem_id':$('table'.attr('class').split()[-1])
-			},
-			success: function(sdata){
-				console.log('launched inspiration');
-			},
-			error: function(e){
-				console.log("error! "+e);
-			}
-		})
+		window.location.replace('/problems');
 	});
 	$(document).on('click','.cancelinspiration',function(e){
 		$('.ui.modal').modal('hide');

@@ -8,10 +8,25 @@
 				<tr>
 					<td>Summary</td>
 					<td>Reason</td>
+					<td>Created</td>
 					<td>Illustration</td>
 				</tr>
 			</thead>
 			<tbody>
+				{% for inspiration in inspirations %}
+				<tr class={{'inspiration-id-'~inspiration.inspiration_id}}>
+					<td>
+						<h2 class="ui aligned sortable centered header">
+							<a href="get_schema" class="schema-content">{{inspiration.text}}</a>
+						</h2>
+					</td>
+
+					<td>{{schema.time}}</td>
+					<td><div class="ui button">Accept</div>
+						<div class="ui button">Reject</div>
+					</td>
+				</tr>
+				{% endfor %}
 				<tr>
 					<td>This is summary</td>
 					<td>Hide or face</td>
