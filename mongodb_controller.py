@@ -64,6 +64,12 @@ def slugify(s):
 def get_problems_by_user(username):
     result = []
     for problem in problems_collection.find({OWNER_USERNAME: username}):
+        if problem[STAGE]==STAGE_SCHEMA:
+            insp_count = 0
+            insp_count_goal = 0
+        else:
+            insp_count = problem[INSPIRATION_COUNT]
+            insp_count_goal = problem[INSPIRATION_COUNT_GOAL]
         for_result = {
             TITLE: problem[TITLE],
             DESCRIPTION: problem[DESCRIPTION],
@@ -74,8 +80,8 @@ def get_problems_by_user(username):
             TIME_CREATED: problem[TIME_CREATED],
             STAGE: problem[STAGE],
             INSPIRATIONS_PAGE_LINK: "/{}/schemas".format(problem[SLUG]),
-            INSPIRATION_COUNT: problem[INSPIRATION_COUNT],
-            INSPIRATION_COUNT_GOAL: problem[INSPIRATION_COUNT_GOAL]
+            INSPIRATION_COUNT: insp_count,
+            INSPIRATION_COUNT_GOAL: insp_count_goal
         }
         result.append(for_result)
     return result
