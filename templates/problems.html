@@ -26,8 +26,11 @@
           </td>
           <td>
             <div class="ui label">
-              
+
               <a href={{problem.schemas_page_link}} class="ui small basic schema-list"><i class="paw icon"></i> {{problem.schema_count}}</a>
+              {% if problem.stage != 'schema' %}
+              <a href={{problem.schemas_page_link}} class="ui small basic inspiration-list"><i class="idea icon"></i> {{problem.inspiration_count}}</a>
+              {% endif %}
             </div>
           </td>
         </tr>

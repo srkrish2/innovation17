@@ -7,7 +7,7 @@
         console.log('setInterval');
         $.ajax({
             type: "GET",
-            url: '/get_schema_count_updates',
+            url: '/get_count_updates',
             success:function(sdata){
                 console.log('data = '+sdata);
                 for (var i= 0;i<sdata.length; i++){
