@@ -23,34 +23,34 @@
   <body>
     <div class="ui container">
       <div class="ui inverted top fixed large menu">
-      {% for href, id, caption in navigation_bar %}
+        {% for href, id, caption in navigation_bar %}
         <a href="{{ href|e }}" 
-          {% if id == active_page %} class="active red item"
-          {% else %}
-          class="item"
-          {% endif%}>{{ caption|e }}</a>
-      {% endfor %}
-      <div class="right item">
-        <div class="ui icon input">
-          <input type="text" placeholder="Search...">
-          <i class="search icon"></i>
+        {% if id == active_page %} class="active red item"
+        {% else %}
+        class="item"
+        {% endif%}>{{ caption|e }}</a>
+        {% endfor %}
+        <div class="right item">
+          <div class="ui icon input">
+            <input type="text" placeholder="Search...">
+            <i class="search icon"></i>
+          </div>
+        </div>
+        <div class="item right">
+          <a href='/log_out' class='ui red label'>Logout</a>
+        </div>
+        <div class="item right">
+          <a href='/profile_info' class='ui blue label'><i class="settings icon"></i>Setting</a>
         </div>
       </div>
-      <div class="item right">
-        <a href='/log_out' class='ui red label'>Logout</a>
-      </div>
-      <div class="item right">
-        <a href='/profile_info' class='ui blue label'><i class="settings icon"></i>Setting</a>
+      {% block content %}{% endblock %}
+      <div class='ui grid bottom attach footer'>
+        <div class="five wide column">
+        </div>
+        <div class="ui seven wide column">Copyright ©2016, RTC3 Crowdsourcing Innovation Lab @ Bosch
+        </div>
       </div>
     </div>
-  </div>
-  {% block content %}{% endblock %}
+  </body>
   <script src="/static/semantic/dist/semantic.js"></script>
-  <div class='ui grid bottom attach footer'>
-    <div class="five wide column">
-    </div>
-    <div class="ui seven wide column">Copyright ©2016, RTC3 Crowdsourcing Innovation Lab @ Bosch</div>
-  </div>
-  
-</body>
-</html>
+  </html>

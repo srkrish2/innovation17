@@ -44,6 +44,8 @@ function submitForm(e) {
         timeout : 100000,
 
         success : function(data) {
+            console.log('wait a second');
+            alert('data is' + data)
             if (data["success"]) {
                 window.location.replace("/"+data["url"]);
             } else {

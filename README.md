@@ -40,6 +40,23 @@ array of maps (dictionaries). each map has the following format:
 }
 ```
 
+### /{{problem_title}}/inspiration page parser input
+```
+array of maps (dictionaries). each map has the following format:
+{
+    "summary": string,
+    "reason": string,
+    "time": "19 May 2016 12:19 PM",
+    "worker_id": string,
+    "inspiration_id": string,
+    "link": string,
+    "problem_id": string,
+    "problem_text": string,
+    "schema_id":string,
+    "schema_text": string
+}
+```
+
 ### /post_new_problem POST request
 input
 ```

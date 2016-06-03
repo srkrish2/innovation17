@@ -13,13 +13,13 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
 </head>
 <body>
-  <div class="ui text container">
+  <div class="ui text middle aligned center first-page-element container">
     <form action="" class="ui form">
       <h3 class="dividing header">
         <div class="field">
           <label >Name</label>
           <div class="three fields">
-          <div class="ui field corner labeled input">
+            <div class="ui field corner labeled input">
               <input type="text" name="username" id="" placeholder="Username Name">
               <div class="ui corner label">
                 <i class="asterisk icon"></i>
@@ -32,7 +32,7 @@
         <div class="field">
           <label>Contact</label>
           <div class="two fields">
-            <div class="ui required field corner labeled">
+            <div class="ui required field corner labeled input">
               <input type="text" name="email" id="" placeholder="Email">
               <div class="ui corner label">
                 <i class="asterisk icon"></i>
@@ -43,14 +43,22 @@
         </div>
         <div class="field">
           <label>Security</label>
-          <div class="two fields">
-            <div class="required field"><input type="password" name="password" id="" placeholder="Enter your password"></div>
-            <div class="required field"><input type="text" name="securityquestion" id="" placeholder="Enter your security question"></div>
+          <div class="column">
+            <div class="two fields">
+              <div class="ui required field red corner labeled input">Password:
+                <input type="password" name="password" id="password" placeholder="Enter your password">
+                <div class="ui corner label"><i class="asterisk icon"></i></div>
+              </div>
+              <div class="required field">securityquestion:<input type="text" name="securityquestion" id="" placeholder="Enter your security question"></div>
+            </div>
           </div>
         </div>
         <div class="field">
           <div class="two fields">
-            <div class="field"><input type="password" name="repassword" id="" placeholder="Reenter your password"></div>
+            <div class="ui required field corner labeled input">Password:
+              <input type="password" name="password2" id="password2" placeholder="Reenter your password">
+              <div class="ui corner label"><i class="asterisk icon"></i></div>
+            </div>
             <div class="field"><input type="text" name="securityanswer" id="" placeholder="Enter your security answer"></div>
           </div>
         </div>
@@ -77,12 +85,13 @@
             </div>
           </div>
         </div>
-        <div class="field">
-          <div class="ui teal button profilesubmit">Update</div>
-        </div>
+       
+        <button class="ui teal button profileregister" type="submit">Register</button>
+      
       </h3>
     </form>
   </div>
+  <script src="/static/semantic/dist/semantic.js"></script>
+  <script type="text/javascript" src="/static/assets/js/register.js"></script>
 </body>
 </html>
-<script>
