@@ -1,6 +1,6 @@
 (function(global){
 	$(document).on('click','.proceed',function(e){
-		$('.ui.modal').show();
+		$('.ui.modal').modal('show');
 	});
 	$(document).on('click','.startinspiration',function(e){
 		$('.ui.modal').hide();

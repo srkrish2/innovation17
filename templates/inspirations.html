@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% set active_page = "home" %}
+{% block content %}
+<div class="ui container center middle aligned first-page-element">
+	<div class="ui equal width grid">
+		<table class="ui cell padded table">
+			<thead>
+				<tr>
+					<td>Summary</td>
+					<td>Reason</td>
+					<td>Illustration</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>This is summary</td>
+					<td>Hide or face</td>
+					<td>Forget it</td>
+				</tr>
+			</tbody>
+			<tfoot class="full-width">
+				<tr class="padded">
+					<th colspan="4">
+						<div class="ui button">Accept all</div>
+						<div class="ui button">Reject all</div>
+						<div class="ui button">Proceed</div>
+					</th>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+{% endblock %}
