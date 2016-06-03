@@ -50,6 +50,10 @@ class HtmlPageLoader(object):
         return render_schemas_page(problem_slug)
 
     @cherrypy.expose
+    def inspirations(self, problem_slug):
+        return render_inspirations_page(problem_slug)
+
+    @cherrypy.expose
     def log_out(self):
         cherrypy.session.pop(USERNAME_KEY)
         return render_homepage()
@@ -93,23 +97,49 @@ def render_problems_page():
 
 
 def render_schemas_page(problem_slug):
+    if check_problem_access(problem_slug) is True:
+        problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
+        schemas = mongodb_controller.get_schemas(problem_id)
+        template = env.get_template('schemas.html')
+        return template.render(schemas=schemas, problem_id=problem_id)
+
+
+def render_inspirations_page(problem_slug):
+    if check_problem_access(problem_slug) is True:
+        problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
+        inspirations = mongodb_controller.get_inspirations(problem_id)
+        template = env.get_template('inspirations.html')
+        return template.render(inspirations=inspirations, problem_id=problem_id)
+
+
+def check_problem_access(problem_slug):
     if USERNAME_KEY in cherrypy.session:
         username = cherrypy.session[USERNAME_KEY]
         if mongodb_controller.does_user_have_problem(username, problem_slug):
-            hit_id = mongodb_controller.get_generate_schema_hit_id(username, problem_slug)
-            schemas = mongodb_controller.get_schemas(hit_id)
-            template = env.get_template('schemas.html')
-            return template.render(schemas=schemas)
+            return True
         else:
             raise cherrypy.HTTPError(404, "You, {}, don't have a problem named like {}".format(username, problem_slug))
     else:
-        cherrypy.session[PREVIOUS_URL_KEY] = "{}/schemas".format(problem_slug)
+        cherrypy.session[PREVIOUS_URL_KEY] = "problems"
         raise cherrypy.HTTPRedirect("sign_in")
 
 
-def update_schemas_for_user(username):
-    for generate_schema_hit_id in mongodb_controller.get_users_gen_schema_hit_ids(username):
-        update_schemas_for_problem(generate_schema_hit_id)
+class CountUpdatesHandler(object):
+    exposed = True
+
+    # post requests go here
+    @cherrypy.tools.json_out()
+    def GET(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+        username = cherrypy.session[USERNAME_KEY]
+        for problem_id in mongodb_controller.get_users_problem_ids(username):
+            stage = mongodb_controller.get_stage(problem_id)
+            if stage == mongodb_controller.STAGE_SCHEMA:
+                update_schemas_for_problem(problem_id)
+            if stage == mongodb_controller.STAGE_INSPIRATION:
+                update_inspirations_for_problem(problem_id)
+        return mongodb_controller.get_counts_for_user(username)
 
 
 def update_schemas_for_problem(hit_id):
@@ -129,17 +159,21 @@ def update_schemas_for_problem(hit_id):
     mongodb_controller.update_schema_count(hit_id, schema_count)
 
 
-class SchemaCountUpdatesHandler(object):
-    exposed = True
-
-    # post requests go here
-    @cherrypy.tools.json_out()
-    def GET(self):
-        if USERNAME_KEY not in cherrypy.session:
-            raise cherrypy.HTTPError(403)
-        username = cherrypy.session[USERNAME_KEY]
-        update_schemas_for_user(username)
-        return mongodb_controller.get_schema_counts_for_user(username)
+def update_inspirations_for_problem(problem_id):
+    for inspiration_hit_id in mongodb_controller.get_problems_inspiration_hit_ids(problem_id):
+        inspirations = mturk_controller.get_inspiration_hit_results(inspiration_hit_id)
+        inspiration_count = 0
+        # replace time with a readable one and add to DB
+        for inspiration in inspirations:
+            inspiration_count += 1
+            # pop epoch time
+            epoch_time_ms = long(inspiration.pop(mongodb_controller.TIME_CREATED))
+            epoch_time = epoch_time_ms / 1000.0
+            readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
+            # add readable time
+            inspiration[mongodb_controller.TIME_CREATED] = readable_time
+            mongodb_controller.add_inspiration(inspiration)
+        mongodb_controller.update_inspiration_count(problem_id, inspiration_count)
 
 
 class NewProblemHandler(object):
@@ -164,7 +198,7 @@ class NewProblemHandler(object):
                 casting_fail = False
 
         if not casting_fail:
-            hit_id = mturk_controller.create_schema_making_hit(description)
+            hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
             print "MTurk controller output:", hit_id
         else:
             print "Casting fail!!!"
@@ -260,8 +294,46 @@ class SignInHandler(object):
             return result
 
 
+class InspirationTaskHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def POST(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+
+        owner_username = cherrypy.session[USERNAME_KEY]
+        data = cherrypy.request.json
+        problem_id = data['problem_id']
+
+        if not mongodb_controller.does_user_have_problem_with_id(owner_username, problem_id):
+            raise cherrypy.HTTPError(403)
+
+        casting_fail = False
+        count_goal = data['count_goal']
+        if not isinstance(count_goal, int):
+            try:
+                count_goal = int(count_goal)
+            except ValueError:
+                casting_fail = False
+        if casting_fail:
+            print "Casting fail!!!"
+            return {"success": False}
+        for schema in mongodb_controller.get_schemas(problem_id):
+            hit_id = mturk_controller.create_inspiration_hit(schema[mongodb_controller.SCHEMA_TEXT], count_goal)
+            # add the hit_id to schema
+            mongodb_controller.add_inspiration_hit_id_to_schema(hit_id, schema[mongodb_controller.SCHEMA_ID])
+            if hit_id != "FAIL":
+                print "create_inspiration_hit FAILED!! dunno how to handle"
+                continue
+        mongodb_controller.set_inspiration_stage(problem_id, count_goal)
+        return {"success": True,
+                "url": "problems"}
+
+
 def render_new_problem():
-    template = env.get_template('new_problem.html');
+    template = env.get_template('new_problem.html')
     return template.render()
 
 
@@ -309,10 +381,13 @@ if __name__ == '__main__':
         '/post_new_account': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
-        '/get_schema_count_updates': {
+        '/get_count_updates': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
         '/post_sign_in': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/post_inspiration_task': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
@@ -322,7 +397,8 @@ if __name__ == '__main__':
     webapp.post_sign_in = SignInHandler()
     webapp.post_new_problem = NewProblemHandler()
     webapp.post_new_account = NewAccountHandler()
-    webapp.get_schema_count_updates = SchemaCountUpdatesHandler()
+    webapp.get_count_updates = CountUpdatesHandler()
+    webapp.post_inspiration_task = InspirationTaskHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 
@@ -337,8 +413,8 @@ if __name__ == '__main__':
 
     cherrypy.config.update({'error_page.404': error_page_404,
                             'error_page.403': error_page_403,
-                            'request.error_response': unanticipated_error#,
-                            # 'server.socket_host': '192.168.1.85',
+                            'request.error_response': unanticipated_error  # ,
+                            # 'server.socket_host': '192.168.1.100',
                             # 'server.socket_port': 8080
                             })
 

@@ -1,5 +1,4 @@
 import pymongo
-import copy
 import re
 
 MONGODB_ID = "_id"
@@ -19,6 +18,8 @@ SCHEMA_COUNT_GOAL = "schema_count_goal"
 SCHEMAS_PAGE_LINK = "schemas_page_link"
 TIME_CREATED = "time_created"
 PROBLEM_ID_FOR_USER = "problem_id"
+STAGE = "stage"
+INSPIRATIONS_PAGE_LINK = "inspirations_page_link"
 
 SCHEMA_TEXT = "text"
 SCHEMA_HIT_ID = "hit_id"
@@ -47,7 +48,8 @@ def add_problem(generate_schema_hit_id, title, description, owner_username, sche
         SCHEMA_COUNT: 0,
         SCHEMA_COUNT_GOAL: schema_count_goal,
         SLUG: slugify(title),
-        TIME_CREATED: time_created
+        TIME_CREATED: time_created,
+        STAGE: "schema"
     }
     problems_collection.insert_one(problem)
 
@@ -74,7 +76,9 @@ def get_problems_by_user(username):
             SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
             PROBLEM_ID_FOR_USER: problem[GENERATE_SCHEMA_HIT_ID],
             SCHEMAS_PAGE_LINK: "/{}/schemas".format(problem[SLUG]),
-            TIME_CREATED: problem[TIME_CREATED]
+            TIME_CREATED: problem[TIME_CREATED],
+            STAGE: problem[STAGE],
+            INSPIRATIONS_PAGE_LINK: "/{}/schemas".format(problem[SLUG])
         }
         result.append(for_result)
     return result
@@ -119,15 +123,6 @@ def update_schema_count(generate_schema_hit_id, schema_count):
 def add_schema(schema):
     if schemas_collection.find_one(schema) is None:
         schemas_collection.insert_one(schema)
-
-
-# def are_all_schemas_generated(username, problem_title_slug):
-#     query = {
-#         OWNER_USERNAME: username,
-#         SLUG: problem_title_slug
-#     }
-#     problem = problems_collection.find_one(query)
-#     return problem[SCHEMA_COUNT] == problem[SCHEMA_COUNT_GOAL]
 
 
 def new_account(username, email, password):
