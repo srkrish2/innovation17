@@ -88,7 +88,7 @@ output
 ```
 {
   "success": boolean,   
-  "new_id": string //only if success=true
+  "new_id": string      //only if success=true
 }
 ```
 
