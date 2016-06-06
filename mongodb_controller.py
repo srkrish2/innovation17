@@ -195,7 +195,7 @@ def get_counts_for_user(username):
     result = []
     for problem in problems_collection.find({OWNER_USERNAME: username}):
         stage = problem[STAGE]
-        if stage == STAGE_INSPIRATION:
+        if stage == STAGE_SCHEMA:
             count = problem[SCHEMA_COUNT]
         else:
             count = problem[INSPIRATION_COUNT]

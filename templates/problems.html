@@ -8,8 +8,11 @@
         <tr>
           <th>Problem name</th>
           <th>Created</th>
+
           <th>Action</th>
+
           <th class="social">Brief summary</th>
+
         </tr>
       </thead>
       <tbody>
@@ -20,18 +23,23 @@
           </td>
           <td>{{problem.time_created}}</td>
           <td>
+            {% if problem.stage=='unpublished' %}
             <div class="ui button">Edit</div>
             <div class="ui button">Delete</div>
             <div class="ui button">Publish</div>
+
+            {% else %}
+            <div class="ui button">View</div>
+            {% endif %}
+
           </td>
           <td>
-            <div class="ui label">
-
-              <a href={{problem.schemas_page_link}} class="ui small basic schema-list"><i class="paw icon"></i> {{problem.schema_count}}</a>
-              {% if problem.stage != 'schema' %}
-              <a href={{problem.schemas_page_link}} class="ui small basic inspiration-list"><i class="idea icon"></i> {{problem.inspiration_count}}</a>
-              {% endif %}
-            </div>
+            {% if problem.stage=='schema' or 'inspiration' %}
+            <a href={{problem.schemas_page_link}} class="ui label small basic schema-list"><i class="paw icon"></i> {{problem.schema_count}}</a>
+            {% endif %}
+            {% if problem.stage == 'inspiration' %}
+            <a href={{problem.inspirations_page_link}} class="ui label small basic inspiration-list"><i class="idea icon"></i> {{problem.inspiration_count}}</a>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}

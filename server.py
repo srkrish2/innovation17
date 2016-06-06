@@ -46,6 +46,10 @@ class HtmlPageLoader(object):
         return render_problems_page()
 
     @cherrypy.expose
+    def edit(self, problem_slug):
+        return "edit page for", problem_slug
+
+    @cherrypy.expose
     def schemas(self, problem_slug):
         return render_schemas_page(problem_slug)
 
@@ -205,23 +209,28 @@ class NewProblemHandler(object):
             except ValueError:
                 casting_fail = False
 
-        if not casting_fail:
-            hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
-            print "MTurk controller output:", hit_id
-        else:
+        if casting_fail:
             print "Casting fail!!!"
+            return {"success": False}
 
-        result = {}
-        if hit_id != "FAIL" and not casting_fail:
-            time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
-            mongodb_controller.add_problem(hit_id, title, description, owner_username, schema_count_goal, time_created)
-            result["success"] = True
-            result["url"] = "problems"
-            return result
-        else:
-            result["success"] = False
-            return result
+        hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
+        time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
+        mongodb_controller.add_problem(hit_id, title, description, owner_username, schema_count_goal, time_created)
 
+        # mongodb_controller.save_problem(title, description, owner_username, schema_count_goal, time_created)
+
+        return {
+            "success": True,
+            "url": "problems"
+        }
+
+
+# def publish_problem(temp_problem_id):
+#      hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
+#      if hit_id == "FAIL":
+#          return {"success": False}
+#
+#      mongodb_controller.publish_problem(temp_problem_id)
 
 class NewAccountHandler(object):
     exposed = True
@@ -313,6 +322,8 @@ class InspirationTaskHandler(object):
 
         owner_username = cherrypy.session[USERNAME_KEY]
         data = cherrypy.request.json
+        print "THIS IS IT!!!!!"
+        print data
         problem_id = data['problem_id']
 
         if not mongodb_controller.does_user_have_problem_with_id(owner_username, problem_id):

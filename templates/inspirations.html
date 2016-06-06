@@ -10,6 +10,8 @@
 					<td>Reason</td>
 					<td>Created</td>
 					<td>Illustration</td>
+					<td>Schema</td>
+					<td>Action</td>
 				</tr>
 			</thead>
 			<tbody>
@@ -17,17 +19,21 @@
 				<tr class={{'inspiration-id-'~inspiration.inspiration_id}}>
 					<td>
 						<h2 class="ui aligned sortable centered header">
-							<a href="get_schema" class="schema-content">{{inspiration.text}}</a>
+							<a href="get_schema" class="inspiration-content">{{inspiration.summary}}</a>
 						</h2>
 					</td>
-
-					<td>{{schema.time}}</td>
-					<td><div class="ui button">Accept</div>
-						<div class="ui button">Reject</div>
+					<td>{{inspiration.reason}}</td>
+					<td>{{inspiration.time}}</td>
+					<td>{{inspiration.link}}</td>
+					<td>{{inspiration.schema}}</td>
+					<td><div class="ui button ac">Accept</div>
+						<div class="ui button red rj">Reject</div>
 					</td>
 				</tr>
 				{% endfor %}
 				<tr>
+					<td>This is summary</td>
+					<td>This is summary</td>
 					<td>This is summary</td>
 					<td>Hide or face</td>
 					<td>Forget it</td>
@@ -36,9 +42,9 @@
 			<tfoot class="full-width">
 				<tr class="padded">
 					<th colspan="4">
-						<div class="ui button">Accept all</div>
-						<div class="ui button">Reject all</div>
-						<div class="ui button">Proceed</div>
+						<div class="ui button ac-all">Accept all</div>
+						<div class="ui button rj-all">Reject all</div>
+						<div class="ui button next">Proceed</div>
 					</th>
 				</tr>
 			</tfoot>
