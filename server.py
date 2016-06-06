@@ -123,7 +123,14 @@ def check_problem_access(problem_slug):
     if USERNAME_KEY in cherrypy.session:
         username = cherrypy.session[USERNAME_KEY]
         if mongodb_controller.does_user_have_problem(username, problem_slug):
+# <<<<<<< Updated upstream
             return True
+# =======
+#             hit_id = mongodb_controller.get_generate_schema_hit_id(username, problem_slug)
+#             schemas = mongodb_controller.get_schemas(hit_id)
+#             template = env.get_template('schemas.html')
+#             return template.render(schemas=schemas, problem_id=hit_id)
+# >>>>>>> Stashed changes
         else:
             raise cherrypy.HTTPError(404, "You, {}, aren't allowed here".format(username))
     else:
