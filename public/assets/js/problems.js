@@ -1,10 +1,11 @@
 (function(global){
     makePostRequest();
     var interval = setInterval(makePostRequest,30000);
-    $(document).on('click', 'a.schemalist', function(e){
+    $(document).on('click', 'a.schemalist, div.button', function(e){
         clearInterval(interval);
     });
     $(document).on('click','div.button.publish',function(e){
+        $(e.currentTarget).innerHTML="<i class='paw icon'></i>0";
         $.ajax({
             type: "POST",
             url: "/publish_problem",
@@ -19,14 +20,16 @@
                 $('.ui.button.publish').addClass('hidden');
                 $('.ui.button.view').removeClass('hidden');
                 if(sdata['success'])$(e.currentTarget.parentElement.parentElement).attr('class',sdata['new_id'])
-                $('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";
+                ///$('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";
             }
         });
     });
     $(document).on('click','div.button.delete',function(e){
+        $(e.currentTarget.parentElement.parentElement).remove();
         $.ajax({
             type: "POST",
             url: "/delete_problem",
+            contentType: 'application/json',
             data: JSON.stringify({
                 "problem_id": $(e.currentTarget.parentElement.parentElement).attr('class')
             }),

@@ -1,32 +1,32 @@
 $(init);
 
-var POST_URL = "/save_new_problem";
+var SAVE_URL = "/save_new_problem", POST_URL='/post_new_problem';
 var SELECTOR = ".ui.form";
 
 var VALIDATION_RULES = {
     fields: {
         title: {
             rules: [
-                {
-                    type   : 'empty',
-                    prompt : 'Please add a title'
-                }
+            {
+                type   : 'empty',
+                prompt : 'Please add a title'
+            }
             ]
         },
         description: {
             rules: [
-                {
-                    type   : 'empty',
-                    prompt : 'Please add description'
-                }
+            {
+                type   : 'empty',
+                prompt : 'Please add description'
+            }
             ]
         },
         category: {
             rules: [
-                {
-                    type   : 'empty',
-                    prompt : 'Please choose a category'
-                }
+            {
+                type   : 'empty',
+                prompt : 'Please choose a category'
+            }
             ]
         }
     },
@@ -51,7 +51,7 @@ function init() {
                 REF = $('.new-tag.label')[InsIdx];
             }
             $("<div class = 'ui olive new-tag label'>" + tag
-                                                       + " <i class='delete icon'></i></div>").insertAfter(REF);
+             + " <i class='delete icon'></i></div>").insertAfter(REF);
             $(this).val('');
         }
     });
@@ -61,34 +61,60 @@ function init() {
 }
 
 function submitForm(e) {
+    e.preventDefault();
     $('.ui.loader.submit-loader').addClass('active');
+    var id = $('.problem_id').innerHTML||null;
     var title = $(SELECTOR).form("get value", "title");
     var description = $(SELECTOR).form("get value", "description");
     var schemagoal = $(SELECTOR).form("get value", "schemagoal");
 
     var data = {
+        "id": id,
         "title": title,
         "description": description,
         "schema_count_goal": schemagoal
     }
-    $.ajax({
-        type : "POST",
-        url: POST_URL,
-        data: JSON.stringify(data),
-        contentType: 'application/json; charset=utf-8',
-        success : function(data) {
-            var success = data["success"]
-            if (success) {
-                window.location.replace('/'+data['url']);
-            } else {
-                console.log("UNEXPECTED ERROR")
-            }
-            
-        },
+    if($(e.currentTarget).hasClass('save')){
+        $.ajax({
+            type : "POST",
+            url: SAVE_URL,
+            data: JSON.stringify(data),
+            contentType: 'application/json; charset=utf-8',
+            success : function(data) {
+                var success = data["success"]
+                if (success) {
+                    window.location.replace('/'+data['url']);
+                } else {
+                    console.log("UNEXPECTED ERROR")
+                }
 
-        error : function(e) {
-            console.log("ERROR: ", e);
-        }
-    });
-    e.preventDefault();
+            },
+
+            error : function(e) {
+                console.log("ERROR: ", e);
+            }
+        });
+    }
+    else {
+        $.ajax({
+            type : "POST",
+            url: POST_URL,
+            data: JSON.stringify(data),
+            contentType: 'application/json; charset=utf-8',
+            success : function(data) {
+                var success = data["success"]
+                if (success) {
+                    window.location.replace('/'+data['url']);
+                } else {
+                    console.log("UNEXPECTED ERROR")
+                }
+                
+            },
+
+            error : function(e) {
+                console.log("ERROR: ", e);
+            }
+        });
+    }
+    
 }

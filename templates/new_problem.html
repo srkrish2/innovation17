@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="ui middle first-page-element aligned center container content">
-  <div class="ui project form">
-    <h2 class="ui diving header">Project Information</h2>
+  <div class="ui problem form">
+    <h2 class="ui diving header">Problem Information</h2>
+    <span class='problem-id hidden'>{{""~problem_id|default('')~""}}</span>
     <div class="field">
       <label class="title">
         <div class="ui transparent input">
@@ -34,10 +35,10 @@
             Add Tag
           </a>
         </div>
-        </div>
       </div>
-      <div class="two fields">
-        <div class="field">
+    </div>
+    <div class="two fields">
+      <div class="field">
           <!-- <label for="file" class="ui icon button">
             <i class="file icon"></i>
             Open File</label>
@@ -45,8 +46,11 @@
             <input type="text" name="schemagoal" id="schemagoal" placeholder="Target number of schemas to get">
           </div>
           <div class="field">
-            <div class="ui teal button right submit">Submit
-            <div class="ui submit-loader small inline loader"></div> 
+            <div class="ui teal button right save"><i class="icon save"></i> Save
+              <div class="ui save-loader small inline loader"></div> 
+            </div>
+            <div class="ui blue button submit">Submit
+              <div class="ui submit-loader small inline loader"></div> 
             </div>
           </div>
         </div>

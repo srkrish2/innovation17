@@ -43,12 +43,9 @@ class HtmlPageLoader(object):
     def problems(self):
         return render_problems_page()
 
-    # @cherrypy.expose
-    # def edit(self, problem_slug):
-    #     return "edit page for", problem_slug
     @cherrypy.expose
-    def get_problem(self, problem_slug):
-        return render_problem(problem_slug)
+    def edit(self, problem_slug):
+        render_edit_page(problem_slug)
 
     @cherrypy.expose
     def schemas(self, problem_slug):
@@ -82,9 +79,6 @@ class HtmlPageLoader(object):
     @cherrypy.expose
     def profile_info(self):
         return render_profile()
-
-
-
 
 
 def render_homepage():
@@ -125,6 +119,12 @@ def render_inspirations_page(problem_slug):
         return template.render(inspirations=inspirations)
 
 
+def render_edit_page(problem_slug):
+    return "implementttt"
+    #if check_problem_access(problem_slug) is True:
+
+
+
 def check_problem_access(problem_slug):
     if USERNAME_KEY in cherrypy.session:
         username = cherrypy.session[USERNAME_KEY]
@@ -150,11 +150,9 @@ class CountUpdatesHandler(object):
             stage = mongodb_controller.get_stage(problem_id)
             if stage == mongodb_controller.STAGE_SCHEMA:
                 update_schemas_for_problem(problem_id)
-            if stage == mongodb_controller.STAGE_INSPIRATION:
+            elif stage == mongodb_controller.STAGE_INSPIRATION:
                 update_inspirations_for_problem(problem_id)
-        result = mongodb_controller.get_counts_for_user(username)
-        print str(result)
-        return result #mongodb_controller.get_counts_for_user(username)
+        return mongodb_controller.get_counts_for_user(username)
 
 
 def update_schemas_for_problem(hit_id):
@@ -180,6 +178,7 @@ def update_inspirations_for_problem(problem_id):
     for schema_id in mongodb_controller.get_schema_ids(problem_id):
         for inspiration_hit_id in mongodb_controller.get_inspiration_hit_id(schema_id):
             inspirations = mturk_controller.get_inspiration_hit_results(inspiration_hit_id)
+            print "mturk returned", str(inspirations)
             inspiration_count = 0
             for inspiration in inspirations:
                 inspiration_count += 1
@@ -372,6 +371,15 @@ class InspirationTaskHandler(object):
                 "url": "problems"}
 
 
+class DeleteProblemHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    def POST(self):
+        data = cherrypy.request.json
+        mongodb_controller.delete_problem(data[PROBLEM_ID])
+
+
 def render_new_problem():
     template = env.get_template('new_problem.html')
     return template.render()
@@ -432,6 +440,9 @@ if __name__ == '__main__':
         },
         '/publish_problem': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/delete_problem': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -443,6 +454,7 @@ if __name__ == '__main__':
     webapp.get_count_updates = CountUpdatesHandler()
     webapp.post_inspiration_task = InspirationTaskHandler()
     webapp.publish_problem = PublishProblemHandler()
+    webapp.delete_problem = DeleteProblemHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 

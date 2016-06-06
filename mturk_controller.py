@@ -66,7 +66,7 @@ def get_schema_making_results(hit_id):
             answer_text = answer_text.rstrip()
 
             schema = {
-                mongodb_controller.HIT_ID: hit_id,
+                mongodb_controller.PROBLEM_ID: hit_id,
                 mongodb_controller.SCHEMA_TEXT: answer_text,
                 mongodb_controller.SCHEMA_TIME: epoch_time_ms_string,
                 mongodb_controller.WORKER_ID: worker_id,

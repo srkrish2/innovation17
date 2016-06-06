@@ -19,15 +19,22 @@ array of maps (dictionaries). each map has the following format:
 {
   "title": string,
   "description": string,
-  "schema_count": int,
-  "schema_count_goal": int,
   "problem_id": string,
-  "schemas_page_link": string,
   "time_created": string,
   "stage": string,
-  "inspirations_page_link",
-  "inspiration_count": int,        // only if stage=inspiration
-  "inspiration_count_goal": int    // only if stage=inspiration
+  
+  //// if stage=unpublished ////
+  "edit_page_link": string,
+  
+  ////    if stage=schema   ////
+  "schema_count": int,
+  "schema_count_goal": int,
+  "schemas_page_link": string,
+  
+  //// if stage=inspiration ////
+  "inspiration_count": int,
+  "inspiration_count_goal": int,
+  "inspirations_page_link"
 }
 ```
 
@@ -146,20 +153,10 @@ input
 }
 ```
 
-
-### /change_problem POST request
+### /delete_problem POST request
 input
 ```
 {
-    "problem_id": string,
-    "operation": "edit" or "view"
+    "problem_id": string
 }
 ```
-output
-```
-
-{
-  "title": string,
-  "description": string,
-  "schema_count_goal": int
-}
