@@ -229,7 +229,7 @@ class PublishProblemHandler(object):
     @cherrypy.tools.json_in()
     def POST(self):
         data = cherrypy.request.json
-        publish_problem(data[PROBLEM_ID])
+        return publish_problem(data[PROBLEM_ID])
 
 
 def publish_problem(temp_problem_id):
