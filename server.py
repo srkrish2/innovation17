@@ -69,7 +69,7 @@ class HtmlPageLoader(object):
         return open("register.html")
 
     @cherrypy.expose
-    def new_problem(self): ##either edit or view
+    def new_problem(self):
         return render_new_problem()
 
     @cherrypy.expose
@@ -111,12 +111,14 @@ def render_inspirations_page(problem_slug):
         problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
         inspirations = mongodb_controller.get_inspirations(problem_id)
         template = env.get_template('inspirations.html')
+        inspiration_dicts_list = []
         for inspiration in inspirations:
             problem_text = mongodb_controller.get_problem_text(inspiration[mongodb_controller.PROBLEM_ID])
             schema_text = mongodb_controller.get_schema_text(inspiration[mongodb_controller.SCHEMA_ID])
             inspiration["problem_text"] = problem_text
             inspiration["schema_text"] = schema_text
-        return template.render(inspirations=inspirations)
+            inspiration_dicts_list.append(inspiration)
+        return template.render(inspirations=inspiration_dicts_list)
 
 
 def render_edit_page(problem_slug):
