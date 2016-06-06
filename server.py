@@ -147,7 +147,6 @@ class CountUpdatesHandler(object):
             raise cherrypy.HTTPError(403)
         username = cherrypy.session[USERNAME_KEY]
         for problem_id in mongodb_controller.get_users_problem_ids(username):
-            print "problem_id =", problem_id
             stage = mongodb_controller.get_stage(problem_id)
             if stage == mongodb_controller.STAGE_SCHEMA:
                 update_schemas_for_problem(problem_id)
@@ -164,7 +163,6 @@ def update_schemas_for_problem(hit_id):
     schema_count = 0
     # replace time with a readable one and add to DB
     for schema_dict in schema_dicts:
-        print (str(schema_dict))
         schema_count += 1
         # pop epoch time
         epoch_time_ms = long(schema_dict.pop(mongodb_controller.SCHEMA_TIME))
@@ -239,7 +237,7 @@ class PublishProblemHandler(object):
     @cherrypy.tools.json_in()
     def POST(self):
         data = cherrypy.request.json
-        publish_problem(data[PROBLEM_ID])
+        return publish_problem(data[PROBLEM_ID])
 
 
 def publish_problem(temp_problem_id):
