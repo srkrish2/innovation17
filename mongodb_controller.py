@@ -91,6 +91,7 @@ def get_problems_by_user(username):
             for_result[INSPIRATIONS_PAGE_LINK] = "/{}/inspirations".format(problem[SLUG])
 
         result.append(for_result)
+        print "result is ", result
     return result
 
 

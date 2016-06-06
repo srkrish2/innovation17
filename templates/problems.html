@@ -35,7 +35,7 @@
           </td>
           <td>
             {% if problem.stage=='schema' or 'inspiration' %}
-            <a href={{problem.schemas_page_link}} class="ui label small basic schema-list"><i class="paw icon"></i> {{problem.schema_count}}</a>
+            <a href={{problem.schemas_page_link}} class="ui label small basic schema schema-list"><i class="paw icon"></i> {{problem.schema_count}} </a>
             {% endif %}
             {% if problem.stage == 'inspiration' %}
             <a href={{problem.inspirations_page_link}} class="ui label small basic inspiration-list"><i class="idea icon"></i> {{problem.inspiration_count}}</a>

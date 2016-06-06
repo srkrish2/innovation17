@@ -153,7 +153,9 @@ class CountUpdatesHandler(object):
                 update_schemas_for_problem(problem_id)
             if stage == mongodb_controller.STAGE_INSPIRATION:
                 update_inspirations_for_problem(problem_id)
-        return mongodb_controller.get_counts_for_user(username)
+        result = mongodb_controller.get_counts_for_user(username)
+        print str(result)
+        return result #mongodb_controller.get_counts_for_user(username)
 
 
 def update_schemas_for_problem(hit_id):
