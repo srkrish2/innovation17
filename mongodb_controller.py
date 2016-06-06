@@ -23,10 +23,10 @@ STAGE_UNPUBLISHED = "unpublished"
 INSPIRATIONS_PAGE_LINK = "inspirations_page_link"
 INSPIRATION_COUNT = "inspiration_count"
 INSPIRATION_COUNT_GOAL = "inspiration_count_goal"
+EDIT_PAGE_LINK = "edit_page_link"
 
 SCHEMA_TEXT = "text"
-HIT_ID = "hit_id"
-INSPIRATION_HIT_ID = "inspiration_hit_id"
+INSPIRATION_ID = "inspiration_id"
 WORKER_ID = "worker_id"
 SCHEMA_TIME = "time"
 SCHEMA_ID = "schema_id"
@@ -82,7 +82,9 @@ def get_problems_by_user(username):
             SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
             TIME_CREATED: problem[TIME_CREATED]
         }
-        if problem[STAGE] == STAGE_SCHEMA:
+        if problem[STAGE] == STAGE_UNPUBLISHED:
+            for_result[EDIT_PAGE_LINK] = "/{}/edit".format(problem[SLUG])
+        elif problem[STAGE] == STAGE_SCHEMA:
             for_result[SCHEMA_COUNT] = problem[SCHEMA_COUNT]
             for_result[SCHEMAS_PAGE_LINK] = "/{}/schemas".format(problem[SLUG])
         elif problem[STAGE] == STAGE_INSPIRATION:
@@ -119,9 +121,9 @@ def get_problem_id(username, problem_title_slug):
     return problem[PROBLEM_ID]
 
 
-def get_schemas(hit_id):
+def get_schemas(problem_id):
     result = []
-    for schema in schemas_collection.find({HIT_ID: hit_id}):
+    for schema in schemas_collection.find({PROBLEM_ID: problem_id}):
         for_result = {
             SCHEMA_TEXT: schema[SCHEMA_TEXT],
             SCHEMA_TIME: schema[SCHEMA_TIME],
@@ -228,13 +230,13 @@ def get_schema_ids(problem_id):
 
 
 def get_inspiration_hit_id(schema_id):
-    return schemas_collection.find_one({SCHEMA_ID: schema_id})[INSPIRATION_HIT_ID]
+    return schemas_collection.find_one({SCHEMA_ID: schema_id})[INSPIRATION_ID]
 
 
 def add_inspiration_hit_id_to_schema(hit_id, schema_id):
     query_filter = {SCHEMA_ID: schema_id}
     new_fields = {
-        INSPIRATION_HIT_ID: hit_id
+        INSPIRATION_ID: hit_id
     }
     update = {'$set': new_fields}
     schemas_collection.update_one(query_filter, update)
@@ -254,6 +256,10 @@ def get_schema_text(schema_id):
 
 def get_schema_count_goal(temp_problem_id):
     return problems_collection.find_one({PROBLEM_ID: temp_problem_id})[SCHEMA_COUNT_GOAL]
+
+
+def delete_problem(problem_id):
+    problems_collection.remove({PROBLEM_ID: problem_id})
 
 
 def slugify(s):
