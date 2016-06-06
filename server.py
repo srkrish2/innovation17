@@ -9,8 +9,8 @@ To run, enter "python server.py" in terminal.
 
 import os
 import cherrypy
-# to not flood mturk
-# import mock_mturk_controller as mturk_controller
+import random
+import string
 import mturk_controller
 import mongodb_controller
 import datetime
@@ -21,9 +21,7 @@ env = Environment(loader=PackageLoader('server', '/templates'))
 # sha256_crypt = passlib.hash.sha256_crypt
 
 
-COOKIE_NAME = "user_id"
-PROBLEM_COMPLETION_STATUS = "schema_count"
-PROBLEM_FOR_FRONTEND_ID = "problem_id"
+PROBLEM_ID = "problem_id"
 # format example: 23 Apr 2012 4:00 PM
 READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 PREVIOUS_URL_KEY = "previous_url"
@@ -127,7 +125,7 @@ def check_problem_access(problem_slug):
         if mongodb_controller.does_user_have_problem(username, problem_slug):
             return True
         else:
-            raise cherrypy.HTTPError(404, "You, {}, don't have a problem named like {}".format(username, problem_slug))
+            raise cherrypy.HTTPError(404, "You, {}, aren't allowed here".format(username))
     else:
         cherrypy.session[PREVIOUS_URL_KEY] = "problems"
         raise cherrypy.HTTPRedirect("/sign_in")
@@ -143,6 +141,7 @@ class CountUpdatesHandler(object):
             raise cherrypy.HTTPError(403)
         username = cherrypy.session[USERNAME_KEY]
         for problem_id in mongodb_controller.get_users_problem_ids(username):
+            print "problem_id =", problem_id
             stage = mongodb_controller.get_stage(problem_id)
             if stage == mongodb_controller.STAGE_SCHEMA:
                 update_schemas_for_problem(problem_id)
@@ -157,6 +156,7 @@ def update_schemas_for_problem(hit_id):
     schema_count = 0
     # replace time with a readable one and add to DB
     for schema_dict in schema_dicts:
+        print (str(schema_dict))
         schema_count += 1
         # pop epoch time
         epoch_time_ms = long(schema_dict.pop(mongodb_controller.SCHEMA_TIME))
@@ -165,7 +165,8 @@ def update_schemas_for_problem(hit_id):
         # add readable time
         schema_dict[mongodb_controller.SCHEMA_TIME] = readable_time
         mongodb_controller.add_schema(schema_dict)
-    mongodb_controller.update_schema_count(hit_id, schema_count)
+    if schema_count > 0:
+        mongodb_controller.update_schema_count(hit_id, schema_count)
 
 
 def update_inspirations_for_problem(problem_id):
@@ -213,11 +214,9 @@ class NewProblemHandler(object):
             print "Casting fail!!!"
             return {"success": False}
 
-        hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
         time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
-        mongodb_controller.add_problem(hit_id, title, description, owner_username, schema_count_goal, time_created)
-
-        # mongodb_controller.save_problem(title, description, owner_username, schema_count_goal, time_created)
+        temp_id = ''.join(random.sample(string.hexdigits, 8))
+        mongodb_controller.save_problem(temp_id, title, description, owner_username, schema_count_goal, time_created)
 
         return {
             "success": True,
@@ -225,12 +224,25 @@ class NewProblemHandler(object):
         }
 
 
-# def publish_problem(temp_problem_id):
-#      hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
-#      if hit_id == "FAIL":
-#          return {"success": False}
-#
-#      mongodb_controller.publish_problem(temp_problem_id)
+class PublishProblemHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def POST(self):
+        data = cherrypy.request.json
+        publish_problem(data[PROBLEM_ID])
+
+
+def publish_problem(temp_problem_id):
+    description = mongodb_controller.get_problem_text(temp_problem_id)
+    schema_count_goal = mongodb_controller.get_schema_count_goal(temp_problem_id)
+    hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
+    if hit_id == "FAIL":
+        return {"success": False}
+    mongodb_controller.set_schema_stage(temp_problem_id, hit_id)
+    return {"success": True, "new_id": hit_id}
+
 
 class NewAccountHandler(object):
     exposed = True
@@ -249,12 +261,15 @@ class NewAccountHandler(object):
         }
         if "@" not in email:
             result["issue"] = "Illegal email"
+            print "Illegal email"
             return result
         if mongodb_controller.is_email_in_use(email):
             result["issue"] = "Email already in use"
+            print "Email already in use"
             return result
         if mongodb_controller.is_username_taken(username):
             result["issue"] = "This username is already taken"
+            print "This username is already taken"
             return result
 
         # encrypt the password
@@ -322,6 +337,8 @@ class InspirationTaskHandler(object):
 
         owner_username = cherrypy.session[USERNAME_KEY]
         data = cherrypy.request.json
+        print "THIS IS IT!!!!!"
+        print data
         problem_id = data['problem_id']
 
         if not mongodb_controller.does_user_have_problem_with_id(owner_username, problem_id):
@@ -341,7 +358,7 @@ class InspirationTaskHandler(object):
             hit_id = mturk_controller.create_inspiration_hit(schema[mongodb_controller.SCHEMA_TEXT], count_goal)
             # add the hit_id to schema
             mongodb_controller.add_inspiration_hit_id_to_schema(hit_id, schema[mongodb_controller.SCHEMA_ID])
-            if hit_id != "FAIL":
+            if hit_id == "FAIL":
                 print "create_inspiration_hit FAILED!! dunno how to handle"
                 continue
         mongodb_controller.set_inspiration_stage(problem_id, count_goal)
@@ -392,7 +409,7 @@ if __name__ == '__main__':
             'tools.sessions.storage_path': "./session_data/"
         },
         # these are for rest api requests, not html pages, so create method dispatchers
-        '/post_new_problem': {
+        '/save_new_problem': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
         '/post_new_account': {
@@ -406,16 +423,20 @@ if __name__ == '__main__':
         },
         '/post_inspiration_task': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/publish_problem': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
     webapp = HtmlPageLoader()
 
     webapp.post_sign_in = SignInHandler()
-    webapp.post_new_problem = NewProblemHandler()
+    webapp.save_new_problem = NewProblemHandler()
     webapp.post_new_account = NewAccountHandler()
     webapp.get_count_updates = CountUpdatesHandler()
     webapp.post_inspiration_task = InspirationTaskHandler()
+    webapp.publish_problem = PublishProblemHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 

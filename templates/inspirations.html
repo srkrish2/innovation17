@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% set active_page = "home" %}
+{% block content %}
+<div class="ui container center middle aligned first-page-element">
+	<div class="ui equal width grid">
+		<table class="ui cell padded table">
+			<thead>
+				<tr>
+					<td>Summary</td>
+					<td>Reason</td>
+					<td>Created</td>
+					<td>Illustration</td>
+					<td>Schema</td>
+					<td>Action</td>
+				</tr>
+			</thead>
+			<tbody>
+				{% for inspiration in inspirations %}
+				<tr class={{'inspiration-id-'~inspiration.inspiration_id}}>
+					<td>
+						<h2 class="ui aligned sortable centered header">
+							<a href="get_schema" class="inspiration-content">{{inspiration.summary}}</a>
+						</h2>
+					</td>
+					<td>{{inspiration.reason}}</td>
+					<td>{{inspiration.time}}</td>
+					<td>{{inspiration.link}}</td>
+					<td>{{inspiration.schema}}</td>
+					<td><div class="ui button ac">Accept</div>
+						<div class="ui button red rj">Reject</div>
+					</td>
+				</tr>
+				{% endfor %}
+				<tr>
+					<td>This is summary</td>
+					<td>This is summary</td>
+					<td>This is summary</td>
+					<td>Hide or face</td>
+					<td>Forget it</td>
+				</tr>
+			</tbody>
+			<tfoot class="full-width">
+				<tr class="padded">
+					<th colspan="4">
+						<div class="ui button ac-all">Accept all</div>
+						<div class="ui button rj-all">Reject all</div>
+						<div class="ui button next">Proceed</div>
+					</th>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+{% endblock %}

@@ -3,8 +3,8 @@
 {% block content %}
 <div class="ui middle aligned center container content first-page-element">
   <div class="ui schema-list equal width grid">
-    <table class="ui fixed celled padded table">
-      <thead>
+    <table class='ui fixed celled padded table'>
+      <thead class={{problem_id}}>
         <tr>
           <th>Schema Content</th>
           <th>Date</th>
@@ -51,12 +51,12 @@
                 <div class="ui inverted black label">You have {{schemas|length}} schema(s) to initiate the inspirations from</div>
               </div>
               <div class="field">
-                <div class="field"><input type="text" class="t" placeholder="Enter the number of inspiration for each schema">
+                <div class="field"><input type="text" class="count_goal" placeholder="Enter the number of inspiration for each schema">
                 </div>
               </div>
 
             </div>
-            <button class="ui button teal startInspiration">Confirm</button>
+            <button class="ui button teal startinspiration">Confirm</button>
             <button class="ui button teal cancelinspiration">Cancel</button>
           </div>
         </div>
