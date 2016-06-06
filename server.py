@@ -45,9 +45,12 @@ class HtmlPageLoader(object):
     def problems(self):
         return render_problems_page()
 
+    # @cherrypy.expose
+    # def edit(self, problem_slug):
+    #     return "edit page for", problem_slug
     @cherrypy.expose
-    def edit(self, problem_slug):
-        return "edit page for", problem_slug
+    def get_problem(self, problem_slug):
+        return render_problem(problem_slug)
 
     @cherrypy.expose
     def schemas(self, problem_slug):
@@ -71,7 +74,7 @@ class HtmlPageLoader(object):
         return open("register.html")
 
     @cherrypy.expose
-    def new_problem(self):
+    def new_problem(self): ##either edit or view
         return render_new_problem()
 
     @cherrypy.expose
@@ -81,6 +84,9 @@ class HtmlPageLoader(object):
     @cherrypy.expose
     def profile_info(self):
         return render_profile()
+
+
+
 
 
 def render_homepage():

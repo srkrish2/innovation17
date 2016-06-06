@@ -1,6 +1,6 @@
 $(init);
 
-var POST_URL = "/post_new_problem";
+var POST_URL = "/save_new_problem";
 var SELECTOR = ".ui.form";
 
 var VALIDATION_RULES = {

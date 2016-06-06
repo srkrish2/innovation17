@@ -129,3 +129,21 @@ input
     ]
 }
 ```
+
+
+### /change_problem POST request
+input
+```
+{
+    "problem_id": string,
+    "operation": "edit" or "view"
+}
+```
+output
+```
+
+{
+  "title": string,
+  "description": string,
+  "schema_count_goal": int
+}

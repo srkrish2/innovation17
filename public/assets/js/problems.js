@@ -1,8 +1,32 @@
 (function(global){
-    makePostRequest()
+    makePostRequest();
     var interval = setInterval(makePostRequest,30000);
     $(document).on('click', 'a.schemalist', function(e){
         clearInterval(interval);
+    });
+    $(document).on('click','div.button.publish',function(e){
+        $.ajax({
+            type: "post",
+            url: "publish_problem",
+            data: {
+                problem_id: $e.val()
+            },
+            success: function(sdata){
+                console.log("return back from sdata");
+            }
+        });
+    });
+    $(document).on('click','div.button.delete',function(e){
+        $.ajax({
+            type: "post",
+            url: "publish_problem",
+            data: {
+                problem_id: $e.val()
+            },
+            success: function(sdata){
+                console.log("return back from sdata");
+            }
+        });
     });
 }(window));
 

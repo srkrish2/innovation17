@@ -24,12 +24,12 @@
           <td>{{problem.time_created}}</td>
           <td>
             {% if problem.stage=='unpublished' %}
-            <div class="ui button">Edit</div>
-            <div class="ui button">Delete</div>
-            <div class="ui button">Publish</div>
+            <div class="ui button" href={{""~problem.problem_id~"/edit"}}>Edit</div>
+            <div class="ui button delete">Delete</div>
+            <div class="ui button publish">Publish</div>
 
             {% else %}
-            <div class="ui button">View</div>
+            <div class="ui button" href={{""~problem.problem_id~"/view"}}>View</div>
             {% endif %}
 
           </td>
