@@ -14,7 +14,12 @@
             }),
             success: function(sdata){
                 console.log("return back from sdata");
+                $('.ui.button.edit').addClass('hidden');
+                $('.ui.button.delete').addClass('hidden');
+                $('.ui.button.publish').addClass('hidden');
+                $('.ui.button.view').removeClass('hidden');
                 if(sdata['success'])$(e.currentTarget.parentElement.parentElement).attr('class',sdata['new_id'])
+                $('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";
             }
         });
     });
@@ -39,7 +44,7 @@ function makePostRequest(){
         success:function(sdata){
             console.log('data = '+sdata[0]['count']);
             for (var i= 0;i<sdata.length; i++){
-                $('tr.'+sdata[i]['problem_id']+' .schema-list')[0].innerHTML=sdata[i]['count'];
+                $('tr.'+sdata[i]['problem_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i> "+sdata[i]['count'];
             }
         }
     })

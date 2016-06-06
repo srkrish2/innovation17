@@ -24,21 +24,24 @@
           <td>{{problem.time_created}}</td>
           <td>
             {% if problem.stage=='unpublished' %}
-            <div class="ui button" href={{""~problem.problem_id~"/edit"}}>Edit</div>
+            <div class="ui button edit" href={{""~problem.problem_id~"/edit"}}>Edit</div>
             <div class="ui button delete">Delete</div>
             <div class="ui button publish">Publish</div>
-
+            <div class="ui button view hidden" href={{""~problem.problem_id~"/view"}}>View</div>
             {% else %}
-            <div class="ui button" href={{""~problem.problem_id~"/view"}}>View</div>
+            <div class="ui button hidden" href={{""~problem.problem_id~"/edit"}}>Edit</div>
+            <div class="ui button delete hidden">Delete</div>
+            <div class="ui button publish hidden">Publish</div>
+            <div class="ui button view" href={{""~problem.problem_id~"/view"}}>View</div>
             {% endif %}
 
           </td>
           <td>
             {% if problem.stage=='schema' or 'inspiration' %}
-            <a href={{problem.schemas_page_link}} class="ui label small basic schema schema-list"><i class="paw icon"></i> {{problem.schema_count}} </a>
+            <a href={{problem.schemas_page_link|default('#')}} class="ui label schema schema-list"><i class="paw icon"></i> {{problem.schema_count|default(0)}} </a>
             {% endif %}
             {% if problem.stage == 'inspiration' %}
-            <a href={{problem.inspirations_page_link}} class="ui label small basic inspiration-list"><i class="idea icon"></i> {{problem.inspiration_count}}</a>
+            <a href={{ problem.inspirations_page_link|default('#')}} class="ui label inspiration-list"><i class="idea icon"></i> {{problem.inspiration_count|default(0)}}</a>
             {% endif %}
           </td>
         </tr>
