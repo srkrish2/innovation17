@@ -60,7 +60,7 @@ array of maps (dictionaries). each map has the following format:
 }
 ```
 
-### /post_new_problem POST request
+### /save_new_problem POST request
 input
 ```
 {
@@ -76,6 +76,22 @@ output
   "url": string,       //only if success=true
 }
 ```
+
+### /publish_problem POST request
+input
+```
+{
+    "problem_id": string
+}
+```
+output
+```
+{
+  "success": boolean,   
+  "new_id": string      //only if success=true
+}
+```
+
 ### /post_sign_in POST request
 input
 ```

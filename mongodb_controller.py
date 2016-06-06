@@ -19,6 +19,7 @@ STAGE = "stage"
 STAGE_SCHEMA = "schema"
 COUNT = "count"
 STAGE_INSPIRATION = "inspiration"
+STAGE_UNPUBLISHED = "unpublished"
 INSPIRATIONS_PAGE_LINK = "inspirations_page_link"
 INSPIRATION_COUNT = "inspiration_count"
 INSPIRATION_COUNT_GOAL = "inspiration_count_goal"
@@ -34,55 +35,61 @@ PROJECT_OWNER_ID = "owner_id"
 PROJECT_CATEGORY = "category"
 
 
-def add_problem(generate_schema_hit_id, title, description, owner_username, schema_count_goal, time_created):
+def save_problem(temporary_id, title, description, owner_username, schema_count_goal, time_created):
     problem = {
-        PROBLEM_ID: generate_schema_hit_id,
+        PROBLEM_ID: temporary_id,
         TITLE: title,
         DESCRIPTION: description,
         OWNER_USERNAME: owner_username,
-        SCHEMA_COUNT: 0,
         SCHEMA_COUNT_GOAL: schema_count_goal,
         SLUG: slugify(title),
         TIME_CREATED: time_created,
-        STAGE: STAGE_SCHEMA
+        STAGE: STAGE_UNPUBLISHED
     }
     problems_collection.insert_one(problem)
 
 
-def slugify(s):
-    s = s.lower()
-    for c in [' ', '-', '.', '/']:
-        s = s.replace(c, '_')
-    s = re.sub('\W', '', s)
-    s = s.replace('_', ' ')
-    s = re.sub('\s+', ' ', s)
-    s = s.strip()
-    s = s.replace(' ', '-')
-    return s
+def set_schema_stage(temporary_id, new_problem_id):
+    query_filter = {PROBLEM_ID: temporary_id}
+    new_fields = {
+        STAGE: STAGE_SCHEMA,
+        SCHEMA_COUNT: 0,
+        PROBLEM_ID: new_problem_id
+    }
+    update = {'$set': new_fields}
+    problems_collection.update_one(query_filter, update)
+
+
+def set_inspiration_stage(problem_id, count_goal):
+    query_filter = {PROBLEM_ID: problem_id}
+    new_fields = {
+        STAGE: STAGE_INSPIRATION,
+        INSPIRATION_COUNT: 0,
+        INSPIRATION_COUNT_GOAL: count_goal
+    }
+    update = {'$set': new_fields}
+    problems_collection.update_one(query_filter, update)
 
 
 def get_problems_by_user(username):
     result = []
     for problem in problems_collection.find({OWNER_USERNAME: username}):
-        if problem[STAGE]==STAGE_SCHEMA:
-            insp_count = 0
-            insp_count_goal = 0
-        else:
-            insp_count = problem[INSPIRATION_COUNT]
-            insp_count_goal = problem[INSPIRATION_COUNT_GOAL]
         for_result = {
+            PROBLEM_ID: problem[PROBLEM_ID],
             TITLE: problem[TITLE],
             DESCRIPTION: problem[DESCRIPTION],
-            SCHEMA_COUNT: problem[SCHEMA_COUNT],
-            SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
-            PROBLEM_ID: problem[PROBLEM_ID],
-            SCHEMAS_PAGE_LINK: "/{}/schemas".format(problem[SLUG]),
-            TIME_CREATED: problem[TIME_CREATED],
             STAGE: problem[STAGE],
-            INSPIRATIONS_PAGE_LINK: "/{}/schemas".format(problem[SLUG]),
-            INSPIRATION_COUNT: insp_count,
-            INSPIRATION_COUNT_GOAL: insp_count_goal
+            SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
+            TIME_CREATED: problem[TIME_CREATED]
         }
+        if problem[STAGE] == STAGE_SCHEMA:
+            for_result[SCHEMA_COUNT] = problem[SCHEMA_COUNT]
+            for_result[SCHEMAS_PAGE_LINK] = "/{}/schemas".format(problem[SLUG])
+        elif problem[STAGE] == STAGE_INSPIRATION:
+            for_result[INSPIRATION_COUNT] = problem[INSPIRATION_COUNT],
+            for_result[INSPIRATION_COUNT_GOAL] = problem[INSPIRATION_COUNT_GOAL]
+            for_result[INSPIRATIONS_PAGE_LINK] = "/{}/inspirations".format(problem[SLUG])
+
         result.append(for_result)
     return result
 
@@ -195,9 +202,11 @@ def get_counts_for_user(username):
     result = []
     for problem in problems_collection.find({OWNER_USERNAME: username}):
         stage = problem[STAGE]
-        if stage == STAGE_SCHEMA:
+        if stage == STAGE_UNPUBLISHED:
+            continue
+        elif stage == STAGE_SCHEMA:
             count = problem[SCHEMA_COUNT]
-        else:
+        elif stage == STAGE_INSPIRATION:
             count = problem[INSPIRATION_COUNT]
         for_result = {
             PROBLEM_ID: problem[PROBLEM_ID],
@@ -222,17 +231,6 @@ def get_inspiration_hit_id(schema_id):
     return schemas_collection.find_one({SCHEMA_ID: schema_id})[INSPIRATION_HIT_ID]
 
 
-def set_inspiration_stage(problem_id, count_goal):
-    query_filter = {PROBLEM_ID: problem_id}
-    new_fields = {
-        STAGE: STAGE_INSPIRATION,
-        INSPIRATION_COUNT: 0,
-        INSPIRATION_COUNT_GOAL: count_goal
-    }
-    update = {'$set': new_fields}
-    problems_collection.update_one(query_filter, update)
-
-
 def add_inspiration_hit_id_to_schema(hit_id, schema_id):
     query_filter = {SCHEMA_ID: schema_id}
     new_fields = {
@@ -251,7 +249,23 @@ def get_problem_text(problem_id):
 
 
 def get_schema_text(schema_id):
-    return problems_collection.find_one({SCHEMA_ID: schema_id})[SCHEMA_TEXT]
+    return schemas_collection.find_one({SCHEMA_ID: schema_id})[SCHEMA_TEXT]
+
+
+def get_schema_count_goal(temp_problem_id):
+    return problems_collection.find_one({PROBLEM_ID: temp_problem_id})[SCHEMA_COUNT_GOAL]
+
+
+def slugify(s):
+    s = s.lower()
+    for c in [' ', '-', '.', '/']:
+        s = s.replace(c, '_')
+    s = re.sub('\W', '', s)
+    s = s.replace('_', ' ')
+    s = re.sub('\s+', ' ', s)
+    s = s.strip()
+    s = s.replace(' ', '-')
+    return s
 
 # client
 client = pymongo.MongoClient()
