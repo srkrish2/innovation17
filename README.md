@@ -160,3 +160,10 @@ input
     "problem_id": string
 }
 ```
+### /post_inspiration_task POST request
+input
+```
+{
+    "problem_id": string,
+    "count_goal": int
+}

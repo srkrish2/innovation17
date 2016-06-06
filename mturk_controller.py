@@ -109,6 +109,7 @@ def create_inspiration_hit(schema, count_goal):
 
 
 def get_inspiration_hit_results(hit_id):
+    print "GOT REQUEST FOR HITID=",hit_id
     p = subprocess.Popen(['java', '-jar', 'InspirationHITResults.jar', hit_id],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
@@ -149,10 +150,9 @@ def get_inspiration_hit_results(hit_id):
             "link": answers[0],
             "summary": answers[1],
             "reason": answers[2],
-            mongodb_controller.HIT_ID: hit_id,
             mongodb_controller.TIME_CREATED: epoch_time_ms_string,
             mongodb_controller.WORKER_ID: worker_id,
-            mongodb_controller.ASSIGNMENT_ID: assignment_id
+            mongodb_controller.INSPIRATION_ID: assignment_id
         }
         inspirations.append(inspiration)
     return inspirations

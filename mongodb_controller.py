@@ -26,6 +26,7 @@ INSPIRATION_COUNT_GOAL = "inspiration_count_goal"
 EDIT_PAGE_LINK = "edit_page_link"
 
 SCHEMA_TEXT = "text"
+INSPIRATION_HIT_ID = "inspiration_hit_id"
 INSPIRATION_ID = "inspiration_id"
 WORKER_ID = "worker_id"
 SCHEMA_TIME = "time"

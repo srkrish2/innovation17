@@ -176,21 +176,25 @@ def update_schemas_for_problem(hit_id):
 def update_inspirations_for_problem(problem_id):
     # get schema ids instead
     for schema_id in mongodb_controller.get_schema_ids(problem_id):
-        for inspiration_hit_id in mongodb_controller.get_inspiration_hit_id(schema_id):
-            inspirations = mturk_controller.get_inspiration_hit_results(inspiration_hit_id)
-            print "mturk returned", str(inspirations)
-            inspiration_count = 0
-            for inspiration in inspirations:
-                inspiration_count += 1
-                # replace time with a readable one and add to DB
-                epoch_time_ms = long(inspiration.pop(mongodb_controller.TIME_CREATED))
-                epoch_time = epoch_time_ms / 1000.0
-                readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
-                inspiration[mongodb_controller.TIME_CREATED] = readable_time
-                # add problem/schema id/text
-                inspiration[mongodb_controller.PROBLEM_ID] = problem_id
-                inspiration[mongodb_controller.SCHEMA_ID] = schema_id
-                mongodb_controller.add_inspiration(inspiration)
+        inspiration_hit_id = mongodb_controller.get_inspiration_hit_id(schema_id)
+        inspirations = mturk_controller.get_inspiration_hit_results(inspiration_hit_id)
+        if inspirations == "FAIL":
+            print "mturk_controller.get_inspiration_hit_results - FAIL!"
+            return
+        print "mturk returned", str(inspirations)
+        inspiration_count = 0
+        for inspiration in inspirations:
+            inspiration_count += 1
+            # replace time with a readable one and add to DB
+            epoch_time_ms = long(inspiration.pop(mongodb_controller.TIME_CREATED))
+            epoch_time = epoch_time_ms / 1000.0
+            readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
+            inspiration[mongodb_controller.TIME_CREATED] = readable_time
+            # add problem/schema id/text
+            inspiration[mongodb_controller.PROBLEM_ID] = problem_id
+            inspiration[mongodb_controller.SCHEMA_ID] = schema_id
+            mongodb_controller.add_inspiration(inspiration)
+        if inspiration_count > 0:
             mongodb_controller.update_inspiration_count(problem_id, inspiration_count)
 
 
