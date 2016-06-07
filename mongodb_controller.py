@@ -33,8 +33,7 @@ WORKER_ID = "worker_id"
 SCHEMA_TIME = "time"
 SCHEMA_ID = "schema_id"
 
-PROJECT_OWNER_ID = "owner_id"
-PROJECT_CATEGORY = "category"
+IDEA_ID = "idea_id"
 
 
 def save_problem(temporary_id, title, description, owner_username, schema_count_goal, time_created):

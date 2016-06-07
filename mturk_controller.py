@@ -93,7 +93,7 @@ def create_inspiration_hit(schema, count_goal):
     jar_output_file = p.stdout
     first_line = jar_output_file.readline().rstrip()
     if first_line == "FAIL":
-        print "SchemaMaking.jar: FAIL"
+        print "PostInspirationHIT.jar: FAIL"
         print jar_output_file.readline().rstrip()
         return "FAIL"
     if first_line != "SUCCESS":
@@ -124,7 +124,7 @@ def get_inspiration_hit_results(hit_id):
 
     jar_output_file = p.stdout
     if jar_output_file.readline().rstrip() == "FAIL":
-        print "SchemaMakingResults.jar: FAIL"
+        print "InspirationHITResults.jar: FAIL"
         print jar_output_file.readline().rstrip()
         return "FAIL"
 
@@ -155,6 +155,78 @@ def get_inspiration_hit_results(hit_id):
         }
         inspirations.append(inspiration)
     return inspirations
+
+
+def create_idea_hit(problem, link, inspiration, assignments_num):
+    # run the jarred java file for submitting mturk task, passing problem as args[0]
+    p = subprocess.Popen(['java', '-jar', 'PostIdeaHIT.jar', problem, link, inspiration, str(assignments_num)],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    # output format:
+    #  * "SUCCESS"
+    #  * HIT_ID
+    #  * URL
+
+    jar_output_file = p.stdout
+    first_line = jar_output_file.readline().rstrip()
+    if first_line == "FAIL":
+        print "PostIdeaHIT.jar: FAIL"
+        print jar_output_file.readline().rstrip()
+        return "FAIL"
+    if first_line != "SUCCESS":
+        print "UNEXPECTED! neither fail/success"
+        return "FAIL"
+
+    hit_id = jar_output_file.readline().rstrip()
+    url = jar_output_file.readline().rstrip()
+
+    print "url =", url
+
+    return hit_id
+
+
+def get_idea_hit_results(hit_id):
+    p = subprocess.Popen(['java', '-jar', 'IdeaHITResults.jar', hit_id],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    # output format:
+    # "SUCCESS"
+    #  assignments_count
+    #  assignmentId
+    #  worker_id
+    #  epoch_time_ms
+    # "--[ANSWER START]--"
+    #  answer
+    # "--[ANSWER END]--"
+
+    jar_output_file = p.stdout
+    if jar_output_file.readline().rstrip() == "FAIL":
+        print "IdeaHITResults.jar: FAIL"
+        print jar_output_file.readline().rstrip()
+        return "FAIL"
+
+    ideas = []
+    assignment_count = int(jar_output_file.readline().rstrip())
+    for i in xrange(assignment_count):
+        assignment_id = jar_output_file.readline().rstrip()
+        worker_id = jar_output_file.readline().rstrip()
+        epoch_time_ms_string = jar_output_file.readline().rstrip()
+        jar_output_file.readline()
+        answer_text = ""
+        line = jar_output_file.readline().rstrip()
+        while line != "--[ANSWER END]--":
+            answer_text += line + '\n'
+            line = jar_output_file.readline().rstrip()
+        answer_text = answer_text.rstrip()
+
+        idea = {
+            "text": answer_text,
+            mongodb_controller.TIME_CREATED: epoch_time_ms_string,
+            mongodb_controller.WORKER_ID: worker_id,
+            mongodb_controller.IDEA_ID: assignment_id
+        }
+        ideas.append(idea)
+    return ideas
 
 
 """

@@ -48,6 +48,10 @@ class HtmlPageLoader(object):
         render_edit_page(problem_slug)
 
     @cherrypy.expose
+    def view(self, problem_slug):
+        render_view_page(problem_slug)
+
+    @cherrypy.expose
     def schemas(self, problem_slug):
         return render_schemas_page(problem_slug)
 
@@ -122,9 +126,19 @@ def render_inspirations_page(problem_slug):
 
 
 def render_edit_page(problem_slug):
-    template = env.get_template('edit.html')
-    #return template.render()
+    return "implement meeee"
+    # if check_problem_access(problem_slug) is True:
+    #     problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
+    #     template = env.get_template('edit.html')
+    #     #return template.render()
 
+
+def render_view_page(problem_slug):
+    return "implement meeee"
+    # if check_problem_access(problem_slug) is True:
+    #     problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
+    #     template = env.get_template('view.html')
+    #     return template.render()
 
 
 def check_problem_access(problem_slug):
