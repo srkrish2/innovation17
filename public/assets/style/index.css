@@ -76,3 +76,7 @@ input:focus:-ms-input-placeholder {
 div.ui.modal.launchnext {
   padding: 2em;
 }
+
+div.hidden {
+  display: none!important;
+}

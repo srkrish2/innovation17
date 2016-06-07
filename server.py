@@ -138,7 +138,7 @@ def render_view_page(problem_slug):
     if check_problem_access(problem_slug) is True:
         problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
         problem = mongodb_controller.get_problem_fields(problem_id)
-        template = env.get_template('view.html')
+        template = env.get_template('new_problem.html')
         return template.render(problem=problem)
 
 
