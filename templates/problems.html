@@ -27,12 +27,12 @@
             <div class="ui button edit" ><a href={{problem.edit_page_link}}>Edit</a> </div>
             <div class="ui button delete">Delete</div>
             <div class="ui button publish">Publish</div>
-            <div class="ui button view hidden" href={{problem.view_page_link}}>View</div>
+            <div class="ui button view hidden"><a href={{problem.view_page_link}}>View</a></div>
             {% else %}
-            <div class="ui button hidden" href={{problem.edit_page_link}}>Edit</div>
+            <div class="ui button hidden" ><a href={{problem.edit_page_link}}>Edit</a></div>
             <div class="ui button delete hidden">Delete</div>
             <div class="ui button publish hidden">Publish</div>
-            <div class="ui button view" href={{""~problem.view_page_link~""}}>View</div>
+            <div class="ui button view"><a href= {{problem.view_page_link}}>View</a></div>
             {% endif %}
           </td>
           <td>

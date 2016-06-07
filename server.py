@@ -130,7 +130,7 @@ def render_edit_page(problem_slug):
         problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
         [title, description, count_goal, problem_id] = mongodb_controller.get_problem_fields(problem_id)
         template = env.get_template('new_problem.html')
-        print count_goal, problem_id, "this is id!"
+        print description, "this is id!"
         return template.render(count_goal=count_goal, problem_id=problem_id, title=title,
                                operation="edit", description=description)
 
