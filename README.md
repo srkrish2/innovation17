@@ -41,7 +41,6 @@ array of maps (dictionaries). each map has the following format:
 
 ### /{{problem_slug}}/edit page parser input
 ```
-{
     "problem_id": string,
     "schema_count_goal": int,
     "title": string,

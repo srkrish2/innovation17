@@ -128,18 +128,19 @@ def render_inspirations_page(problem_slug):
 def render_edit_page(problem_slug):
     if check_problem_access(problem_slug) is True:
         problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-        problem = mongodb_controller.get_problem_fields(problem_id)
+        [title, description, count_goal, problem_id] = mongodb_controller.get_problem_fields(problem_id)
         template = env.get_template('new_problem.html')
-        print "dskfsldkfjdslkf"
-        return template.render(problem=problem)
+        return template.render(count_goal=count_goal, problem_id=problem_id, title=title,
+                               operation="edit", description=description)
 
 
 def render_view_page(problem_slug):
     if check_problem_access(problem_slug) is True:
         problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-        problem = mongodb_controller.get_problem_fields(problem_id)
-        template = env.get_template('view.html')
-        return template.render(problem=problem)
+        [title, description, count_goal, problem_id] = mongodb_controller.get_problem_fields(problem_id)
+        template = env.get_template('new_problem.html')
+        return template.render(count_goal=count_goal, problem_id=problem_id, title=title,
+                               operation="view", description=description)
 
 
 def check_problem_access(problem_slug):
