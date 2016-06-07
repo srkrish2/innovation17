@@ -146,9 +146,9 @@ def get_inspiration_hit_results(hit_id):
             answers.append(answer_text)
 
         inspiration = {
-            "link": answers[0],
-            "summary": answers[1],
-            "reason": answers[2],
+            mongodb_controller.INSPIRATION_LINK: answers[0],
+            mongodb_controller.INSPIRATION_SUMMARY: answers[1],
+            mongodb_controller.INSPIRATION_REASON: answers[2],
             mongodb_controller.TIME_CREATED: epoch_time_ms_string,
             mongodb_controller.WORKER_ID: worker_id,
             mongodb_controller.INSPIRATION_ID: assignment_id
@@ -157,9 +157,9 @@ def get_inspiration_hit_results(hit_id):
     return inspirations
 
 
-def create_idea_hit(problem, link, inspiration, assignments_num):
+def create_idea_hit(problem, link, explanation, assignments_num):
     # run the jarred java file for submitting mturk task, passing problem as args[0]
-    p = subprocess.Popen(['java', '-jar', 'PostIdeaHIT.jar', problem, link, inspiration, str(assignments_num)],
+    p = subprocess.Popen(['java', '-jar', 'PostIdeaHIT.jar', problem, link, explanation, str(assignments_num)],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
