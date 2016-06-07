@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% set active_page = "home" %}
+{% block content %}
+<div class="ui container center middle aligned first-page-element">
+	<div class="ui divided items">
+		{% for inspiration in inspirations %}
+		<div class="item">
+			<div class="image"><img src={{inspiration.link}} alt=""></div>
+			<div class="content"></div>
+			<a href="" class="header">{{inspiration.summary}}</a>
+			<div class="description">{{inspiration.reason}}</div>
+			<div class="extra">blalllla</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

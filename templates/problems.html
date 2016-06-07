@@ -40,6 +40,7 @@
             <a href={{problem.schemas_page_link|default('#')}} class="ui label schema schema-list"><i class="paw icon"></i> {{problem.schema_count|default(0)}} </a>
             {% endif %}
             {% if problem.stage == 'inspiration' %}
+            <span>{{problem.inspiration_count}}</span>
             <a href={{ problem.inspirations_page_link|default('#')}} class="ui label inspiration-list"><i class="idea icon"></i> {{problem.inspiration_count|default(0)}}</a>
             {% endif %}
           </td>
