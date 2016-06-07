@@ -126,19 +126,20 @@ def render_inspirations_page(problem_slug):
 
 
 def render_edit_page(problem_slug):
-    return "implement meeee"
-    # if check_problem_access(problem_slug) is True:
-    #     problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-    #     template = env.get_template('edit.html')
-    #     #return template.render()
+    if check_problem_access(problem_slug) is True:
+        problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
+        problem = mongodb_controller.get_problem_fields(problem_id)
+        template = env.get_template('new_problem.html')
+        print "dskfsldkfjdslkf"
+        return template.render(problem=problem)
 
 
 def render_view_page(problem_slug):
-    return "implement meeee"
-    # if check_problem_access(problem_slug) is True:
-    #     problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-    #     template = env.get_template('view.html')
-    #     return template.render()
+    if check_problem_access(problem_slug) is True:
+        problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
+        problem = mongodb_controller.get_problem_fields(problem_id)
+        template = env.get_template('view.html')
+        return template.render(problem=problem)
 
 
 def check_problem_access(problem_slug):
@@ -413,6 +414,16 @@ class InspirationTaskHandler(object):
                 "url": "problems"}
 
 
+class ProblemEditHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def POST(self):
+        data = cherrypy.request.json
+        print data
+
+
 class DeleteProblemHandler(object):
     exposed = True
 
@@ -488,6 +499,9 @@ if __name__ == '__main__':
         },
         '/post_new_problem': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/problem_edit_handler': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -501,6 +515,7 @@ if __name__ == '__main__':
     webapp.get_count_updates = CountUpdatesHandler()
     webapp.post_inspiration_task = InspirationTaskHandler()
     webapp.delete_problem = DeleteProblemHandler()
+    webapp.post_problem_edit = ProblemEditHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 

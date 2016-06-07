@@ -39,7 +39,17 @@ array of maps (dictionaries). each map has the following format:
 }
 ```
 
-### /{{problem_title}}/schemas page parser input
+### /{{problem_slug}}/edit page parser input
+```
+{
+    "problem_id": string,
+    "schema_count_goal": int,
+    "title": string,
+    "description": string
+}
+```
+
+### /{{problem_slug}}/schemas page parser input
 ```
 array of maps (dictionaries). each map has the following format:
 {
@@ -185,18 +195,9 @@ input
     "problem_id": string,
     "count_goal": int
 }
-
-### /problem_slug/edit GET request
-output
 ```
-{
-    "problem_id": string,
-    "count_goal": int,
-    "title": string,
-    "description": string
-}
 
-### /problem_slug/update POST request
+### /post_problem_edit POST request
 input
 ```
 {
@@ -205,3 +206,4 @@ input
     "title": string,
     "description": string
 }
+```
