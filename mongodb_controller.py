@@ -62,13 +62,16 @@ def save_problem(temporary_id, title, description, owner_username, schema_count_
 
 
 def set_schema_stage(temporary_id=None, hit_id=None):
-    query_filter = {PROBLEM_ID: temporary_id}
     new_fields = {
         STAGE: STAGE_SCHEMA,
         SCHEMA_COUNT: 0
     }
+    query_filter = {}
     if temporary_id is not None:
         new_fields[PROBLEM_ID] = hit_id
+        query_filter[PROBLEM_ID] = temporary_id
+    else:
+        query_filter[PROBLEM_ID] = hit_id
     update = {'$set': new_fields}
     problems_collection.update_one(query_filter, update)
 
@@ -113,11 +116,10 @@ def get_problems_by_user(username):
             for_result[SCHEMAS_PAGE_LINK] = "/{}/schemas".format(problem[SLUG])
             for_result[VIEW_PAGE_LINK] = "/{}/view".format(problem[SLUG])
         elif problem[STAGE] == STAGE_INSPIRATION:
-            for_result[INSPIRATION_COUNT] = problem[INSPIRATION_COUNT],
+            for_result[INSPIRATION_COUNT] = problem[INSPIRATION_COUNT]
             for_result[INSPIRATION_COUNT_GOAL] = problem[INSPIRATION_COUNT_GOAL]
             for_result[INSPIRATIONS_PAGE_LINK] = "/{}/inspirations".format(problem[SLUG])
             for_result[VIEW_PAGE_LINK] = "/{}/view".format(problem[SLUG])
-
         result.append(for_result)
         
     return result

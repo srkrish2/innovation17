@@ -174,7 +174,9 @@ class CountUpdatesHandler(object):
             elif stage == mongodb_controller.STAGE_IDEA:
                 update_ideas_for_problem(problem_id)
 
-        return mongodb_controller.get_counts_for_user(username)
+        result = mongodb_controller.get_counts_for_user(username)
+        print result
+        return result
 
 
 def update_schemas_for_problem(hit_id):
