@@ -109,7 +109,6 @@ def create_inspiration_hit(schema, count_goal):
 
 
 def get_inspiration_hit_results(hit_id):
-    print "GOT REQUEST FOR HITID=",hit_id
     p = subprocess.Popen(['java', '-jar', 'InspirationHITResults.jar', hit_id],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)

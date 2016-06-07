@@ -122,8 +122,8 @@ def render_inspirations_page(problem_slug):
 
 
 def render_edit_page(problem_slug):
-    return "implementttt"
-    #if check_problem_access(problem_slug) is True:
+    template = env.get_template('edit.html')
+    #return template.render()
 
 
 
@@ -183,7 +183,6 @@ def update_inspirations_for_problem(problem_id):
         if inspirations == "FAIL":
             print "mturk_controller.get_inspiration_hit_results - FAIL!"
             return
-        print "mturk returned", str(inspirations)
         inspiration_count = 0
         for inspiration in inspirations:
             inspiration_count += 1
@@ -200,35 +199,58 @@ def update_inspirations_for_problem(problem_id):
             mongodb_controller.update_inspiration_count(problem_id, inspiration_count)
 
 
-class NewProblemHandler(object):
+class SaveNewProblemHandler(object):
     exposed = True
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):
-        if USERNAME_KEY not in cherrypy.session:
-            raise cherrypy.HTTPError(403)
-        owner_username = cherrypy.session[USERNAME_KEY]
-        data = cherrypy.request.json
-        title = data["title"]
-        description = data["description"]
+        [owner_username, title, description, schema_count_goal] = get_problem_parameters()
+        if schema_count_goal == -1:
+            return {"success": False}
+        temp_id = ''.join(random.sample(string.hexdigits, 8))
+        time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
+        mongodb_controller.save_problem(temp_id, title, description, owner_username, schema_count_goal, time_created)
+        return {
+            "success": True,
+            "url": "problems"
+        }
 
-        casting_fail = False
-        schema_count_goal = data["schema_count_goal"]
-        if not isinstance(schema_count_goal, int):
-            try:
-                schema_count_goal = int(schema_count_goal)
-            except ValueError:
-                casting_fail = False
 
-        if casting_fail:
-            print "Casting fail!!!"
+def get_problem_parameters():
+    if USERNAME_KEY not in cherrypy.session:
+        raise cherrypy.HTTPError(403)
+    owner_username = cherrypy.session[USERNAME_KEY]
+    data = cherrypy.request.json
+    title = data["title"]
+    description = data["description"]
+
+    schema_count_goal = data["schema_count_goal"]
+    if not isinstance(schema_count_goal, int):
+        try:
+            schema_count_goal = int(schema_count_goal)
+        except ValueError:
+            schema_count_goal = -1
+    return owner_username, title, description, schema_count_goal
+
+
+class PostNewProblemHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
+        [owner_username, title, description, schema_count_goal] = get_problem_parameters()
+        if schema_count_goal == -1:
+            return {"success": False}
+
+        hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
+        if hit_id == "FAIL":
             return {"success": False}
 
         time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
-        temp_id = ''.join(random.sample(string.hexdigits, 8))
-        mongodb_controller.save_problem(temp_id, title, description, owner_username, schema_count_goal, time_created)
-
+        mongodb_controller.save_problem(hit_id, title, description, owner_username, schema_count_goal, time_created)
+        mongodb_controller.set_schema_stage(hit_id=hit_id)
         return {
             "success": True,
             "url": "problems"
@@ -251,7 +273,7 @@ def publish_problem(temp_problem_id):
     hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
     if hit_id == "FAIL":
         return {"success": False}
-    mongodb_controller.set_schema_stage(temp_problem_id, hit_id)
+    mongodb_controller.set_schema_stage(temporary_id=temp_problem_id, hit_id=hit_id)
     return {"success": True, "new_id": hit_id}
 
 
@@ -449,17 +471,21 @@ if __name__ == '__main__':
         },
         '/delete_problem': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/post_new_problem': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
     webapp = HtmlPageLoader()
 
     webapp.post_sign_in = SignInHandler()
-    webapp.save_new_problem = NewProblemHandler()
+    webapp.save_new_problem = SaveNewProblemHandler()
+    webapp.post_new_problem = PostNewProblemHandler()
+    webapp.publish_problem = PublishProblemHandler()
     webapp.post_new_account = NewAccountHandler()
     webapp.get_count_updates = CountUpdatesHandler()
     webapp.post_inspiration_task = InspirationTaskHandler()
-    webapp.publish_problem = PublishProblemHandler()
     webapp.delete_problem = DeleteProblemHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)

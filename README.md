@@ -25,6 +25,7 @@ array of maps (dictionaries). each map has the following format:
   
   //// if stage=unpublished ////
   "edit_page_link": string,
+  "view_page_link": string,
   
   ////    if stage=schema   ////
   "schema_count": int,
@@ -50,7 +51,7 @@ array of maps (dictionaries). each map has the following format:
 also problem_id. see render_schemas_page in server.py
 ```
 
-### /{{problem_title}}/inspiration page parser input
+### /{{problem_slug}}/inspiration page parser input
 ```
 array of maps (dictionaries). each map has the following format:
 {
@@ -68,6 +69,23 @@ array of maps (dictionaries). each map has the following format:
 ```
 
 ### /save_new_problem POST request
+input
+```
+{
+  "title": string,
+  "description": string,
+  "schema_count_goal": int
+}
+```
+output
+```
+{
+  "success": boolean,
+  "url": string,       //only if success=true
+}
+```
+
+### /post_new_problem POST request
 input
 ```
 {
