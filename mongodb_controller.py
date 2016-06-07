@@ -86,14 +86,15 @@ def get_problems_by_user(username):
         }
         if problem[STAGE] == STAGE_UNPUBLISHED:
             for_result[EDIT_PAGE_LINK] = "/{}/edit".format(problem[SLUG])
-            for_result[VIEW_PAGE_LINK] = "/{}/view".format(problem[SLUG])
         elif problem[STAGE] == STAGE_SCHEMA:
             for_result[SCHEMA_COUNT] = problem[SCHEMA_COUNT]
             for_result[SCHEMAS_PAGE_LINK] = "/{}/schemas".format(problem[SLUG])
+            for_result[VIEW_PAGE_LINK] = "/{}/view".format(problem[SLUG])
         elif problem[STAGE] == STAGE_INSPIRATION:
             for_result[INSPIRATION_COUNT] = problem[INSPIRATION_COUNT],
             for_result[INSPIRATION_COUNT_GOAL] = problem[INSPIRATION_COUNT_GOAL]
             for_result[INSPIRATIONS_PAGE_LINK] = "/{}/inspirations".format(problem[SLUG])
+            for_result[VIEW_PAGE_LINK] = "/{}/view".format(problem[SLUG])
 
         result.append(for_result)
         
@@ -268,7 +269,22 @@ def delete_problem(problem_id):
 
 def get_problem_fields(problem_id):
     problem = problems_collection.find_one({PROBLEM_ID: problem_id})
-    return problem[TITLE], problem[DESCRIPTION], problem[SCHEMA_COUNT_GOAL], problem[PROBLEM_ID]
+    return problem[TITLE], problem[DESCRIPTION], problem[SCHEMA_COUNT_GOAL]
+
+
+def edit_problem(problem_dict):
+    problem_id = problem_dict[PROBLEM_ID]
+    query_filter = {PROBLEM_ID: problem_id}
+    new_fields = {
+        DESCRIPTION: problem_dict[DESCRIPTION],
+        SCHEMA_COUNT_GOAL: problem_dict[SCHEMA_COUNT_GOAL]
+    }
+    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
+    if problem_dict[TITLE] != problem[TITLE]:
+        new_fields[TITLE] = problem_dict[TITLE]
+        new_fields[SLUG] = slugify(problem_dict[TITLE])
+    update = {'$set': new_fields}
+    problems_collection.update_one(query_filter, update)
 
 
 def slugify(s):

@@ -25,17 +25,19 @@ array of maps (dictionaries). each map has the following format:
   
   //// if stage=unpublished ////
   "edit_page_link": string,
-  "view_page_link": string,
   
   ////    if stage=schema   ////
   "schema_count": int,
   "schema_count_goal": int,
   "schemas_page_link": string,
+  "view_page_link": string,
   
   //// if stage=inspiration ////
   "inspiration_count": int,
   "inspiration_count_goal": int,
-  "inspirations_page_link"
+  "inspirations_page_link",
+  "view_page_link": string
+
 }
 ```
 
@@ -201,7 +203,7 @@ input
 ```
 {
     "problem_id": string,
-    "count_goal": int,
+    "schema_count_goal": int,
     "title": string,
     "description": string
 }
