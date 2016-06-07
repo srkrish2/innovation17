@@ -116,11 +116,10 @@ def get_problems_by_user(username):
             for_result[SCHEMAS_PAGE_LINK] = "/{}/schemas".format(problem[SLUG])
             for_result[VIEW_PAGE_LINK] = "/{}/view".format(problem[SLUG])
         elif problem[STAGE] == STAGE_INSPIRATION:
-            for_result[INSPIRATION_COUNT] = problem[INSPIRATION_COUNT],
+            for_result[INSPIRATION_COUNT] = problem[INSPIRATION_COUNT]
             for_result[INSPIRATION_COUNT_GOAL] = problem[INSPIRATION_COUNT_GOAL]
             for_result[INSPIRATIONS_PAGE_LINK] = "/{}/inspirations".format(problem[SLUG])
             for_result[VIEW_PAGE_LINK] = "/{}/view".format(problem[SLUG])
-
         result.append(for_result)
         
     return result
