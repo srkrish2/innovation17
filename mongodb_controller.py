@@ -62,13 +62,16 @@ def save_problem(temporary_id, title, description, owner_username, schema_count_
 
 
 def set_schema_stage(temporary_id=None, hit_id=None):
-    query_filter = {PROBLEM_ID: temporary_id}
     new_fields = {
         STAGE: STAGE_SCHEMA,
         SCHEMA_COUNT: 0
     }
+    query_filter = {}
     if temporary_id is not None:
         new_fields[PROBLEM_ID] = hit_id
+        query_filter[PROBLEM_ID] = temporary_id
+    else:
+        query_filter[PROBLEM_ID] = hit_id
     update = {'$set': new_fields}
     problems_collection.update_one(query_filter, update)
 
