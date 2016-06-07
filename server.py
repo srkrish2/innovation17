@@ -171,6 +171,9 @@ class CountUpdatesHandler(object):
                 update_schemas_for_problem(problem_id)
             elif stage == mongodb_controller.STAGE_INSPIRATION:
                 update_inspirations_for_problem(problem_id)
+            elif stage == mongodb_controller.STAGE_IDEA:
+                update_ideas_for_problem(problem_id)
+
         return mongodb_controller.get_counts_for_user(username)
 
 
@@ -193,7 +196,6 @@ def update_schemas_for_problem(hit_id):
 
 
 def update_inspirations_for_problem(problem_id):
-    # get schema ids instead
     for schema_id in mongodb_controller.get_schema_ids(problem_id):
         inspiration_hit_id = mongodb_controller.get_inspiration_hit_id(schema_id)
         inspirations = mturk_controller.get_inspiration_hit_results(inspiration_hit_id)
@@ -214,6 +216,29 @@ def update_inspirations_for_problem(problem_id):
             mongodb_controller.add_inspiration(inspiration)
         if inspiration_count > 0:
             mongodb_controller.update_inspiration_count(problem_id, inspiration_count)
+
+
+def update_ideas_for_problem(problem_id):
+    for inspiration_id in mongodb_controller.get_inspiration_ids(problem_id):
+        idea_hit_id = mongodb_controller.get_idea_hit_id(inspiration_id)
+        ideas = mturk_controller.get_idea_hit_results(idea_hit_id)
+        if ideas == "FAIL":
+            print "mturk_controller.get_idea_hit_results - FAIL!"
+            return
+        ideas_count = 0
+        for idea in ideas:
+            ideas_count += 1
+            # replace time with a readable one and add to DB
+            epoch_time_ms = long(idea.pop(mongodb_controller.TIME_CREATED))
+            epoch_time = epoch_time_ms / 1000.0
+            readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
+            idea[mongodb_controller.TIME_CREATED] = readable_time
+            # add problem/schema id/text
+            idea[mongodb_controller.PROBLEM_ID] = problem_id
+            idea[mongodb_controller.INSPIRATION_ID] = inspiration_id
+            mongodb_controller.add_idea(idea)
+        if ideas_count > 0:
+            mongodb_controller.update_inspiration_count(problem_id, ideas_count)
 
 
 class SaveNewProblemHandler(object):
@@ -243,12 +268,18 @@ def get_problem_parameters():
     description = data["description"]
 
     schema_count_goal = data["schema_count_goal"]
-    if not isinstance(schema_count_goal, int):
-        try:
-            schema_count_goal = int(schema_count_goal)
-        except ValueError:
-            schema_count_goal = -1
+
     return owner_username, title, description, schema_count_goal
+
+
+def convert_input_count(user_input):
+    if not isinstance(user_input, int):
+        try:
+            schema_count_goal = int(user_input)
+        except ValueError:
+            print "Casting fail!!!"
+            schema_count_goal = -1
+    return schema_count_goal
 
 
 class PostNewProblemHandler(object):
@@ -392,23 +423,15 @@ class InspirationTaskHandler(object):
         if not mongodb_controller.does_user_have_problem_with_id(owner_username, problem_id):
             raise cherrypy.HTTPError(403)
 
-        casting_fail = False
-        count_goal = data['count_goal']
-        if not isinstance(count_goal, int):
-            try:
-                count_goal = int(count_goal)
-            except ValueError:
-                casting_fail = False
-        if casting_fail:
-            print "Casting fail!!!"
+        count_goal = convert_input_count(data['count_goal'])
+        if count_goal == -1:
             return {"success": False}
         for schema in mongodb_controller.get_schemas(problem_id):
             hit_id = mturk_controller.create_inspiration_hit(schema[mongodb_controller.SCHEMA_TEXT], count_goal)
-            # add the hit_id to schema
-            mongodb_controller.add_inspiration_hit_id_to_schema(hit_id, schema[mongodb_controller.SCHEMA_ID])
             if hit_id == "FAIL":
                 print "create_inspiration_hit FAILED!! dunno how to handle"
                 continue
+            mongodb_controller.add_inspiration_hit_id_to_schema(hit_id, schema[mongodb_controller.SCHEMA_ID])
         mongodb_controller.set_inspiration_stage(problem_id, count_goal)
         return {"success": True,
                 "url": "problems"}
@@ -422,6 +445,8 @@ class ProblemEditHandler(object):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
+        if not mongodb_controller.does_user_have_problem_with_id(cherrypy.session[USERNAME_KEY], data[PROBLEM_ID]):
+            raise cherrypy.HTTPError(403)
         mongodb_controller.edit_problem(data)
 
 
@@ -430,8 +455,48 @@ class DeleteProblemHandler(object):
 
     @cherrypy.tools.json_in()
     def POST(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
+        if not mongodb_controller.does_user_have_problem_with_id(cherrypy.session[USERNAME_KEY], data[PROBLEM_ID]):
+            raise cherrypy.HTTPError(403)
         mongodb_controller.delete_problem(data[PROBLEM_ID])
+
+
+class IdeaTaskHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def POST(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+
+        owner_username = cherrypy.session[USERNAME_KEY]
+        data = cherrypy.request.json
+        problem_id = data['problem_id']
+
+        if not mongodb_controller.does_user_have_problem_with_id(owner_username, problem_id):
+            raise cherrypy.HTTPError(403)
+
+        count_goal = convert_input_count(data['count_goal'])
+        if count_goal == -1:
+            return {"success": False}
+
+        for inspiration in mongodb_controller.get_inspirations(problem_id):
+            problem_text = mongodb_controller.get_problem_text(inspiration[PROBLEM_ID])
+            link = inspiration[mongodb_controller.INSPIRATION_LINK]
+            explanation = inspiration[mongodb_controller.INSPIRATION_REASON]
+
+            hit_id = mturk_controller.create_idea_hit(problem_text, link, explanation, count_goal)
+            # add the hit_id to schema
+            if hit_id == "FAIL":
+                print "create_idea_hit FAILED!! dunno how to handle"
+                continue
+            mongodb_controller.add_idea_hit_id_to_inspiration(hit_id, inspiration[mongodb_controller.INSPIRATION_ID])
+        mongodb_controller.set_idea_stage(problem_id, count_goal)
+        return {"success": True,
+                "url": "problems"}
 
 
 def render_new_problem():

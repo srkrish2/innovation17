@@ -10,19 +10,13 @@ USER_EMAIL = "email"
 USER_PASSWORD = "password"
 
 OWNER_USERNAME = "owner_username"
-SCHEMA_COUNT = "schema_count"
-SCHEMA_COUNT_GOAL = "schema_count_goal"
 SCHEMAS_PAGE_LINK = "schemas_page_link"
 TIME_CREATED = "time_created"
 PROBLEM_ID = "problem_id"
 STAGE = "stage"
-STAGE_SCHEMA = "schema"
 COUNT = "count"
-STAGE_INSPIRATION = "inspiration"
-STAGE_UNPUBLISHED = "unpublished"
 INSPIRATIONS_PAGE_LINK = "inspirations_page_link"
-INSPIRATION_COUNT = "inspiration_count"
-INSPIRATION_COUNT_GOAL = "inspiration_count_goal"
+
 EDIT_PAGE_LINK = "edit_page_link"
 VIEW_PAGE_LINK = "view_page_link"
 
@@ -33,7 +27,24 @@ WORKER_ID = "worker_id"
 SCHEMA_TIME = "time"
 SCHEMA_ID = "schema_id"
 
+STAGE_UNPUBLISHED = "unpublished"
+STAGE_SCHEMA = "schema"
+STAGE_INSPIRATION = "inspiration"
+STAGE_IDEA = "idea"
+
+SCHEMA_COUNT = "schema_count"
+SCHEMA_COUNT_GOAL = "schema_count_goal"
+INSPIRATION_COUNT = "inspiration_count"
+INSPIRATION_COUNT_GOAL = "inspiration_count_goal"
+IDEA_COUNT = "idea_count"
+IDEA_COUNT_GOAL = "idea_count_goal"
+
+INSPIRATION_LINK = "link"
+INSPIRATION_SUMMARY = "summary"
+INSPIRATION_REASON = "reason"
+
 IDEA_ID = "idea_id"
+IDEA_HIT_ID = "idea_hit_id"
 
 
 def save_problem(temporary_id, title, description, owner_username, schema_count_goal, time_created):
@@ -57,7 +68,7 @@ def set_schema_stage(temporary_id=None, hit_id=None):
         SCHEMA_COUNT: 0
     }
     if temporary_id is not None:
-        new_fields[PROBLEM_ID: hit_id]
+        new_fields[PROBLEM_ID] = hit_id
     update = {'$set': new_fields}
     problems_collection.update_one(query_filter, update)
 
@@ -68,6 +79,17 @@ def set_inspiration_stage(problem_id, count_goal):
         STAGE: STAGE_INSPIRATION,
         INSPIRATION_COUNT: 0,
         INSPIRATION_COUNT_GOAL: count_goal
+    }
+    update = {'$set': new_fields}
+    problems_collection.update_one(query_filter, update)
+
+
+def set_idea_stage(problem_id, count_goal):
+    query_filter = {PROBLEM_ID: problem_id}
+    new_fields = {
+        STAGE: STAGE_IDEA,
+        IDEA_COUNT: 0,
+        IDEA_COUNT_GOAL: count_goal
     }
     update = {'$set': new_fields}
     problems_collection.update_one(query_filter, update)
@@ -161,6 +183,11 @@ def add_inspiration(inspiration):
         inspirations_collection.insert_one(inspiration)
 
 
+def add_idea(idea):
+    if ideas_collection.find_one(idea) is None:
+        ideas_collection.insert_one(idea)
+
+
 def new_account(username, email, password):
     new_user = {
         USER_USERNAME: username,
@@ -215,6 +242,10 @@ def get_counts_for_user(username):
             count = problem[SCHEMA_COUNT]
         elif stage == STAGE_INSPIRATION:
             count = problem[INSPIRATION_COUNT]
+        elif stage == STAGE_IDEA:
+            count = problem[IDEA_COUNT]
+        else:
+            count = 0
         for_result = {
             PROBLEM_ID: problem[PROBLEM_ID],
             COUNT: count
@@ -234,14 +265,25 @@ def get_schema_ids(problem_id):
     return result
 
 
+def get_inspiration_ids(problem_id):
+    result = []
+    for inspiration in inspirations_collection.find({PROBLEM_ID: problem_id}):
+        result.append(inspiration[INSPIRATION_ID])
+    return result
+
+
 def get_inspiration_hit_id(schema_id):
-    return schemas_collection.find_one({SCHEMA_ID: schema_id})[INSPIRATION_ID]
+    return schemas_collection.find_one({SCHEMA_ID: schema_id})[INSPIRATION_HIT_ID]
+
+
+def get_idea_hit_id(inspiration_id):
+    return inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})[IDEA_HIT_ID]
 
 
 def add_inspiration_hit_id_to_schema(hit_id, schema_id):
     query_filter = {SCHEMA_ID: schema_id}
     new_fields = {
-        INSPIRATION_ID: hit_id
+        INSPIRATION_HIT_ID: hit_id
     }
     update = {'$set': new_fields}
     schemas_collection.update_one(query_filter, update)
@@ -287,6 +329,15 @@ def edit_problem(problem_dict):
     problems_collection.update_one(query_filter, update)
 
 
+def add_idea_hit_id_to_inspiration(hit_id, inspiration_id):
+    query_filter = {INSPIRATION_ID: inspiration_id}
+    new_fields = {
+        IDEA_HIT_ID: hit_id
+    }
+    update = {'$set': new_fields}
+    inspirations_collection.update_one(query_filter, update)
+
+
 def slugify(s):
     s = s.lower()
     for c in [' ', '-', '.', '/']:
@@ -307,3 +358,4 @@ users_collection = db.users
 problems_collection = db.problems
 schemas_collection = db.schemas
 inspirations_collection = db.inspirations
+ideas_collection = db.ideas
