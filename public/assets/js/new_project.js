@@ -1,6 +1,4 @@
 $(init);
-
-var SAVE_URL = "/save_new_problem", POST_URL='/post_new_problem';
 var SELECTOR = ".ui.form";
 
 var VALIDATION_RULES = {
@@ -28,9 +26,16 @@ var VALIDATION_RULES = {
                 prompt : 'Please choose a category'
             }
             ]
+        },
+        schemagoal: {
+            rules: [
+            {
+                type   : 'empty',
+                prompt : 'Please enter the number of schemas that you want to gather for {name}'
+            }
+            ]
         }
-    },
-    onSuccess: submitForm
+    }
 };
 
 
@@ -51,7 +56,7 @@ function init() {
                 REF = $('.new-tag.label')[InsIdx];
             }
             $("<div class = 'ui olive new-tag label'>" + tag
-             + " <i class='delete icon'></i></div>").insertAfter(REF);
+               + " <i class='delete icon'></i></div>").insertAfter(REF);
             $(this).val('');
         }
     });
@@ -60,24 +65,31 @@ function init() {
     });
 }
 
-function submitForm(e) {
-    e.preventDefault();
-    $('.ui.loader.submit-loader').addClass('active');
-    var id = $('.problem_id').innerHTML||null;
-    var title = $(SELECTOR).form("get value", "title");
-    var description = $(SELECTOR).form("get value", "description");
-    var schemagoal = $(SELECTOR).form("get value", "schemagoal");
+$(document).on('click','.ui.save, .ui.submit',function(e){
+    // e.preventDefault();
+    $(SELECTOR).form('validate form');
+    if($(SELECTOR).form('is valid')){
+        var id = $('.problem_id').innerHTML||null;
+        var title = $(SELECTOR).form("get value", "title");
+        var description = $(SELECTOR).form("get value", "description");
+        var schemagoal = $(SELECTOR).form("get value", "schemagoal");
 
-    var data = {
-        "id": id,
-        "title": title,
-        "description": description,
-        "schema_count_goal": schemagoal
-    }
-    if($(e.currentTarget).hasClass('save')){
+        var data = {
+            "id": id,
+            "title": title,
+            "description": description,
+            "schema_count_goal": schemagoal
+        };
+        var URL_link = "/post_new_problem";
+
+        if($(e.currentTarget).hasClass('save')){
+            URL_link='/save_new_problem';
+            $('.ui.loader.save-loader').addClass('active');
+        }
+        else $('.ui.loader.submit-loader').addClass('active');
         $.ajax({
             type : "POST",
-            url: SAVE_URL,
+            url: URL_link,
             data: JSON.stringify(data),
             contentType: 'application/json; charset=utf-8',
             success : function(data) {
@@ -87,34 +99,11 @@ function submitForm(e) {
                 } else {
                     console.log("UNEXPECTED ERROR")
                 }
-
             },
-
-            error : function(e) {
-                console.log("ERROR: ", e);
-            }
-        });
-    }
-    else {
-        $.ajax({
-            type : "POST",
-            url: POST_URL,
-            data: JSON.stringify(data),
-            contentType: 'application/json; charset=utf-8',
-            success : function(data) {
-                var success = data["success"]
-                if (success) {
-                    window.location.replace('/'+data['url']);
-                } else {
-                    console.log("UNEXPECTED ERROR")
-                }
-                
-            },
-
             error : function(e) {
                 console.log("ERROR: ", e);
             }
         });
     }
     
-}
+});
