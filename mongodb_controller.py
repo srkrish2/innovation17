@@ -268,12 +268,7 @@ def delete_problem(problem_id):
 
 def get_problem_fields(problem_id):
     problem = problems_collection.find_one({PROBLEM_ID: problem_id})
-    return {
-        TITLE: problem[TITLE],
-        DESCRIPTION: problem[DESCRIPTION],
-        SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
-        PROBLEM_ID: problem[PROBLEM_ID]
-    }
+    return problem[TITLE], problem[DESCRIPTION], problem[SCHEMA_COUNT_GOAL], problem[PROBLEM_ID]
 
 
 def slugify(s):

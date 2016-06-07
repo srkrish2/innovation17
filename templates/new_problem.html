@@ -10,9 +10,7 @@
           <h3 class="title italic content">
             {% if problem_id %}
             <input type="text" name="title" value={{title}}
-            {% if operation=="view" %}
-            disabled
-            {% endif %}
+            
             >
             {% else %}
             <input type="text" name="title" placeholder="Enter title...">
@@ -24,9 +22,7 @@
     <div class="field">
       {% if problem_id %}
       <textarea type="text" name="description" value={{description}} 
-      {% if operation=="view" %}
-      disabled
-      {% endif %}
+      
       ></textarea>
       {% else %}
       <textarea type="text" name="description" placeholder="Project description..."></textarea>
@@ -62,10 +58,8 @@
             Open File</label>
             <input type="file" id="file" style="display:none"> -->
             {% if problem_id %}
-            <input type="text" name="schemagoal" id="schemagoal" value={{schema_count_goal}}
-            {% if operation=="view" %}
-            disabled
-            {% endif %}
+            <input type="text" name="schemagoal" id="schemagoal" value={{count_goal}}
+          
             >
             {% else %}
             <input type="text" name="schemagoal" id="schemagoal" placeholder="Target number of schemas to get">
