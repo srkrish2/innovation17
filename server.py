@@ -128,7 +128,7 @@ def render_inspirations_page(problem_slug):
 def render_edit_page(problem_slug):
     if check_problem_access(problem_slug) is True:
         problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-        [title, description, count_goal, problem_id] = mongodb_controller.get_problem_fields(problem_id)
+        [title, description, count_goal] = mongodb_controller.get_problem_fields(problem_id)
         template = env.get_template('new_problem.html')
         print count_goal, problem_id, "this is id!"
         return template.render(count_goal=count_goal, problem_id=problem_id, title=title,
@@ -138,7 +138,7 @@ def render_edit_page(problem_slug):
 def render_view_page(problem_slug):
     if check_problem_access(problem_slug) is True:
         problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-        [title, description, count_goal, problem_id] = mongodb_controller.get_problem_fields(problem_id)
+        [title, description, count_goal] = mongodb_controller.get_problem_fields(problem_id)
         template = env.get_template('new_problem.html')
         return template.render(count_goal=count_goal, problem_id=problem_id, title=title,
                                operation="view", description=description)
@@ -387,8 +387,6 @@ class InspirationTaskHandler(object):
 
         owner_username = cherrypy.session[USERNAME_KEY]
         data = cherrypy.request.json
-        print "THIS IS IT!!!!!"
-        print data
         problem_id = data['problem_id']
 
         if not mongodb_controller.does_user_have_problem_with_id(owner_username, problem_id):
@@ -419,11 +417,12 @@ class InspirationTaskHandler(object):
 class ProblemEditHandler(object):
     exposed = True
 
-    @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
-        print data
+        mongodb_controller.edit_problem(data)
 
 
 class DeleteProblemHandler(object):
@@ -502,7 +501,7 @@ if __name__ == '__main__':
         '/post_new_problem': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
-        '/problem_edit_handler': {
+        '/post_problem_edit': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
