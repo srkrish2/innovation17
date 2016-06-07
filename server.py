@@ -45,11 +45,11 @@ class HtmlPageLoader(object):
 
     @cherrypy.expose
     def edit(self, problem_slug):
-        render_edit_page(problem_slug)
+        return render_edit_page(problem_slug)
 
     @cherrypy.expose
     def view(self, problem_slug):
-        render_view_page(problem_slug)
+        return render_view_page(problem_slug)
 
     @cherrypy.expose
     def schemas(self, problem_slug):
