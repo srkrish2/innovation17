@@ -19,7 +19,8 @@
                 $('.ui.button.delete').addClass('hidden');
                 $('.ui.button.publish').addClass('hidden');
                 $('.ui.button.view').removeClass('hidden');
-                if(sdata['success'])$(e.currentTarget.parentElement.parentElement).attr('class',sdata['new_id'])
+                if(sdata['success'])$(e.currentTarget.parentElement.parentElement).attr('class',sdata['new_id']);
+                makePostRequest();
                 ///$('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";
             }
         });

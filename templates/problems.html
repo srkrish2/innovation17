@@ -24,17 +24,16 @@
           <td>{{problem.time_created}}</td>
           <td>
             {% if problem.stage=='unpublished' %}
-            <div class="ui button edit" href={{""~problem.problem_id~"/edit"}}>Edit</div>
+            <div class="ui button edit" href={{""~problem.edit_page_link~"/edit"}}>Edit</div>
             <div class="ui button delete">Delete</div>
             <div class="ui button publish">Publish</div>
-            <div class="ui button view hidden" href={{""~problem.problem_id~"/view"}}>View</div>
+            <div class="ui button view hidden" href={{""~problem.view_page_link~"/view"}}>View</div>
             {% else %}
-            <div class="ui button hidden" href={{""~problem.problem_id~"/edit"}}>Edit</div>
+            <div class="ui button hidden" href={{""~problem.edit_page_link~"/edit"}}>Edit</div>
             <div class="ui button delete hidden">Delete</div>
             <div class="ui button publish hidden">Publish</div>
-            <div class="ui button view" href={{""~problem.problem_id~"/view"}}>View</div>
+            <div class="ui button view" href={{""~problem.view_page_link~"/view"}}>View</div>
             {% endif %}
-
           </td>
           <td>
             {% if problem.stage=='schema' or 'inspiration' %}

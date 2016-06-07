@@ -185,4 +185,23 @@ input
     "problem_id": string,
     "count_goal": int
 }
+
+### /problem_slug/edit GET request
+output
 ```
+{
+    "problem_id": string,
+    "count_goal": int,
+    "title": string,
+    "description": string
+}
+
+### /problem_slug/update POST request
+input
+```
+{
+    "problem_id": string,
+    "count_goal": int,
+    "title": string,
+    "description": string
+}
