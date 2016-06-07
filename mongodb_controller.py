@@ -24,6 +24,7 @@ INSPIRATIONS_PAGE_LINK = "inspirations_page_link"
 INSPIRATION_COUNT = "inspiration_count"
 INSPIRATION_COUNT_GOAL = "inspiration_count_goal"
 EDIT_PAGE_LINK = "edit_page_link"
+VIEW_PAGE_LINK = "view_page_link"
 
 SCHEMA_TEXT = "text"
 INSPIRATION_HIT_ID = "inspiration_hit_id"
@@ -50,13 +51,14 @@ def save_problem(temporary_id, title, description, owner_username, schema_count_
     problems_collection.insert_one(problem)
 
 
-def set_schema_stage(temporary_id, new_problem_id):
+def set_schema_stage(temporary_id=None, hit_id=None):
     query_filter = {PROBLEM_ID: temporary_id}
     new_fields = {
         STAGE: STAGE_SCHEMA,
-        SCHEMA_COUNT: 0,
-        PROBLEM_ID: new_problem_id
+        SCHEMA_COUNT: 0
     }
+    if temporary_id is not None:
+        new_fields[PROBLEM_ID: hit_id]
     update = {'$set': new_fields}
     problems_collection.update_one(query_filter, update)
 
@@ -85,6 +87,7 @@ def get_problems_by_user(username):
         }
         if problem[STAGE] == STAGE_UNPUBLISHED:
             for_result[EDIT_PAGE_LINK] = "/{}/edit".format(problem[SLUG])
+            for_result[VIEW_PAGE_LINK] = "/{}/view".format(problem[SLUG])
         elif problem[STAGE] == STAGE_SCHEMA:
             for_result[SCHEMA_COUNT] = problem[SCHEMA_COUNT]
             for_result[SCHEMAS_PAGE_LINK] = "/{}/schemas".format(problem[SLUG])

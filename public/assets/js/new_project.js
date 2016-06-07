@@ -75,6 +75,7 @@ function submitForm(e) {
         "schema_count_goal": schemagoal
     }
     if($(e.currentTarget).hasClass('save')){
+        console.log("Hello?")
         $.ajax({
             type : "POST",
             url: SAVE_URL,
@@ -98,7 +99,7 @@ function submitForm(e) {
     else {
         $.ajax({
             type : "POST",
-            url: POST_URL,
+            url: SAVE_URL,
             data: JSON.stringify(data),
             contentType: 'application/json; charset=utf-8',
             success : function(data) {
