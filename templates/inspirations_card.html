@@ -6,10 +6,12 @@
 		{% for inspiration in inspirations %}
 		<div class="item">
 			<div class="image"><img src={{inspiration.link}} alt=""></div>
-			<div class="content"></div>
-			<a href="" class="header">{{inspiration.summary}}</a>
-			<div class="description">{{inspiration.reason}}</div>
-			<div class="extra">blalllla</div>
+			<div class="content">
+				<a href="" class="header">{{inspiration.summary}}</a>
+				<div class="description">{{inspiration.reason}}</div>
+				<div class="extra"><a href="http://www.inc.com/jeff-haden/75-inspiring-motivational-quotes-for-being-happier.html" target="_blank">Source</a></div>
+			</div>
+			
 		</div>
 		{% endfor %}
 	</div>

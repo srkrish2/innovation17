@@ -81,8 +81,11 @@ $(document).on('click','.ui.save, .ui.submit',function(e){
             "schema_count_goal": schemagoal
         };
         var URL_link = "/post_new_problem";
-
-        if($(e.currentTarget).hasClass('save')){
+        if($('.problem_id').innerHTML!=''){
+            URL_link = "/post_problem_edit";
+            $('.ui.loader.save-loader').addClass('active');
+        }
+        else if($(e.currentTarget).hasClass('save')){
             URL_link='/save_new_problem';
             $('.ui.loader.save-loader').addClass('active');
         }
