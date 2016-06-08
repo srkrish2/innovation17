@@ -22,20 +22,19 @@ array of maps (dictionaries). each map has the following format:
   "problem_id": string,
   "time_created": string,
   "stage": string,
+  "schema_count": int,
+  "schema_count_goal": int,
+  "inspiration_count": int,
+  "inspiration_count_goal": int,
   
   //// if stage=unpublished ////
   "edit_page_link": string,
   
-  ////    if stage=schema   ////
-  "schema_count": int,
-  "schema_count_goal": int,
   "schemas_page_link": string,
   "view_page_link": string,
   
   //// if stage=inspiration ////
-  "inspiration_count": int,
-  "inspiration_count_goal": int,
-  "inspirations_page_link",
+  "inspirations_page_link": string,
   "view_page_link": string
 
 }
@@ -72,6 +71,7 @@ array of maps (dictionaries). each map has the following format:
     "worker_id": string,
     "inspiration_id": string,
     "link": string,
+    "additional_link": string,
     "problem_id": string,
     "problem_text": string,
     "schema_id":string,

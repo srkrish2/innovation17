@@ -135,7 +135,7 @@ def get_inspiration_hit_results(hit_id):
         worker_id = jar_output_file.readline().rstrip()
         epoch_time_ms_string = jar_output_file.readline().rstrip()
         answers = []
-        for j in xrange(3):
+        for j in xrange(4):
             jar_output_file.readline()
             answer_text = ""
             line = jar_output_file.readline().rstrip()
@@ -147,8 +147,9 @@ def get_inspiration_hit_results(hit_id):
 
         inspiration = {
             mongodb_controller.INSPIRATION_LINK: answers[0],
-            mongodb_controller.INSPIRATION_SUMMARY: answers[1],
-            mongodb_controller.INSPIRATION_REASON: answers[2],
+            mongodb_controller.INSPIRATION_ADDITIONAL: answers[1],
+            mongodb_controller.INSPIRATION_SUMMARY: answers[2],
+            mongodb_controller.INSPIRATION_REASON: answers[3],
             mongodb_controller.TIME_CREATED: epoch_time_ms_string,
             mongodb_controller.WORKER_ID: worker_id,
             mongodb_controller.INSPIRATION_ID: assignment_id
