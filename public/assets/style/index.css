@@ -80,3 +80,12 @@ div.ui.modal.launchnext {
 div.hidden {
   display: none!important;
 }
+
+h3.fluid{
+  margin: 0 auto;
+  width: 100%;
+}
+
+input.fluid {
+  width:100%!important;
+}

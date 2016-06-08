@@ -78,7 +78,21 @@ array of maps (dictionaries). each map has the following format:
     "schema_text": string
 }
 ```
-
+### /{{problem_slug}}/ideas page parser input
+```
+array of maps (dictionaries). each map has the following format:
+{
+    "idea_id": string,
+    "title": string,
+    "time": "19 May 2016 12:19 PM",
+    "content": string,
+    "schema_text": string,
+    "problem_text":strng,
+    "worker_id": string,
+    "schema_id": string
+}
+also problem_id. see render_schemas_page in server.py
+```
 ### /save_new_problem POST request
 input
 ```
@@ -206,5 +220,14 @@ input
     "schema_count_goal": int,
     "title": string,
     "description": string
+}
+```
+
+### /post_idea_task POST request
+input 
+```
+{
+    "problem_id":string,
+    "count_goal": int
 }
 ```

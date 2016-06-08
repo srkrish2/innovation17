@@ -69,27 +69,31 @@ $(document).on('click','.ui.save, .ui.submit',function(e){
     // e.preventDefault();
     $(SELECTOR).form('validate form');
     if($(SELECTOR).form('is valid')){
-        var id = $('.problem_id').innerHTML||null;
+        var id = $('.problem_id').html()||null;
         var title = $(SELECTOR).form("get value", "title");
         var description = $(SELECTOR).form("get value", "description");
         var schemagoal = $(SELECTOR).form("get value", "schemagoal");
 
         var data = {
-            "id": id,
+            "problem_id": id,
             "title": title,
             "description": description,
             "schema_count_goal": schemagoal
         };
-        var URL_link = "/post_new_problem";
-        if($('.problem_id').innerHTML!=''){
-            URL_link = "/post_problem_edit";
-            $('.ui.loader.save-loader').addClass('active');
+        var URL_link = null;
+        if($(e.currentTarget).hasClass('save')){
+            if($('.problem_id').html()!=''){ //save an existing problem
+                URL_link = "/post_problem_edit";
+                $('.ui.loader.save-loader').addClass('active');
+            }
+            else {
+                URL_link = "/save_new_problem";//save a new_problem
+            }
         }
-        else if($(e.currentTarget).hasClass('save')){
-            URL_link='/save_new_problem';
-            $('.ui.loader.save-loader').addClass('active');
+        else {
+            URL_link = "/post_new_problem";//post - make it public
+            $('.ui.loader.submit-loader').addClass('active');
         }
-        else $('.ui.loader.submit-loader').addClass('active');
         $.ajax({
             type : "POST",
             url: URL_link,

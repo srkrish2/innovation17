@@ -6,16 +6,16 @@
     <span class='problem_id hidden'>{{""~problem_id|default('')~""}}</span>
     <div class="field">
       <label class="title">
-        <div class="ui transparent input">
-          <h3 class="title italic content">
+        <div class="ui transparent input fluid">
+          <h3 class="title fluid italic">
             {% if problem_id %}
-            <input type="text" name="title" value={{title}}
+            <input type="text" name="title" class="fluid" value="{{title}}"
             {% if operation=="view" %}
             disabled
             {% endif %}
             >
             {% else %}
-            <input type="text" name="title" placeholder="Enter title...">
+            <input type="text" name="title" class="fluid" placeholder="Enter title...">
             {% endif %}
           </h3>
         </div>

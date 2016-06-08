@@ -6,26 +6,25 @@
 		<table class="ui cell padded table">
 			<thead>
 				<tr>
-					<td>Summary</td>
-					<td>Reason</td>
-					<td>Created</td>
-					<td>Illustration</td>
+					<td>Title</td>
+					<td>Content</td>
 					<td>Schema</td>
-					<td>Action</td>
+					<td>Problem</td>
+					<td>Action/Feedback</td>
 				</tr>
 			</thead>
 			<tbody>
-				{% for inspiration in inspirations %}
-				<tr class={{'inspiration-id-'~inspiration.inspiration_id}}>
+				{% for idea in ideas %}
+				<tr class={{idea.idea_id}}>
 					<td>
 						<h2 class="ui aligned sortable centered header">
-							<a href="get_schema" class="inspiration-content">{{inspiration.summary}}</a>
+							<a href="get_schema" class="idea-content">{{idea.title}}</a>
 						</h2>
 					</td>
-					<td>{{inspiration.reason}}</td>
-					<td>{{inspiration.time_created}}</td>
-					<td><img src={{inspiration.link}} alt=""></div></td>
-					<td>{{inspiration.schema_text}}</td>
+					<td>{{idea.content}}</td>
+					<td>{{idea.problem_text}}</td>
+					<td><img src={{idea.link}} alt=""></div></td>
+					<td>{{idea.schema_text}}</td>
 					<td><div class="ui button ac">Accept</div>
 						<div class="ui button red rj">Reject</div>
 					</td>

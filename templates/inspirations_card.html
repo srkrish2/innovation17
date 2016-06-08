@@ -11,9 +11,17 @@
 				<div class="description">{{inspiration.reason}}</div>
 				<div class="extra"><a href="http://www.inc.com/jeff-haden/75-inspiring-motivational-quotes-for-being-happier.html" target="_blank">Source</a></div>
 			</div>
+			<div class="action">
+				<div class="ui button ac">Accept</div>
+				<div class="ui button red rj">Reject</div>
+			</div>
 			
 		</div>
 		{% endfor %}
+		<div class="ui button">Accept all</div>
+		<div class="ui red button">Reject all</div>
+		<div class="ui teal button">Proceed</div>
 	</div>
 </div>
+<script src="/static/assets/js/inspirations.js"></script>
 {% endblock %}
