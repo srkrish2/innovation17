@@ -130,7 +130,6 @@ def render_edit_page(problem_slug):
         problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
         [title, description, count_goal] = mongodb_controller.get_problem_fields(problem_id)
         template = env.get_template('new_problem.html')
-        print description, "this is id!"
         return template.render(count_goal=count_goal, problem_id=problem_id, title=title,
                                operation="edit", description=description)
 
@@ -173,10 +172,7 @@ class CountUpdatesHandler(object):
                 update_inspirations_for_problem(problem_id)
             elif stage == mongodb_controller.STAGE_IDEA:
                 update_ideas_for_problem(problem_id)
-
-        result = mongodb_controller.get_counts_for_user(username)
-        print result
-        return result
+        return mongodb_controller.get_counts_for_user(username)
 
 
 def update_schemas_for_problem(hit_id):
@@ -240,7 +236,7 @@ def update_ideas_for_problem(problem_id):
             idea[mongodb_controller.INSPIRATION_ID] = inspiration_id
             mongodb_controller.add_idea(idea)
         if ideas_count > 0:
-            mongodb_controller.update_inspiration_count(problem_id, ideas_count)
+            mongodb_controller.update_idea_count(problem_id, ideas_count)
 
 
 class SaveNewProblemHandler(object):
@@ -570,6 +566,9 @@ if __name__ == '__main__':
         },
         '/post_problem_edit': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/post_idea_task': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -584,6 +583,7 @@ if __name__ == '__main__':
     webapp.post_inspiration_task = InspirationTaskHandler()
     webapp.delete_problem = DeleteProblemHandler()
     webapp.post_problem_edit = ProblemEditHandler()
+    webapp.post_idea_task = IdeaTaskHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 

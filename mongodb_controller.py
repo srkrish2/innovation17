@@ -10,15 +10,16 @@ USER_EMAIL = "email"
 USER_PASSWORD = "password"
 
 OWNER_USERNAME = "owner_username"
-SCHEMAS_PAGE_LINK = "schemas_page_link"
 TIME_CREATED = "time_created"
 PROBLEM_ID = "problem_id"
 STAGE = "stage"
 COUNT = "count"
-INSPIRATIONS_PAGE_LINK = "inspirations_page_link"
 
 EDIT_PAGE_LINK = "edit_page_link"
 VIEW_PAGE_LINK = "view_page_link"
+SCHEMAS_PAGE_LINK = "schemas_page_link"
+INSPIRATIONS_PAGE_LINK = "inspirations_page_link"
+IDEAS_PAGE_LINK = "ideas_page_link"
 
 SCHEMA_TEXT = "text"
 INSPIRATION_HIT_ID = "inspiration_hit_id"
@@ -40,6 +41,7 @@ IDEA_COUNT = "idea_count"
 IDEA_COUNT_GOAL = "idea_count_goal"
 
 INSPIRATION_LINK = "link"
+INSPIRATION_ADDITIONAL = "additional_link"
 INSPIRATION_SUMMARY = "summary"
 INSPIRATION_REASON = "reason"
 
@@ -53,10 +55,15 @@ def save_problem(temporary_id, title, description, owner_username, schema_count_
         TITLE: title,
         DESCRIPTION: description,
         OWNER_USERNAME: owner_username,
-        SCHEMA_COUNT_GOAL: schema_count_goal,
         SLUG: slugify(title),
         TIME_CREATED: time_created,
-        STAGE: STAGE_UNPUBLISHED
+        STAGE: STAGE_UNPUBLISHED,
+        SCHEMA_COUNT: 0,
+        SCHEMA_COUNT_GOAL: schema_count_goal,
+        INSPIRATION_COUNT: 0,
+        INSPIRATION_COUNT_GOAL: 0,
+        IDEA_COUNT: 0,
+        IDEA_COUNT_GOAL: 0
     }
     problems_collection.insert_one(problem)
 
@@ -64,7 +71,6 @@ def save_problem(temporary_id, title, description, owner_username, schema_count_
 def set_schema_stage(temporary_id=None, hit_id=None):
     new_fields = {
         STAGE: STAGE_SCHEMA,
-        SCHEMA_COUNT: 0
     }
     query_filter = {}
     if temporary_id is not None:
@@ -80,7 +86,6 @@ def set_inspiration_stage(problem_id, count_goal):
     query_filter = {PROBLEM_ID: problem_id}
     new_fields = {
         STAGE: STAGE_INSPIRATION,
-        INSPIRATION_COUNT: 0,
         INSPIRATION_COUNT_GOAL: count_goal
     }
     update = {'$set': new_fields}
@@ -91,7 +96,6 @@ def set_idea_stage(problem_id, count_goal):
     query_filter = {PROBLEM_ID: problem_id}
     new_fields = {
         STAGE: STAGE_IDEA,
-        IDEA_COUNT: 0,
         IDEA_COUNT_GOAL: count_goal
     }
     update = {'$set': new_fields}
@@ -106,20 +110,19 @@ def get_problems_by_user(username):
             TITLE: problem[TITLE],
             DESCRIPTION: problem[DESCRIPTION],
             STAGE: problem[STAGE],
+            TIME_CREATED: problem[TIME_CREATED],
+            EDIT_PAGE_LINK: "/{}/edit".format(problem[SLUG]),
+            SCHEMAS_PAGE_LINK:"/{}/schemas".format(problem[SLUG]),
+            IDEAS_PAGE_LINK:"/{}/ideas".format(problem[SLUG]),
+            INSPIRATIONS_PAGE_LINK: "/{}/inspirations".format(problem[SLUG]),
+            VIEW_PAGE_LINK: "/{}/view".format(problem[SLUG]),
+            SCHEMA_COUNT: problem[SCHEMA_COUNT],
             SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
-            TIME_CREATED: problem[TIME_CREATED]
+            INSPIRATION_COUNT: problem[INSPIRATION_COUNT],
+            INSPIRATION_COUNT_GOAL: problem[INSPIRATION_COUNT_GOAL],
+            IDEA_COUNT: problem[IDEA_COUNT],
+            IDEA_COUNT_GOAL: problem[IDEA_COUNT_GOAL]
         }
-        if problem[STAGE] == STAGE_UNPUBLISHED:
-            for_result[EDIT_PAGE_LINK] = "/{}/edit".format(problem[SLUG])
-        elif problem[STAGE] == STAGE_SCHEMA:
-            for_result[SCHEMA_COUNT] = problem[SCHEMA_COUNT]
-            for_result[SCHEMAS_PAGE_LINK] = "/{}/schemas".format(problem[SLUG])
-            for_result[VIEW_PAGE_LINK] = "/{}/view".format(problem[SLUG])
-        elif problem[STAGE] == STAGE_INSPIRATION:
-            for_result[INSPIRATION_COUNT] = problem[INSPIRATION_COUNT]
-            for_result[INSPIRATION_COUNT_GOAL] = problem[INSPIRATION_COUNT_GOAL]
-            for_result[INSPIRATIONS_PAGE_LINK] = "/{}/inspirations".format(problem[SLUG])
-            for_result[VIEW_PAGE_LINK] = "/{}/view".format(problem[SLUG])
         result.append(for_result)
     return result
 
@@ -171,6 +174,12 @@ def update_schema_count(problem_id, schema_count):
 def update_inspiration_count(problem_id, inspiration_count):
     query_filter = {PROBLEM_ID: problem_id}
     update = {'$set': {INSPIRATION_COUNT: inspiration_count}}
+    problems_collection.update_one(query_filter, update)
+
+
+def update_idea_count(problem_id, inspiration_count):
+    query_filter = {PROBLEM_ID: problem_id}
+    update = {'$set': {IDEA_COUNT: inspiration_count}}
     problems_collection.update_one(query_filter, update)
 
 
@@ -236,20 +245,11 @@ def get_users_problem_ids(username):
 def get_counts_for_user(username):
     result = []
     for problem in problems_collection.find({OWNER_USERNAME: username}):
-        stage = problem[STAGE]
-        if stage == STAGE_UNPUBLISHED:
-            continue
-        elif stage == STAGE_SCHEMA:
-            count = problem[SCHEMA_COUNT]
-        elif stage == STAGE_INSPIRATION:
-            count = problem[INSPIRATION_COUNT]
-        elif stage == STAGE_IDEA:
-            count = problem[IDEA_COUNT]
-        else:
-            count = 0
         for_result = {
             PROBLEM_ID: problem[PROBLEM_ID],
-            COUNT: count
+            SCHEMA_COUNT: problem[SCHEMA_COUNT],
+            INSPIRATION_COUNT: problem[INSPIRATION_COUNT],
+            IDEA_COUNT: problem[IDEA_COUNT]
         }
         result.append(for_result)
     return result
