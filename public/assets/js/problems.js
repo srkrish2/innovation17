@@ -48,7 +48,6 @@ function makePostRequest(){
         type: "GET",
         url: '/get_count_updates',
         success:function(sdata){
-            console.log('data = '+sdata[0]['count']);
             for (var i= 0;i<sdata.length; i++){
                 $('tr.'+sdata[i]['problem_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i> "+sdata[i]['count'];
             }
