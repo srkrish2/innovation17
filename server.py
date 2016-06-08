@@ -60,6 +60,10 @@ class HtmlPageLoader(object):
         return render_inspirations_page(problem_slug)
 
     @cherrypy.expose
+    def ideas(self, problem_slug):
+        return render_ideas_page(problem_slug)
+
+    @cherrypy.expose
     def log_out(self):
         cherrypy.session.pop(USERNAME_KEY)
         return render_homepage()
@@ -123,6 +127,24 @@ def render_inspirations_page(problem_slug):
             inspiration["schema_text"] = schema_text
             inspiration_dicts_list.append(inspiration)
         return template.render(inspirations=inspiration_dicts_list)
+
+
+def render_ideas_page(problem_slug):
+    if check_problem_access(problem_slug) is True:
+        problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
+        ideas = mongodb_controller.get_ideas(problem_id)
+        template = env.get_template('ideas.html')
+        ideas_dicts_list = []
+        for idea in ideas:
+            problem_text = mongodb_controller.get_problem_text(idea[mongodb_controller.PROBLEM_ID])
+            inspiration_id = idea[mongodb_controller.INSPIRATION_ID]
+            schema_text = mongodb_controller.get_schema_text_from_inspiration(inspiration_id)
+            inspiration_summary = mongodb_controller.get_inspiration_summary(inspiration_id)
+            idea["problem_text"] = problem_text
+            idea["schema_text"] = schema_text
+            idea["inspiration_text"] = inspiration_summary
+            ideas_dicts_list.append(idea)
+        return template.render(ideas=ideas_dicts_list)
 
 
 def render_edit_page(problem_slug):
@@ -439,6 +461,7 @@ class ProblemEditHandler(object):
     exposed = True
 
     @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def POST(self):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
@@ -446,6 +469,8 @@ class ProblemEditHandler(object):
         if not mongodb_controller.does_user_have_problem_with_id(cherrypy.session[USERNAME_KEY], data[PROBLEM_ID]):
             raise cherrypy.HTTPError(403)
         mongodb_controller.edit_problem(data)
+        return {"success": True,
+                "url": "problems"}
 
 
 class DeleteProblemHandler(object):

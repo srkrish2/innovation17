@@ -302,6 +302,15 @@ def get_schema_text(schema_id):
     return schemas_collection.find_one({SCHEMA_ID: schema_id})[SCHEMA_TEXT]
 
 
+def get_schema_text_from_inspiration(inspiration_id):
+    schema_id = inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})[SCHEMA_ID]
+    return get_schema_text(schema_id)
+
+
+def get_inspiration_summary(inspiration_id):
+    return inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})[INSPIRATION_SUMMARY]
+
+
 def get_schema_count_goal(temp_problem_id):
     return problems_collection.find_one({PROBLEM_ID: temp_problem_id})[SCHEMA_COUNT_GOAL]
 

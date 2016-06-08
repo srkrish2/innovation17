@@ -61,7 +61,7 @@ array of maps (dictionaries). each map has the following format:
 also problem_id. see render_schemas_page in server.py
 ```
 
-### /{{problem_slug}}/inspiration page parser input
+### /{{problem_slug}}/inspirations page parser input
 ```
 array of maps (dictionaries). each map has the following format:
 {
@@ -78,21 +78,23 @@ array of maps (dictionaries). each map has the following format:
     "schema_text": string
 }
 ```
+
 ### /{{problem_slug}}/ideas page parser input
 ```
 array of maps (dictionaries). each map has the following format:
 {
-    "idea_id": string,
-    "title": string,
-    "time": "19 May 2016 12:19 PM",
-    "content": string,
-    "schema_text": string,
-    "problem_text":strng,
+    "text": string,
+    "time_created": string,
     "worker_id": string,
-    "schema_id": string
+    "idea_id": string,
+    "problem_id": string,
+    "problem_text": string,
+    "schema_text": string,
+    "inspiration_id": string,
+    "inspiration_text": string
 }
-also problem_id. see render_schemas_page in server.py
 ```
+
 ### /save_new_problem POST request
 input
 ```
@@ -181,7 +183,9 @@ output
 array of maps. each map has the following format:
 {
     "problem_id": string,
-    "count": int
+    "schema_count": int,
+    "inspiration_count": int,
+    "idea_count": int
 }
 ```
 
@@ -211,6 +215,13 @@ input
     "count_goal": int
 }
 ```
+output
+```
+{
+  "success": boolean,
+  "url": string,       //only if success=true
+}
+```
 
 ### /post_problem_edit POST request
 input
@@ -224,10 +235,18 @@ input
 ```
 
 ### /post_idea_task POST request
-input 
+input
 ```
 {
-    "problem_id":string,
+    "problem_id": string,
     "count_goal": int
 }
 ```
+output
+```
+{
+  "success": boolean,
+  "url": string,       //only if success=true
+}
+```
+
