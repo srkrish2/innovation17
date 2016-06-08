@@ -461,6 +461,7 @@ class ProblemEditHandler(object):
     exposed = True
 
     @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def POST(self):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
@@ -468,6 +469,8 @@ class ProblemEditHandler(object):
         if not mongodb_controller.does_user_have_problem_with_id(cherrypy.session[USERNAME_KEY], data[PROBLEM_ID]):
             raise cherrypy.HTTPError(403)
         mongodb_controller.edit_problem(data)
+        return {"success": True,
+                "url": "problems"}
 
 
 class DeleteProblemHandler(object):
