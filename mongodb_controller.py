@@ -51,6 +51,7 @@ SUGGESTION_HIT_ID = "suggestion_hit_id"
 
 IS_REJECTED = "is_rejected"
 TEXT = "text"
+COUNT_GOAL = "count_goal"
 
 
 def save_problem(temporary_id, title, description, owner_username, schema_count_goal, time_created):
@@ -375,6 +376,21 @@ def set_inspiration_rejected_flag(inspiration_id, to_reject):
     inspirations_collection.update_one(query_filter, update)
 
 
+def get_idea_dict(idea_id):
+    return ideas_collection.find_one({IDEA_ID: idea_id})
+
+
+def save_feedback(idea_id, feedback_text, count_goal, hit_id, problem_id):
+    feedback = {
+        IDEA_ID: idea_id,
+        TEXT: feedback_text,
+        COUNT_GOAL: count_goal,
+        SUGGESTION_HIT_ID: hit_id,
+        PROBLEM_ID: problem_id
+    }
+    schemas_collection.insert_one(feedback)
+
+
 def slugify(s):
     s = s.lower()
     for c in [' ', '-', '.', '/']:
@@ -396,3 +412,5 @@ problems_collection = db.problems
 schemas_collection = db.schemas
 inspirations_collection = db.inspirations
 ideas_collection = db.ideas
+feedbacks_collection = db.feedbacks
+suggestions_collection = db.suggestions

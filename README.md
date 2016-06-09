@@ -268,3 +268,29 @@ output
     "count_goal": int
 }
 ```
+output
+```
+{
+  "success": boolean,
+  "url": string,       //only if success=true
+}
+```
+
+### /get_suggestion_count_updates POST request
+input
+```
+{
+    "idea_id":
+}
+```
+
+output
+```
+array of maps. each map has the following format:
+{
+    "problem_id": string,
+    "schema_count": int,
+    "inspiration_count": int,
+    "idea_count": int
+}
+```
