@@ -560,7 +560,21 @@ class FeedbackHandler(object):
         idea_id = data["idea_id"]
         feedback = data["feedback"]
 
+        count_goal = convert_input_count(data['count_goal'])
+        if count_goal == -1:
+            return {"success": False}
 
+        idea_dict = mongodb_controller.get_idea_dict(idea_id)
+        problem_text = mongodb_controller.get_problem_text(idea_dict[PROBLEM_ID])
+        idea_text = idea_dict[mongodb_controller.TEXT]
+        hit_id = mturk_controller.create_suggestion_hit(problem_text, idea_text, feedback, count_goal)
+        # add the hit_id to schema
+        if hit_id == "FAIL":
+            print "create_idea_hit FAILED!! dunno how to handle"
+        mongodb_controller.add_idea_hit_id_to_inspiration(hit_id, inspiration[mongodb_controller.INSPIRATION_ID])
+        mongodb_controller.set_idea_stage(problem_id, submitted_inspirations_count*count_goal)
+        return {"success": True,
+                "url": "problems"}
 
 def render_new_problem():
     template = env.get_template('new_problem.html')

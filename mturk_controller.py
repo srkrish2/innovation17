@@ -67,7 +67,7 @@ def get_schema_making_results(hit_id):
 
             schema = {
                 mongodb_controller.PROBLEM_ID: hit_id,
-                mongodb_controller.SCHEMA_TEXT: answer_text,
+                mongodb_controller.TEXT: answer_text,
                 mongodb_controller.SCHEMA_TIME: epoch_time_ms_string,
                 mongodb_controller.WORKER_ID: worker_id,
                 mongodb_controller.SCHEMA_ID: assignment_id
@@ -221,13 +221,85 @@ def get_idea_hit_results(hit_id):
         answer_text = answer_text.rstrip()
 
         idea = {
-            "text": answer_text,
+            mongodb_controller.TEXT: answer_text,
             mongodb_controller.TIME_CREATED: epoch_time_ms_string,
             mongodb_controller.WORKER_ID: worker_id,
             mongodb_controller.IDEA_ID: assignment_id
         }
         ideas.append(idea)
     return ideas
+
+
+def create_suggestion_hit(problem, idea, feedback, assignments_num):
+    # run the jarred java file for submitting mturk task, passing problem as args[0]
+    p = subprocess.Popen(['java', '-jar', 'PostSuggestionHIT.jar', problem, idea, feedback, str(assignments_num)],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    # output format:
+    #  * "SUCCESS"
+    #  * HIT_ID
+    #  * URL
+
+    jar_output_file = p.stdout
+    first_line = jar_output_file.readline().rstrip()
+    if first_line == "FAIL":
+        print "PostSuggestionHIT.jar: FAIL"
+        print jar_output_file.readline().rstrip()
+        return "FAIL"
+    if first_line != "SUCCESS":
+        print "UNEXPECTED! neither fail/success"
+        return "FAIL"
+
+    hit_id = jar_output_file.readline().rstrip()
+    url = jar_output_file.readline().rstrip()
+
+    print "url =", url
+
+    return hit_id
+
+
+def get_suggestion_hit_results(hit_id):
+    p = subprocess.Popen(['java', '-jar', 'PostSuggestionHIT.jar', hit_id],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    # output format:
+    # "SUCCESS"
+    #  assignments_count
+    #  assignmentId
+    #  worker_id
+    #  epoch_time_ms
+    # "--[ANSWER START]--"
+    #  answer
+    # "--[ANSWER END]--"
+
+    jar_output_file = p.stdout
+    if jar_output_file.readline().rstrip() == "FAIL":
+        print "PostSuggestionHIT.jar: FAIL"
+        print jar_output_file.readline().rstrip()
+        return "FAIL"
+
+    suggestions = []
+    assignment_count = int(jar_output_file.readline().rstrip())
+    for i in xrange(assignment_count):
+        assignment_id = jar_output_file.readline().rstrip()
+        worker_id = jar_output_file.readline().rstrip()
+        epoch_time_ms_string = jar_output_file.readline().rstrip()
+        jar_output_file.readline()
+        answer_text = ""
+        line = jar_output_file.readline().rstrip()
+        while line != "--[ANSWER END]--":
+            answer_text += line + '\n'
+            line = jar_output_file.readline().rstrip()
+        answer_text = answer_text.rstrip()
+
+        suggestion = {
+            mongodb_controller.TEXT: answer_text,
+            mongodb_controller.TIME_CREATED: epoch_time_ms_string,
+            mongodb_controller.WORKER_ID: worker_id,
+            mongodb_controller.SUGGESTION_ID: assignment_id
+        }
+        suggestions.append(suggestion)
+    return suggestions
 
 
 """
