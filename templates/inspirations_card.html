@@ -18,10 +18,31 @@
 			
 		</div>
 		{% endfor %}
-		<div class="ui button">Accept all</div>
-		<div class="ui red button">Reject all</div>
-		<div class="ui teal button">Proceed</div>
+		<div class="ui button acall">Accept all</div>
+		<div class="ui red button rjall">Reject all</div>
+		<div class="ui teal button proceed">Proceed</div>
 	</div>
+	<div class="ui twelve wide column">
+      <div class="ui modal launchnext inspiration">
+      <div class="ui text container aligned center middle padded">
+          <h3 class="ui header">Configure Inspiration Collection Task</h3>
+          <div class="ui form">
+            <div class="two fields">
+              <div class="field">
+                <div class="ui inverted black label">You have {{schemas|length}} schema(s) to initiate the inspirations from</div>
+              </div>
+              <div class="field">
+                <div class="field"><input type="text" class="count_goal" placeholder="Enter the number of inspiration for each schema">
+                </div>
+              </div>
+
+            </div>
+            <button class="ui button teal startidea">Confirm</button>
+            <button class="ui button teal cancelidea">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 <script src="/static/assets/js/inspirations.js"></script>
 {% endblock %}
