@@ -48,6 +48,8 @@ INSPIRATION_REASON = "reason"
 IDEA_ID = "idea_id"
 IDEA_HIT_ID = "idea_hit_id"
 
+IS_REJECTED = "is_rejected"
+
 
 def save_problem(temporary_id, title, description, owner_username, schema_count_goal, time_created):
     problem = {
@@ -347,6 +349,24 @@ def add_idea_hit_id_to_inspiration(hit_id, inspiration_id):
     query_filter = {INSPIRATION_ID: inspiration_id}
     new_fields = {
         IDEA_HIT_ID: hit_id
+    }
+    update = {'$set': new_fields}
+    inspirations_collection.update_one(query_filter, update)
+
+
+def set_schema_rejected_flag(schema_id, to_reject):
+    query_filter = {SCHEMA_ID: schema_id}
+    new_fields = {
+        IS_REJECTED: to_reject
+    }
+    update = {'$set': new_fields}
+    schemas_collection.update_one(query_filter, update)
+
+
+def set_inspiration_rejected_flag(inspiration_id, to_reject):
+    query_filter = {INSPIRATION_ID: inspiration_id}
+    new_fields = {
+        IS_REJECTED: to_reject
     }
     update = {'$set': new_fields}
     inspirations_collection.update_one(query_filter, update)

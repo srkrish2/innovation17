@@ -144,7 +144,6 @@ def render_ideas_page(problem_slug):
             idea["schema_text"] = schema_text
             idea["inspiration_text"] = inspiration_summary
             ideas_dicts_list.append(idea)
-        print ideas_dicts_list
         return template.render(ideas=ideas_dicts_list)
 
 
@@ -211,6 +210,8 @@ def update_schemas_for_problem(hit_id):
         readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
         # add readable time
         schema_dict[mongodb_controller.SCHEMA_TIME] = readable_time
+        # rejected flag
+        schema_dict[mongodb_controller.IS_REJECTED] = False
         mongodb_controller.add_schema(schema_dict)
     if schema_count > 0:
         mongodb_controller.update_schema_count(hit_id, schema_count)
@@ -234,6 +235,8 @@ def update_inspirations_for_problem(problem_id):
             # add problem/schema id/text
             inspiration[mongodb_controller.PROBLEM_ID] = problem_id
             inspiration[mongodb_controller.SCHEMA_ID] = schema_id
+            # rejected flag
+            inspiration[mongodb_controller.IS_REJECTED] = False
             mongodb_controller.add_inspiration(inspiration)
         if inspiration_count > 0:
             mongodb_controller.update_inspiration_count(problem_id, inspiration_count)
@@ -447,13 +450,16 @@ class InspirationTaskHandler(object):
         count_goal = convert_input_count(data['count_goal'])
         if count_goal == -1:
             return {"success": False}
+        submitted_schema_count = 0
         for schema in mongodb_controller.get_schemas(problem_id):
-            hit_id = mturk_controller.create_inspiration_hit(schema[mongodb_controller.SCHEMA_TEXT], count_goal)
-            if hit_id == "FAIL":
-                print "create_inspiration_hit FAILED!! dunno how to handle"
-                continue
-            mongodb_controller.add_inspiration_hit_id_to_schema(hit_id, schema[mongodb_controller.SCHEMA_ID])
-        mongodb_controller.set_inspiration_stage(problem_id, count_goal)
+            if not schema[mongodb_controller.IS_REJECTED]:
+                submitted_schema_count += 1
+                hit_id = mturk_controller.create_inspiration_hit(schema[mongodb_controller.SCHEMA_TEXT], count_goal)
+                if hit_id == "FAIL":
+                    print "create_inspiration_hit FAILED!! dunno how to handle"
+                    continue
+                mongodb_controller.add_inspiration_hit_id_to_schema(hit_id, schema[mongodb_controller.SCHEMA_ID])
+        mongodb_controller.set_inspiration_stage(problem_id, submitted_schema_count*count_goal)
         return {"success": True,
                 "url": "problems"}
 
@@ -507,20 +513,53 @@ class IdeaTaskHandler(object):
         if count_goal == -1:
             return {"success": False}
 
+        submitted_inspirations_count = 0
         for inspiration in mongodb_controller.get_inspirations(problem_id):
-            problem_text = mongodb_controller.get_problem_text(inspiration[PROBLEM_ID])
-            link = inspiration[mongodb_controller.INSPIRATION_LINK]
-            explanation = inspiration[mongodb_controller.INSPIRATION_REASON]
+            if not inspiration[mongodb_controller.IS_REJECTED]:
+                submitted_inspirations_count += 1
+                problem_text = mongodb_controller.get_problem_text(inspiration[PROBLEM_ID])
+                link = inspiration[mongodb_controller.INSPIRATION_LINK]
+                explanation = inspiration[mongodb_controller.INSPIRATION_REASON]
 
-            hit_id = mturk_controller.create_idea_hit(problem_text, link, explanation, count_goal)
-            # add the hit_id to schema
-            if hit_id == "FAIL":
-                print "create_idea_hit FAILED!! dunno how to handle"
-                continue
-            mongodb_controller.add_idea_hit_id_to_inspiration(hit_id, inspiration[mongodb_controller.INSPIRATION_ID])
-        mongodb_controller.set_idea_stage(problem_id, count_goal)
+                hit_id = mturk_controller.create_idea_hit(problem_text, link, explanation, count_goal)
+                # add the hit_id to schema
+                if hit_id == "FAIL":
+                    print "create_idea_hit FAILED!! dunno how to handle"
+                    continue
+                mongodb_controller.add_idea_hit_id_to_inspiration(hit_id, inspiration[mongodb_controller.INSPIRATION_ID])
+        mongodb_controller.set_idea_stage(problem_id, submitted_inspirations_count*count_goal)
         return {"success": True,
                 "url": "problems"}
+
+
+class RejectHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    def POST(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+        data = cherrypy.request.json
+        to_reject = data['to_reject']
+        _type = data['type']
+        _id = data['id']
+        if _type == "schema":
+            mongodb_controller.set_schema_rejected_flag(_id, to_reject)
+        elif _type == "inspiration":
+            mongodb_controller.set_inspiration_rejected_flag(_id, to_reject)
+
+
+class FeedbackHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    def POST(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+        data = cherrypy.request.json
+        idea_id = data["idea_id"]
+        feedback = data["feedback"]
+
 
 
 def render_new_problem():
@@ -595,6 +634,12 @@ if __name__ == '__main__':
         },
         '/post_idea_task': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/post_reject': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/post_feedback': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -610,6 +655,8 @@ if __name__ == '__main__':
     webapp.delete_problem = DeleteProblemHandler()
     webapp.post_problem_edit = ProblemEditHandler()
     webapp.post_idea_task = IdeaTaskHandler()
+    webapp.post_reject = RejectHandler()
+    webapp.post_feedback = FeedbackHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 
