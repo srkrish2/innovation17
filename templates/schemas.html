@@ -14,56 +14,63 @@
       </thead>
       <tbody>
         {% for schema in schemas %}
-        <tr class={{'schema-id-'~schema.schema_id}}>
-          <td>
-            <h2 class="ui aligned sortable centered header">
-              <a href="get_schema" class="schema-content">{{schema.text}}</a>
-            </h2>
-          </td>
-          
-          <td>{{schema.time}}</td>
-          <td>{{schema.worker_id}}</td>
-          <td><div class="ui button">Accept</div>
-            <div class="ui button">Reject</div>
-          </td>
-        </tr>
-        {% endfor %}
-        
-      </tbody>
-      <tfoot class="full-width">
-        <tr class="padded">
-          <th colspan="4">
-            <div class="ui button">Accept all</div>
-            <div class="ui button colspan-btn">Reject all</div>
-            <div class="ui float right blue button colspan-btn relaunch">Relaunch</div>
-            <div class="ui float right teal button colspan-btn proceed">Proceed</div>
-          </th>
-        </tr>
-      </tfoot>
-    </table>
-    <div class="ui twelve wide column">
-      <div class="ui modal launchnext inspiration">
-      <div class="ui text container aligned center middle padded">
-          <h3 class="ui header">Configure Inspiration Collection Task</h3>
-          <div class="ui form">
-            <div class="two fields">
-              <div class="field">
-                <div class="ui inverted black label">You have {{schemas|length}} schema(s) to initiate the inspirations from</div>
-              </div>
-              <div class="field">
-                <div class="field"><input type="text" class="count_goal" placeholder="Enter the number of inspiration for each schema">
-                </div>
-              </div>
+        <tr class="{{'schema-id-'~schema.schema_id}}
+        {% if schema.is_rejected == true %} rj
+        {% endif %}"
+        >
+        <td>
+          <h2 class="ui aligned sortable centered header">
+            <a href="get_schema" class="schema-content">{{schema.text}}</a>
+          </h2>
+        </td>
 
+        <td>{{schema.time}}</td>
+        <td>{{schema.worker_id}}</td>
+        <td>
+          {% if schema.is_rejected == true %}
+          <div class="ui button rj">Accept</div>
+          {% else %}
+          <div class="ui button red rj">Reject</div>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+    <tfoot class="full-width">
+      <tr class="padded">
+        <th colspan="4">
+          <div class="ui button">Accept all</div>
+          <div class="ui button colspan-btn">Reject all</div>
+          <div class="ui float right blue button colspan-btn relaunch">Relaunch</div>
+          <div class="ui float right teal button colspan-btn proceed">Proceed</div>
+        </th>
+      </tr>
+    </tfoot>
+  </table>
+  <div class="ui twelve wide column">
+    <div class="ui modal launchnext inspiration">
+      <div class="ui text container aligned center middle padded">
+        <h3 class="ui header">Configure Inspiration Collection Task</h3>
+        <div class="ui form">
+          <div class="two fields">
+            <div class="field">
+              <div class="ui inverted black label">You have {{schemas|length}} schema(s) to initiate the inspirations from</div>
             </div>
-            <button class="ui button teal startinspiration">Confirm</button>
-            <button class="ui button teal cancelinspiration">Cancel</button>
+            <div class="field">
+              <div class="field"><input type="text" class="count_goal" placeholder="Enter the number of inspiration for each schema">
+              </div>
+            </div>
+
           </div>
+          <button class="ui button teal startinspiration">Confirm</button>
+          <button class="ui button teal cancelinspiration">Cancel</button>
         </div>
       </div>
     </div>
   </div>
-  
+</div>
+
 </div>
 
 <script src="/static/assets/js/schemas.js"></script>
