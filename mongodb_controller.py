@@ -40,8 +40,8 @@ INSPIRATION_COUNT_GOAL = "inspiration_count_goal"
 IDEA_COUNT = "idea_count"
 IDEA_COUNT_GOAL = "idea_count_goal"
 
-INSPIRATION_LINK = "link"
-INSPIRATION_ADDITIONAL = "additional_link"
+INSPIRATION_LINK = "source_link"
+INSPIRATION_ADDITIONAL = "image_link"
 INSPIRATION_SUMMARY = "summary"
 INSPIRATION_REASON = "reason"
 

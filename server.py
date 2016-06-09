@@ -126,7 +126,7 @@ def render_inspirations_page(problem_slug):
             inspiration["problem_text"] = problem_text
             inspiration["schema_text"] = schema_text
             inspiration_dicts_list.append(inspiration)
-        return template.render(inspirations=inspiration_dicts_list)
+        return template.render(inspirations=inspiration_dicts_list, problem_id=problem_id)
 
 
 def render_ideas_page(problem_slug):
@@ -144,7 +144,7 @@ def render_ideas_page(problem_slug):
             idea["schema_text"] = schema_text
             idea["inspiration_text"] = inspiration_summary
             ideas_dicts_list.append(idea)
-        return template.render(ideas=ideas_dicts_list)
+        return template.render(ideas=ideas_dicts_list, problem_id=problem_id)
 
 
 def render_edit_page(problem_slug):
