@@ -144,6 +144,7 @@ def render_ideas_page(problem_slug):
             idea["schema_text"] = schema_text
             idea["inspiration_text"] = inspiration_summary
             ideas_dicts_list.append(idea)
+        print ideas_dicts_list
         return template.render(ideas=ideas_dicts_list)
 
 

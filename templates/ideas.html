@@ -6,8 +6,8 @@
 		<table class="ui cell padded table">
 			<thead>
 				<tr>
-					<td>Title</td>
-					<td>Content</td>
+					<td>Generated Idea</td>
+					<td>Inspiration</td>
 					<td>Schema</td>
 					<td>Problem</td>
 					<td>Action/Feedback</td>
@@ -16,15 +16,14 @@
 			<tbody>
 				{% for idea in ideas %}
 				<tr class={{idea.idea_id}}>
-					<td>
-						<h2 class="ui aligned sortable centered header">
-							<a href="get_schema" class="idea-content">{{idea.title}}</a>
-						</h2>
+					<td>{{idea.text}}
+						<!--<h2 class="ui aligned sortable centered header">-->
+							<!--<a href="get_schema" class="idea-content">{{idea.text}}</a>-->
+						<!--</h2>-->
 					</td>
-					<td>{{idea.content}}</td>
-					<td>{{idea.problem_text}}</td>
-					<td><img src={{idea.link}} alt=""></div></td>
+					<td>{{idea.inspiration_text}}</td>
 					<td>{{idea.schema_text}}</td>
+					<td>{{idea.problem_text}}</td>
 					<td><div class="ui button ac">Accept</div>
 						<div class="ui button red rj">Reject</div>
 					</td>

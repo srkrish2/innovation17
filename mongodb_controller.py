@@ -294,6 +294,10 @@ def get_inspirations(problem_id):
     return inspirations_collection.find({PROBLEM_ID: problem_id})
 
 
+def get_ideas(problem_id):
+    return ideas_collection.find({PROBLEM_ID: problem_id})
+
+
 def get_problem_text(problem_id):
     return problems_collection.find_one({PROBLEM_ID: problem_id})[DESCRIPTION]
 
