@@ -144,7 +144,7 @@ def render_ideas_page(problem_slug):
             idea["schema_text"] = schema_text
             idea["inspiration_text"] = inspiration_summary
             ideas_dicts_list.append(idea)
-        return template.render(ideas=ideas_dicts_list, problem_id=problem_id)
+        return template.render(ideas=ideas_dicts_list)
 
 
 def render_edit_page(problem_slug):
@@ -454,7 +454,7 @@ class InspirationTaskHandler(object):
         for schema in mongodb_controller.get_schemas(problem_id):
             if not schema[mongodb_controller.IS_REJECTED]:
                 submitted_schema_count += 1
-                hit_id = mturk_controller.create_inspiration_hit(schema[mongodb_controller.SCHEMA_TEXT], count_goal)
+                hit_id = mturk_controller.create_inspiration_hit(schema[mongodb_controller.TEXT], count_goal)
                 if hit_id == "FAIL":
                     print "create_inspiration_hit FAILED!! dunno how to handle"
                     continue
@@ -553,6 +553,7 @@ class FeedbackHandler(object):
     exposed = True
 
     @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def POST(self):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
@@ -570,11 +571,11 @@ class FeedbackHandler(object):
         hit_id = mturk_controller.create_suggestion_hit(problem_text, idea_text, feedback, count_goal)
         # add the hit_id to schema
         if hit_id == "FAIL":
-            print "create_idea_hit FAILED!! dunno how to handle"
-        mongodb_controller.add_idea_hit_id_to_inspiration(hit_id, inspiration[mongodb_controller.INSPIRATION_ID])
-        mongodb_controller.set_idea_stage(problem_id, submitted_inspirations_count*count_goal)
+            return {"success": False}
+        mongodb_controller.save_feedback(idea_id, feedback, count_goal, hit_id, idea_dict[PROBLEM_ID])
         return {"success": True,
                 "url": "problems"}
+
 
 def render_new_problem():
     template = env.get_template('new_problem.html')
