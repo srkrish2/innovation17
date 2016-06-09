@@ -207,21 +207,6 @@ input
     "problem_id": string
 }
 ```
-### /post_inspiration_task POST request
-input
-```
-{
-    "problem_id": string,
-    "count_goal": int
-}
-```
-output
-```
-{
-  "success": boolean,
-  "url": string,       //only if success=true
-}
-```
 
 ### /post_problem_edit POST request
 input
@@ -250,3 +235,36 @@ output
 }
 ```
 
+### /post_inspiration_task POST request
+input
+```
+{
+    "problem_id": string,
+    "count_goal": int
+}
+```
+output
+```
+{
+  "success": boolean,
+  "url": string,       //only if success=true
+}
+```
+
+### /post_reject POST request
+```
+{
+    "to_reject": boolean,
+    "type": "schema" or "inspiration"
+    "id": string
+}
+```
+
+### /post_feedback POST request
+```
+{
+    "idea_id": string,
+    "feedback": string,
+    "count_goal": int
+}
+```
