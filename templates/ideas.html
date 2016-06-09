@@ -18,14 +18,18 @@
 				<tr class={{idea.idea_id}}>
 					<td>{{idea.text}}
 						<!--<h2 class="ui aligned sortable centered header">-->
-							<!--<a href="get_schema" class="idea-content">{{idea.text}}</a>-->
+						<!--<a href="get_schema" class="idea-content">{{idea.text}}</a>-->
 						<!--</h2>-->
 					</td>
 					<td>{{idea.inspiration_text}}</td>
 					<td>{{idea.schema_text}}</td>
 					<td>{{idea.problem_text}}</td>
-					<td><div class="ui button ac">Accept</div>
+					<td>
+						{% if schema.is_rejected == true %}
+						<div class="ui button rj">Accept</div>
+						{% else %}
 						<div class="ui button red rj">Reject</div>
+						{% endif %}
 					</td>
 				</tr>
 				{% endfor %}
