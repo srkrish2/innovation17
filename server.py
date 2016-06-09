@@ -454,7 +454,7 @@ class InspirationTaskHandler(object):
         for schema in mongodb_controller.get_schemas(problem_id):
             if not schema[mongodb_controller.IS_REJECTED]:
                 submitted_schema_count += 1
-                hit_id = mturk_controller.create_inspiration_hit(schema[mongodb_controller.SCHEMA_TEXT], count_goal)
+                hit_id = mturk_controller.create_inspiration_hit(schema[mongodb_controller.TEXT], count_goal)
                 if hit_id == "FAIL":
                     print "create_inspiration_hit FAILED!! dunno how to handle"
                     continue
