@@ -21,7 +21,6 @@ SCHEMAS_PAGE_LINK = "schemas_page_link"
 INSPIRATIONS_PAGE_LINK = "inspirations_page_link"
 IDEAS_PAGE_LINK = "ideas_page_link"
 
-SCHEMA_TEXT = "text"
 INSPIRATION_HIT_ID = "inspiration_hit_id"
 INSPIRATION_ID = "inspiration_id"
 WORKER_ID = "worker_id"
@@ -47,8 +46,11 @@ INSPIRATION_REASON = "reason"
 
 IDEA_ID = "idea_id"
 IDEA_HIT_ID = "idea_hit_id"
+SUGGESTION_ID = "suggestion_id"
+SUGGESTION_HIT_ID = "suggestion_hit_id"
 
 IS_REJECTED = "is_rejected"
+TEXT = "text"
 
 
 def save_problem(temporary_id, title, description, owner_username, schema_count_goal, time_created):
@@ -158,10 +160,11 @@ def get_schemas(problem_id):
     result = []
     for schema in schemas_collection.find({PROBLEM_ID: problem_id}):
         for_result = {
-            SCHEMA_TEXT: schema[SCHEMA_TEXT],
+            TEXT: schema[TEXT],
             SCHEMA_TIME: schema[SCHEMA_TIME],
             WORKER_ID: schema[WORKER_ID],
-            SCHEMA_ID: schema[SCHEMA_ID]
+            SCHEMA_ID: schema[SCHEMA_ID],
+            IS_REJECTED: schema[IS_REJECTED]
         }
         result.append(for_result)
     return result
@@ -305,7 +308,7 @@ def get_problem_text(problem_id):
 
 
 def get_schema_text(schema_id):
-    return schemas_collection.find_one({SCHEMA_ID: schema_id})[SCHEMA_TEXT]
+    return schemas_collection.find_one({SCHEMA_ID: schema_id})[TEXT]
 
 
 def get_schema_text_from_inspiration(inspiration_id):
