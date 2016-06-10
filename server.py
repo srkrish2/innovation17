@@ -144,7 +144,7 @@ def render_ideas_page(problem_slug):
             idea["schema_text"] = schema_text
             idea["inspiration_text"] = inspiration_summary
             ideas_dicts_list.append(idea)
-        return template.render(ideas=ideas_dicts_list)
+        return template.render(ideas=ideas_dicts_list, problem_id=problem_id)
 
 
 def render_edit_page(problem_slug):
@@ -574,7 +574,50 @@ class FeedbackHandler(object):
             return {"success": False}
         mongodb_controller.save_feedback(idea_id, feedback, count_goal, hit_id, idea_dict[PROBLEM_ID])
         return {"success": True,
-                "url": "problems"}
+                "feedback_id": hit_id}
+
+
+def update_suggestions(problem_id):
+    for feedback in mongodb_controller.get_feedbacks(problem_id):
+        suggestion_hit_id = feedback[mongodb_controller.SUGGESTION_HIT_ID]
+        suggestions = mturk_controller.get_suggestion_hit_results(suggestion_hit_id)
+        if suggestions == "FAIL":
+            continue
+        suggestions_count = 0
+        for suggestion in suggestions:
+            suggestions_count += 1
+            # replace time with a readable one and add to DB
+            epoch_time_ms = long(suggestion.pop(mongodb_controller.TIME_CREATED))
+            epoch_time = epoch_time_ms / 1000.0
+            readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
+            suggestion[mongodb_controller.TIME_CREATED] = readable_time
+            # add problem id
+            suggestion[mongodb_controller.PROBLEM_ID] = problem_id
+            mongodb_controller.add_suggestion(suggestion)
+        mongodb_controller.update_suggestions_count(suggestion_hit_id, suggestions_count)
+
+
+class SuggestionUpdatesHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+        data = cherrypy.request.json
+        problem_id = data[PROBLEM_ID]
+        update_suggestions(problem_id)
+        return mongodb_controller.get_suggestion_counts(problem_id)
+
+
+class TestHandler(object):
+    exposed = True
+
+    def POST(self):
+        import time
+        time.sleep(10)
+        return "lol"
 
 
 def render_new_problem():
@@ -655,6 +698,12 @@ if __name__ == '__main__':
         },
         '/post_feedback': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/suggestion_updates': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/test': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -672,6 +721,8 @@ if __name__ == '__main__':
     webapp.post_idea_task = IdeaTaskHandler()
     webapp.post_reject = RejectHandler()
     webapp.post_feedback = FeedbackHandler()
+    webapp.suggestion_updates = SuggestionUpdatesHandler()
+    webapp.test = TestHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 

@@ -95,6 +95,18 @@ array of maps (dictionaries). each map has the following format:
 }
 ```
 
+### suggestion data that i can give easily
+```
+{
+	"text" : string,
+	"time_created" : "10 Jun 2016 12:32 PM",
+	"suggestion_id" : string,
+	"worker_id" : string,
+	"problem_id" : string
+}
+```
+
+
 ### /save_new_problem POST request
 input
 ```
@@ -272,25 +284,24 @@ output
 ```
 {
   "success": boolean,
-  "url": string,       //only if success=true
+  "feedback_id": string,   //only if success=true
 }
 ```
 
-### /get_suggestion_count_updates POST request
+### /suggestion_updates POST request
 input
 ```
 {
-    "idea_id":
+    "problem_id": string
 }
 ```
-
 output
 ```
 array of maps. each map has the following format:
 {
-    "problem_id": string,
-    "schema_count": int,
-    "inspiration_count": int,
-    "idea_count": int
+    "feedback_id": string,
+    "suggestion_count": int
 }
 ```
+
+

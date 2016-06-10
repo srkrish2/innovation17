@@ -259,7 +259,7 @@ def create_suggestion_hit(problem, idea, feedback, assignments_num):
 
 
 def get_suggestion_hit_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', 'PostSuggestionHIT.jar', hit_id],
+    p = subprocess.Popen(['java', '-jar', 'SuggestionHITResults.jar', hit_id],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
@@ -274,7 +274,7 @@ def get_suggestion_hit_results(hit_id):
 
     jar_output_file = p.stdout
     if jar_output_file.readline().rstrip() == "FAIL":
-        print "PostSuggestionHIT.jar: FAIL"
+        print "SuggestionHITResults.jar: FAIL"
         print jar_output_file.readline().rstrip()
         return "FAIL"
 
