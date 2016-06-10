@@ -9,12 +9,12 @@
 			url: '/post_idea_task',
 			contentType: 'application/json; charset=utf-8',
 			data: JSON.stringify({
-				'problem_id':$('thead').attr('class'),//length of class list is 6
+				'problem_id':$('.divided').attr('class').split(' ')[3],//length of class list is 4
 				'count_goal': $('.count_goal').val()
 			}),
 			success: function(sdata){
 				console.log('launched idea');
-				window.location.replace('/ideas');
+				window.location.replace('/'+sdata['url']);
 			},
 			error: function(e){
 				console.log("error! "+e);

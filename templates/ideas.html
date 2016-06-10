@@ -8,7 +8,7 @@
 				<tr>
 					<td>Generated Idea</td>
 					<td>Inspiration</td>
-					<td>Schema</td>
+					<td>Idea</td>
 					<td>Problem</td>
 					<td>Action/Feedback</td>
 				</tr>
@@ -17,19 +17,19 @@
 				{% for idea in ideas %}
 				<tr class={{idea.idea_id}}>
 					<td>{{idea.text}}
-						<!--<h2 class="ui aligned sortable centered header">-->
-						<!--<a href="get_schema" class="idea-content">{{idea.text}}</a>-->
-						<!--</h2>-->
+					
 					</td>
 					<td>{{idea.inspiration_text}}</td>
 					<td>{{idea.schema_text}}</td>
 					<td>{{idea.problem_text}}</td>
 					<td>
-						{% if schema.is_rejected == true %}
-						<div class="ui button rj">Accept</div>
+						{% if idea.launched == true %}
+						<div class="ui button view"><a href="{{idea.suggestions_page_link}}"><i class="icon doctor"></i>idea.suggestion_count</a></div>
 						{% else %}
+						<div class="ui button ac proceed">Accept</div>
 						<div class="ui button red rj">Reject</div>
 						{% endif %}
+						
 					</td>
 				</tr>
 				{% endfor %}
@@ -40,12 +40,39 @@
 					<th colspan="4">
 						<div class="ui button ac-all">Accept all</div>
 						<div class="ui button rj-all">Reject all</div>
-						<div class="ui button next">Proceed</div>
 					</th>
 				</tr>
 			</tfoot>
 		</table>
+		<div class="ui twelve wide column">
+			<div class="ui modal launchnext feedback">
+				<div class="ui text container aligned center middle padded">
+					<h3 class="ui header">Configure Feedback Form and Launch Suggestion Task</h3>
+					<div class="ui form">					
+						<div class="two fields">
+							<div class="field">
+								<div class="ui teal label">idea.text</div>
+							</div>
+							<div class="field">
+								<div class="field">
+									<div class="ui inverted black label">You need to enter feedback(s) for suggestions from crowdworkers</div>
+								</div>
+								<div class="field">
+									<div class="field"><input type="text" class="feedback" placeholder="Enter the feedback for the idea">
+									</div>
+									<div class="ui label addfeedback">Add more</div>
+								</div>
+							</div>
+						</div>
+						<button class="ui button teal startsuggestion">Submit</button>
+						<button class="ui button teal cancelsuggestion">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 	</div>
 </div>
 <script src="/static/assets/js/ideas.js"></script>
 {% endblock %}
+

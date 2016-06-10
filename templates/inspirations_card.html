@@ -2,23 +2,22 @@
 {% set active_page = "home" %}
 {% block content %}
 <div class="ui container center middle aligned first-page-element">
-	<div class="ui divided items">
+	<div class="ui divided items {{problem_id}}">
 		{% for inspiration in inspirations %}
 		<div class="item">
-			<div class="image"><img src={{inspiration.link}} alt=""></div>
+			<div class="image"><img src={{inspiration.image_link}} alt=""></div>
 			<div class="content">
 				<a href="" class="header">{{inspiration.summary}}</a>
 				<div class="description">{{inspiration.reason}}</div>
-				<div class="extra"><a href="http://www.inc.com/jeff-haden/75-inspiring-motivational-quotes-for-being-happier.html" target="_blank">Source</a></div>
+				<div class="extra"><a href={{inspiration.source_link}} target="_blank">Source</a></div>
 			</div>
 			<div class="action">
-				{% if schema.is_rejected == true %}
+				{% if inspiration.is_rejected == true %}
 				<div class="ui button rj">Accept</div>
 				{% else %}
 				<div class="ui button red rj">Reject</div>
 				{% endif %}
 			</div>
-			
 		</div>
 		{% endfor %}
 		<div class="ui button acall">Accept all</div>
@@ -35,7 +34,7 @@
 							<div class="ui inverted black label">You have {{inspirations|length}} inspirations(s) to initiate the idea generation from.</div>
 						</div>
 						<div class="field">
-							<div class="field"><input type="text" class="count_goal" placeholder="Enter the number of inspiration for each schema">
+						<div class="field"><input type="text" class="count_goal" placeholder="Enter the number of ideas targeted for each inspiration">
 							</div>
 						</div>
 
