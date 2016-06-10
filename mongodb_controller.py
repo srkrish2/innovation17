@@ -48,6 +48,7 @@ IDEA_ID = "idea_id"
 IDEA_HIT_ID = "idea_hit_id"
 SUGGESTION_ID = "suggestion_id"
 SUGGESTION_HIT_ID = "suggestion_hit_id"
+SUGGESTION_COUNT = "suggestion_count"
 
 IS_REJECTED = "is_rejected"
 TEXT = "text"
@@ -386,9 +387,40 @@ def save_feedback(idea_id, feedback_text, count_goal, hit_id, problem_id):
         TEXT: feedback_text,
         COUNT_GOAL: count_goal,
         SUGGESTION_HIT_ID: hit_id,
-        PROBLEM_ID: problem_id
+        PROBLEM_ID: problem_id,
+        SUGGESTION_COUNT: 0
     }
-    schemas_collection.insert_one(feedback)
+    feedbacks_collection.insert_one(feedback)
+
+
+def get_feedbacks(problem_id):
+    return feedbacks_collection.find({PROBLEM_ID: problem_id})
+
+
+def add_suggestion(suggestion):
+    if suggestions_collection.find_one(suggestion) is None:
+        suggestions_collection.insert_one(suggestion)
+
+
+def update_suggestions_count(suggestion_hit_id, suggestions_count):
+    query_filter = {SUGGESTION_HIT_ID: suggestion_hit_id}
+    new_fields = {
+        SUGGESTION_COUNT: suggestions_count
+    }
+    update = {'$set': new_fields}
+    feedbacks_collection.update_one(query_filter, update)
+
+
+def get_suggestion_counts(problem_id):
+    feedbacks = feedbacks_collection.find({PROBLEM_ID: problem_id})
+    result = []
+    for feedback in feedbacks:
+        for_result = {
+            "feedback_id": feedback[SUGGESTION_HIT_ID],
+            SUGGESTION_COUNT: feedback[SUGGESTION_COUNT]
+        }
+        result.append(for_result)
+    return result
 
 
 def slugify(s):

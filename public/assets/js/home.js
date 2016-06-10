@@ -17,3 +17,14 @@
   //   console.log(window.location.href);
   // })
 }(window));
+
+
+// Pls don't remove
+//$.ajax({
+//    type: 'POST',
+//    url: '/test',
+//    error: function(e){
+//        console.log("error! "+e)
+//    }
+//})
+//window.alert("hi")
