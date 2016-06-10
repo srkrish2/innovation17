@@ -14,8 +14,7 @@
       </thead>
       <tbody>
         {% for schema in schemas %}
-        <tr class="{{'schema-id-'~schema.schema_id}}
-        {% if schema.is_rejected == true %} rj
+        <tr class="{{'schema-id-'~schema.schema_id}}{% if schema.is_rejected == true %} rj
         {% endif %}"
         >
         <td>

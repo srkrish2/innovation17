@@ -36,7 +36,7 @@
 			data: JSON.stringify({
 				"to_reject": toreject,
 				"type": itemType,
-				"id": item_id
+				"id": item_id.split(' ')[0]
 			}),
 			
 			success: function(sdata){
