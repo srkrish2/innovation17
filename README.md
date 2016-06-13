@@ -288,7 +288,7 @@ output
 ```
 {
   "success": boolean,
-  "idea_slug": string
+  "suggestion_page_link": string
 }
 ```
 

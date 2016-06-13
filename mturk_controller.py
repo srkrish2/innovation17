@@ -20,7 +20,7 @@ def create_schema_making_hit(problem, schema_count_goal):
         print jar_output_file.readline().rstrip()
         return "FAIL"
     if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success"
+        print "UNEXPECTED! neither fail/success: {}".format(first_line)
         return "FAIL"
 
     hit_id = jar_output_file.readline().rstrip()
@@ -97,7 +97,7 @@ def create_inspiration_hit(schema, count_goal):
         print jar_output_file.readline().rstrip()
         return "FAIL"
     if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success"
+        print "UNEXPECTED! neither fail/success: {}".format(first_line)
         return "FAIL"
 
     hit_id = jar_output_file.readline().rstrip()
@@ -175,7 +175,8 @@ def create_idea_hit(problem, link, explanation, assignments_num):
         print jar_output_file.readline().rstrip()
         return "FAIL"
     if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success"
+        print "UNEXPECTED! neither fail/success: {}".format(first_line)
+        print jar_output_file.readline().rstrip()
         return "FAIL"
 
     hit_id = jar_output_file.readline().rstrip()
@@ -201,10 +202,13 @@ def get_idea_hit_results(hit_id):
     # "--[ANSWER END]--"
 
     jar_output_file = p.stdout
-    if jar_output_file.readline().rstrip() == "FAIL":
+    first_line = jar_output_file.readline().rstrip()
+    if first_line == "FAIL":
         print "IdeaHITResults.jar: FAIL"
         print jar_output_file.readline().rstrip()
         return "FAIL"
+    if first_line != "SUCCESS":
+        print "neither success nor fail: {}".format(first_line)
 
     ideas = []
     assignment_count = int(jar_output_file.readline().rstrip())
@@ -250,7 +254,7 @@ def create_suggestion_hit(problem, idea, feedback, assignments_num):
         print jar_output_file.readline().rstrip()
         return "FAIL"
     if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success"
+        print "UNEXPECTED! neither fail/success: {}".format(first_line)
         return "FAIL"
 
     hit_id = jar_output_file.readline().rstrip()

@@ -576,8 +576,9 @@ class FeedbackHandler(object):
                 return {"success": False}
             mongodb_controller.save_feedback(idea_id, feedback, count_goal, hit_id, idea_dict[PROBLEM_ID])
             mongodb_controller.idea_launched(idea_id)
+        idea_dict = mongodb_controller.get_idea_dict(idea_id)
         return {"success": True,
-                "idea_slug": idea_dict[mongodb_controller.SLUG]}
+                "suggestion_page_link": idea_dict[mongodb_controller.SUGGESTIONS_PAGE_LINK]}
 
 
 def update_suggestions(problem_id):
