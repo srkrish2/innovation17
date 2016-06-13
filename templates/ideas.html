@@ -16,9 +16,7 @@
 			<tbody>
 				{% for idea in ideas %}
 				<tr class={{idea.idea_id}}>
-					<td>{{idea.text}}
-					
-					</td>
+					<td>{{idea.text}}</td>
 					<td>{{idea.inspiration_text}}</td>
 					<td>{{idea.schema_text}}</td>
 					<td>{{idea.problem_text}}</td>
@@ -29,7 +27,6 @@
 						<div class="ui button ac proceed">Accept</div>
 						<div class="ui button red rj">Reject</div>
 						{% endif %}
-						
 					</td>
 				</tr>
 				{% endfor %}
@@ -37,7 +34,7 @@
 			</tbody>
 			<tfoot class="full-width">
 				<tr class="padded">
-					<th colspan="4">
+					<th colspan="5">
 						<div class="ui button ac-all">Accept all</div>
 						<div class="ui button rj-all">Reject all</div>
 					</th>
@@ -51,14 +48,14 @@
 					<div class="ui form">					
 						<div class="two fields">
 							<div class="field">
-								<div class="ui teal label">idea.text</div>
+								<div class="ui teal label">To be Filled</div>
 							</div>
 							<div class="field">
 								<div class="field">
 									<div class="ui inverted black label">You need to enter feedback(s) for suggestions from crowdworkers</div>
 								</div>
 								<div class="field">
-									<div class="field"><input type="text" class="feedback" placeholder="Enter the feedback for the idea">
+									<div class="field"><input type="text" class="feedback item" placeholder="Enter the feedback for the idea">
 									</div>
 									<div class="ui label addfeedback">Add more</div>
 								</div>

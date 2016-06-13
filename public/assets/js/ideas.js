@@ -1,13 +1,14 @@
 (function(global){
 	var currentIdea;
 	$(document).on('click','.proceed',function(e){
+		$('.ui.modal .teal.ui.label').html($(e.currentTarget.parentElement).siblings()[0]).innerHTML;
 		$('.ui.modal').modal('show');
 	});
 	$(document).on('click','.startsuggestion',function(e){
 		$('.ui.modal').hide();
-		var feedbacks = $('.feedback'), feedbackArray = [];
+		var feedbacks = $('input.feedback'), feedbackArray = [];
 		for (var i = 0; i<feedbacks.length; i++){
-			feedbackArray.push(feedbacks[i].val());
+			feedbackArray.push(feedbacks[i].value);
 		}
 		$.ajax({
 			type: 'POST',
