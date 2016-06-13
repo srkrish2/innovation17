@@ -91,11 +91,15 @@ array of maps (dictionaries). each map has the following format:
     "problem_text": string,
     "schema_text": string,
     "inspiration_id": string,
-    "inspiration_text": string
+    "inspiration_text": string,
+    "launched": boolean,
+    "suggestion_count": int,
+    "suggestions_page_link": string  // if launched
 }
 ```
 
-### suggestion data that i can give easily
+### /{{idea_slug}}/suggestions page parser input
+array of maps (dictionaries). each map has the following format:
 ```
 {
 	"text" : string,
@@ -276,7 +280,7 @@ output
 ```
 {
     "idea_id": string,
-    "feedback": string,
+    "feedbacks": array of strings,
     "count_goal": int
 }
 ```
@@ -284,7 +288,7 @@ output
 ```
 {
   "success": boolean,
-  "feedback_id": string,   //only if success=true
+  "idea_slug": string
 }
 ```
 
@@ -299,9 +303,21 @@ output
 ```
 array of maps. each map has the following format:
 {
-    "feedback_id": string,
+    "idea_id": string,
     "suggestion_count": int
 }
 ```
 
-
+### /get_accepted_schemas_count POST request
+input
+```
+{
+    "problem_id": string
+}
+```
+output
+```
+{
+    "count": int
+}
+```

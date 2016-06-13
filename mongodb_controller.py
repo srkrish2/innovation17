@@ -53,6 +53,8 @@ SUGGESTION_COUNT = "suggestion_count"
 IS_REJECTED = "is_rejected"
 TEXT = "text"
 COUNT_GOAL = "count_goal"
+LAUNCHED = "launched"
+SUGGESTIONS_PAGE_LINK = "suggestions_page_link"
 
 
 def save_problem(temporary_id, title, description, owner_username, schema_count_goal, time_created):
@@ -202,6 +204,12 @@ def add_inspiration(inspiration):
 
 def add_idea(idea):
     if ideas_collection.find_one(idea) is None:
+        # add slug
+        title = idea.pop(TITLE)
+        # set suggestion count to 0, launched
+        idea[SUGGESTION_COUNT] = 0
+        idea[LAUNCHED] = False
+        idea[SUGGESTIONS_PAGE_LINK] = "/{}/suggestions".format(slugify(title))
         ideas_collection.insert_one(idea)
 
 
@@ -402,13 +410,14 @@ def add_suggestion(suggestion):
         suggestions_collection.insert_one(suggestion)
 
 
-def update_suggestions_count(suggestion_hit_id, suggestions_count):
-    query_filter = {SUGGESTION_HIT_ID: suggestion_hit_id}
-    new_fields = {
-        SUGGESTION_COUNT: suggestions_count
-    }
-    update = {'$set': new_fields}
-    feedbacks_collection.update_one(query_filter, update)
+def update_suggestions_count(idea_to_count):
+    for idea_id in idea_to_count:
+        query_filter = {IDEA_ID: idea_id}
+        new_fields = {
+            SUGGESTION_COUNT: idea_to_count[idea_id]
+        }
+        update = {'$set': new_fields}
+        ideas_collection.update_one(query_filter, update)
 
 
 def get_suggestion_counts(problem_id):
@@ -421,6 +430,23 @@ def get_suggestion_counts(problem_id):
         }
         result.append(for_result)
     return result
+
+
+def idea_launched(idea_id):
+    query_filter = {IDEA_ID: idea_id}
+    new_fields = {
+        LAUNCHED: True
+    }
+    update = {'$set': new_fields}
+    ideas_collection.update_one(query_filter, update)
+
+
+def get_accepted_schemas_count(problem_id):
+    count = 0
+    for schema in schemas_collection.find({PROBLEM_ID: problem_id}):
+        if not schema[IS_REJECTED]:
+            count += 1
+    return count
 
 
 def slugify(s):

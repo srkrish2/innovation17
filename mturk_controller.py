@@ -212,16 +212,19 @@ def get_idea_hit_results(hit_id):
         assignment_id = jar_output_file.readline().rstrip()
         worker_id = jar_output_file.readline().rstrip()
         epoch_time_ms_string = jar_output_file.readline().rstrip()
-        jar_output_file.readline()
-        answer_text = ""
-        line = jar_output_file.readline().rstrip()
-        while line != "--[ANSWER END]--":
-            answer_text += line + '\n'
+        answers = []
+        for j in xrange(2):
+            answer_text = ""
+            jar_output_file.readline()
             line = jar_output_file.readline().rstrip()
-        answer_text = answer_text.rstrip()
-
+            while line != "--[ANSWER END]--":
+                answer_text += line + '\n'
+                line = jar_output_file.readline().rstrip()
+            answer_text = answer_text.rstrip()
+            answers.append(answer_text)
         idea = {
-            mongodb_controller.TEXT: answer_text,
+            mongodb_controller.TEXT: answers[0],
+            mongodb_controller.TITLE: answers[1],
             mongodb_controller.TIME_CREATED: epoch_time_ms_string,
             mongodb_controller.WORKER_ID: worker_id,
             mongodb_controller.IDEA_ID: assignment_id

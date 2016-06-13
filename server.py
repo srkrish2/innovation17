@@ -456,7 +456,7 @@ class InspirationTaskHandler(object):
                 submitted_schema_count += 1
                 hit_id = mturk_controller.create_inspiration_hit(schema[mongodb_controller.TEXT], count_goal)
                 if hit_id == "FAIL":
-                    print "create_inspiration_hit FAILED!! dunno how to handle"
+                    print "submitting one of the schemas for create_inspiration_hit FAILED!!"
                     continue
                 mongodb_controller.add_inspiration_hit_id_to_schema(hit_id, schema[mongodb_controller.SCHEMA_ID])
         mongodb_controller.set_inspiration_stage(problem_id, submitted_schema_count*count_goal)
@@ -524,7 +524,7 @@ class IdeaTaskHandler(object):
                 hit_id = mturk_controller.create_idea_hit(problem_text, link, explanation, count_goal)
                 # add the hit_id to schema
                 if hit_id == "FAIL":
-                    print "create_idea_hit FAILED!! dunno how to handle"
+                    print "submitting one of the inspirations create_idea_hit FAILED!!"
                     continue
                 mongodb_controller.add_idea_hit_id_to_inspiration(hit_id, inspiration[mongodb_controller.INSPIRATION_ID])
         mongodb_controller.set_idea_stage(problem_id, submitted_inspirations_count*count_goal)
@@ -559,7 +559,7 @@ class FeedbackHandler(object):
             raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
         idea_id = data["idea_id"]
-        feedback = data["feedback"]
+        feedbacks = data["feedbacks"]
 
         count_goal = convert_input_count(data['count_goal'])
         if count_goal == -1:
@@ -568,24 +568,31 @@ class FeedbackHandler(object):
         idea_dict = mongodb_controller.get_idea_dict(idea_id)
         problem_text = mongodb_controller.get_problem_text(idea_dict[PROBLEM_ID])
         idea_text = idea_dict[mongodb_controller.TEXT]
-        hit_id = mturk_controller.create_suggestion_hit(problem_text, idea_text, feedback, count_goal)
-        # add the hit_id to schema
-        if hit_id == "FAIL":
-            return {"success": False}
-        mongodb_controller.save_feedback(idea_id, feedback, count_goal, hit_id, idea_dict[PROBLEM_ID])
+
+        for feedback in feedbacks:
+            hit_id = mturk_controller.create_suggestion_hit(problem_text, idea_text, feedback, count_goal)
+            # add the hit_id to schema
+            if hit_id == "FAIL":
+                return {"success": False}
+            mongodb_controller.save_feedback(idea_id, feedback, count_goal, hit_id, idea_dict[PROBLEM_ID])
+            mongodb_controller.idea_launched(idea_id)
         return {"success": True,
-                "feedback_id": hit_id}
+                "idea_slug": idea_dict[mongodb_controller.SLUG]}
 
 
 def update_suggestions(problem_id):
+    idea_to_count = {}
     for feedback in mongodb_controller.get_feedbacks(problem_id):
         suggestion_hit_id = feedback[mongodb_controller.SUGGESTION_HIT_ID]
         suggestions = mturk_controller.get_suggestion_hit_results(suggestion_hit_id)
         if suggestions == "FAIL":
             continue
-        suggestions_count = 0
+        idea_id = feedback[mongodb_controller.IDEA_ID]
         for suggestion in suggestions:
-            suggestions_count += 1
+            if idea_id in idea_to_count:
+                idea_to_count[idea_id] += 1
+            else:
+                idea_to_count[idea_id] = 1
             # replace time with a readable one and add to DB
             epoch_time_ms = long(suggestion.pop(mongodb_controller.TIME_CREATED))
             epoch_time = epoch_time_ms / 1000.0
@@ -594,7 +601,7 @@ def update_suggestions(problem_id):
             # add problem id
             suggestion[mongodb_controller.PROBLEM_ID] = problem_id
             mongodb_controller.add_suggestion(suggestion)
-        mongodb_controller.update_suggestions_count(suggestion_hit_id, suggestions_count)
+    mongodb_controller.update_suggestions_count(idea_to_count)
 
 
 class SuggestionUpdatesHandler(object):
@@ -609,6 +616,20 @@ class SuggestionUpdatesHandler(object):
         problem_id = data[PROBLEM_ID]
         update_suggestions(problem_id)
         return mongodb_controller.get_suggestion_counts(problem_id)
+
+
+class AcceptedSchemasCountHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+        data = cherrypy.request.json
+        problem_id = data[PROBLEM_ID]
+        count = mongodb_controller.get_accepted_schemas_count(problem_id)
+        return {"count": count}
 
 
 class TestHandler(object):
@@ -702,6 +723,9 @@ if __name__ == '__main__':
         '/suggestion_updates': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
+        '/get_accepted_schemas_count': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
         '/test': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
@@ -722,6 +746,7 @@ if __name__ == '__main__':
     webapp.post_reject = RejectHandler()
     webapp.post_feedback = FeedbackHandler()
     webapp.suggestion_updates = SuggestionUpdatesHandler()
+    webapp.get_accepted_schemas_count = AcceptedSchemasCountHandler()
     webapp.test = TestHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
