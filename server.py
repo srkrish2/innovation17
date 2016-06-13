@@ -558,6 +558,7 @@ class FeedbackHandler(object):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
+        print "this is data including count_goal", data
         idea_id = data["idea_id"]
         feedbacks = data["feedbacks"]
 
