@@ -4,7 +4,7 @@
 <div class="ui container center middle aligned first-page-element">
 	<div class="ui equal width grid">
 		<table class="ui cell padded table">
-			<thead>
+			<thead class={{problem_id}}>
 				<tr>
 					<td>Generated Idea</td>
 					<td>Inspiration</td>
@@ -22,7 +22,7 @@
 					<td>{{idea.problem_text}}</td>
 					<td>
 						{% if idea.launched == true %}
-						<div class="ui button view"><a href="{{idea.suggestions_page_link}}" class="ui label suggestion suggestion-list"><i class="icon doctor"></i>{{idea.suggestion_count}}</a></div>
+						<div class="ui button view"><a href="{{idea.suggestions_page_link|default('#')}}" class="ui label suggestion suggestion-list"><i class="icon doctor"></i>{{idea.suggestion_count|default(0)}}</a></div>
 						{% else %}
 						<div class="ui button ac proceed">Accept</div>
 						<div class="ui button red rj">Reject</div>
