@@ -55,6 +55,7 @@ TEXT = "text"
 COUNT_GOAL = "count_goal"
 LAUNCHED = "launched"
 SUGGESTIONS_PAGE_LINK = "suggestions_page_link"
+FEEDBACK_TEXT = "feedback_text"
 
 
 def save_problem(temporary_id, title, description, owner_username, schema_count_goal, time_created):
@@ -209,7 +210,7 @@ def add_idea(idea):
         # set suggestion count to 0, launched
         idea[SUGGESTION_COUNT] = 0
         idea[LAUNCHED] = False
-        idea[SUGGESTIONS_PAGE_LINK] = "/{}/suggestions".format(slugify(title))
+        idea[SLUG] = slugify(title)
         ideas_collection.insert_one(idea)
 
 
@@ -447,6 +448,11 @@ def get_accepted_schemas_count(problem_id):
         if not schema[IS_REJECTED]:
             count += 1
     return count
+
+
+def get_suggestions(idea_slug):
+    idea_id = ideas_collection.find_one({SLUG: idea_slug})
+    return suggestions_collection.find({IDEA_ID: idea_id})
 
 
 def slugify(s):

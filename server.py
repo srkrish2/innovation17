@@ -27,7 +27,6 @@ READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 PREVIOUS_URL_KEY = "previous_url"
 USERNAME_KEY = "username"
 
-
 @cherrypy.popargs('problem_slug')
 class HtmlPageLoader(object):
 
@@ -88,6 +87,10 @@ class HtmlPageLoader(object):
     def profile_info(self):
         return render_profile()
 
+    @cherrypy.expose
+    def suggestions(self, problem_slug):
+        return render_suggestions_page(problem_slug)
+
 
 def render_homepage():
     if USERNAME_KEY in cherrypy.session:
@@ -143,6 +146,7 @@ def render_ideas_page(problem_slug):
             idea["problem_text"] = problem_text
             idea["schema_text"] = schema_text
             idea["inspiration_text"] = inspiration_summary
+            idea[mongodb_controller.SUGGESTIONS_PAGE_LINK] = "/{}/suggestions".format(idea[mongodb_controller.SLUG])
             ideas_dicts_list.append(idea)
         return template.render(ideas=ideas_dicts_list, problem_id=problem_id)
 
@@ -163,6 +167,14 @@ def render_view_page(problem_slug):
         template = env.get_template('new_problem.html')
         return template.render(count_goal=count_goal, problem_id=problem_id, title=title,
                                operation="view", description=description)
+
+
+def render_suggestions_page(idea_slug):
+    suggestions = []
+    for suggestion in mongodb_controller.get_suggestions(idea_slug):
+        suggestions.append(suggestion)
+    template = env.get_template('suggestions.html')
+    return template.render(suggestions=suggestions)
 
 
 def check_problem_access(problem_slug):
@@ -558,7 +570,6 @@ class FeedbackHandler(object):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
-        print "this is data including count_goal", data
         idea_id = data["idea_id"]
         feedbacks = data["feedbacks"]
 
@@ -602,6 +613,10 @@ def update_suggestions(problem_id):
             suggestion[mongodb_controller.TIME_CREATED] = readable_time
             # add problem id
             suggestion[mongodb_controller.PROBLEM_ID] = problem_id
+            # add idea id
+            suggestion[mongodb_controller.IDEA_ID] = idea_id
+            # add feedback text
+            suggestion[mongodb_controller.FEEDBACK_TEXT] = feedback[mongodb_controller.TEXT]
             mongodb_controller.add_suggestion(suggestion)
     mongodb_controller.update_suggestions_count(idea_to_count)
 

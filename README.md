@@ -99,14 +99,15 @@ array of maps (dictionaries). each map has the following format:
 ```
 
 ### /{{idea_slug}}/suggestions page parser input
-array of maps (dictionaries). each map has the following format:
 ```
+array of maps:
 {
 	"text" : string,
 	"time_created" : "10 Jun 2016 12:32 PM",
 	"suggestion_id" : string,
 	"worker_id" : string,
-	"problem_id" : string
+	"problem_id" : string,
+	"feedback_text": string
 }
 ```
 
