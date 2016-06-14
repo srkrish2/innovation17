@@ -2,7 +2,7 @@
 {% set active_page = "home" %}
 {% block content %}
 <div class="ui middle aligned center container content first-page-element">
-  <div class="ui schema-list equal width grid">
+  <div class="ui schema-list equal width attached grid">
     <table class='ui fixed celled padded table'>
       <thead class={{problem_id}}>
         <tr>
@@ -42,7 +42,9 @@
           <div class="ui button">Accept all</div>
           <div class="ui button colspan-btn">Reject all</div>
           <div class="ui float right blue button colspan-btn relaunch">Relaunch</div>
+          {% if problem_stage == "schema" %}
           <div class="ui float right teal button colspan-btn proceed">Proceed</div>
+          {% endif %}
         </th>
       </tr>
     </tfoot>
@@ -68,7 +70,36 @@
     </div>
   </div>
 </div>
-
+<div class="ui four bottom attached steps">
+  <div class="step schema">
+    <i class="icon sitemap"></i>
+    <div class="content">
+      <div class="title">Schema</div>
+      <div class="description">Gathering abstract structure or patterns of the problem</div>
+    </div>
+  </div>
+  <div class="step inspiration">
+    <i class="icon write"></i>
+    <div class="content">
+      <div class="title">Inspiration</div>
+      <div class="description">Inquiring analogous situations or solutions based on schemas</div>
+    </div>
+  </div>
+  <div class="step idea">
+    <i class="icon idea"></i>
+    <div class="content">
+      <div class="title">Idea</div>
+      <div class="description">Develop solutions based on the inspirations and original problems</div>
+    </div>
+  </div>
+  <div class="step">
+    <i class="icon paint brush"></i>
+    <div class="content">
+      <div class="title">Suggestion</div>
+      <div class="description">Revise solutions with suggestions based on feedbacks from requesters</div>
+    </div>
+  </div>
+</div>
 </div>
 
 <script src="/static/assets/js/schemas.js"></script>

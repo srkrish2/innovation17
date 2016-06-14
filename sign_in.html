@@ -9,27 +9,11 @@
 
   <!-- Site Properties -->
   <title>Crowd Innovator Login</title>
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/reset.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/site.css">
-
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/container.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/grid.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/header.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/image.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/menu.css">
-
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/divider.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/segment.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/form.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/input.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/button.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/list.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/message.css">
-  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/components/icon.css">
-
+  <link rel="stylesheet" type="text/css" href="/static/semantic/dist/semantic.css">
+  <link rel="stylesheet" type="text/css" href="/static/assets/style/index.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
   <script src="/static/semantic/dist/components/form.js"></script>
-  <script src="/static/semantic/dist/components/transition.js"></script>
+  
 
   <style type="text/css">
     body {
@@ -42,23 +26,24 @@
       margin-top: -100px;
     }
     .column {
-      max-width: 80%;
+      max-width: 90%;
     }
   </style>
 </head>
 <body>
   <div class="ui middle aligned center aligned grid">
     <div class="column">
-      <div class="row">
-        <div class="ui black image header middle aligned center">
-          <img src="/static/assets/images/logo.png" class="image">
-          <div class="content">
-            Sign in
-          </div>
-        </div>
-      </div>
+
       <div class="ui two column relative middle aligned stackable grid">
         <div class="column">
+          <div class="row">
+            <div class="ui black image header middle aligned center">
+              <img src="/static/assets/images/logo.png" class="image">
+              <div class="content">
+                Sign in
+              </div>
+            </div>
+          </div>
           <form class="ui large form">
             <div class="ui stacked segment">
               <div class="field">
@@ -82,16 +67,58 @@
           Or
         </div>
         <div class="center aligned column">
-          <div class="ui big teal labeled icon button">
-            <a href="/register">Register<i class="signup icon"></i></a>
+          <div class="row">
+            <div class="ui black image header middle aligned center">
+              <img src="/static/assets/images/join.png" class="image">
+              <div class="content">
+                Join Us Now!
+              </div>
+            </div>
           </div>
+          <form action="" class="ui large form">
+            <div class="ui stacked segment">
+
+              <div class="field">
+                <div class="ui row field required corner labeled input">
+                  <label >Name</label>
+                  <input type="text" name="username" id="" placeholder="Username Name">
+                  <div class="ui corner label">
+                    <i class="asterisk icon"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui row required field corner labeled input">
+                  <label >Email</label>
+                  <input type="text" name="email" id="" placeholder="Email">
+                  <div class="ui corner label">
+                    <i class="asterisk icon"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui row required field red corner labeled input">
+                  <label>Password</label>
+                  <input type="password" name="password" id="password" placeholder="Enter your password">
+                  <div class="ui corner label"><i class="asterisk icon"></i></div>
+                </div>
+              </div>
+              
+              <div class="ui error message"></div>
+
+            </div>
+          </form>
+
+          <button class="ui teal button profileregister" type="submit"><i class="signup icon"></i>Register</button>
         </div>
+        
       </div>
-
-
-
     </div>
+
+
+
   </div>
-  <script src="/static/assets/js/sign_in.js"></script>
+</div>
+<script src="/static/assets/js/sign_in.js"></script>
 </body>
 </html>

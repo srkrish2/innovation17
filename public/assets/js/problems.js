@@ -44,6 +44,13 @@
 }(window));
 
 function makePostRequest(){
+    // get total seconds between the times
+    // var delta = Math.abs(date_future - date_now) / 1000;
+
+    // // calculate (and subtract) whole days
+    // var days = Math.floor(delta / 86400);
+    // if(days>3)return;
+
     $.ajax({
         type: "GET",
         url: '/get_count_updates',
