@@ -102,12 +102,13 @@ array of maps (dictionaries). each map has the following format:
 ```
 array of maps:
 {
-	"text" : string,
-	"time_created" : "10 Jun 2016 12:32 PM",
+    "text" : string,
+	"idea_id" : string,
+	"time_created" : string,
 	"suggestion_id" : string,
 	"worker_id" : string,
-	"problem_id" : string,
-	"feedback_text": string
+	"feedback_text" : string,
+	"problem_id" : string
 }
 ```
 

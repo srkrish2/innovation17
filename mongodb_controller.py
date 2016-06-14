@@ -210,7 +210,9 @@ def add_idea(idea):
         # set suggestion count to 0, launched
         idea[SUGGESTION_COUNT] = 0
         idea[LAUNCHED] = False
+        slug = slugify(title)
         idea[SLUG] = slugify(title)
+        idea[SUGGESTIONS_PAGE_LINK] = "/{}/suggestions".format(slug)
         ideas_collection.insert_one(idea)
 
 
@@ -397,7 +399,6 @@ def save_feedback(idea_id, feedback_text, count_goal, hit_id, problem_id):
         COUNT_GOAL: count_goal,
         SUGGESTION_HIT_ID: hit_id,
         PROBLEM_ID: problem_id,
-        SUGGESTION_COUNT: 0
     }
     feedbacks_collection.insert_one(feedback)
 
@@ -422,12 +423,12 @@ def update_suggestions_count(idea_to_count):
 
 
 def get_suggestion_counts(problem_id):
-    feedbacks = feedbacks_collection.find({PROBLEM_ID: problem_id})
+    ideas = ideas_collection.find({PROBLEM_ID: problem_id})
     result = []
-    for feedback in feedbacks:
+    for idea in ideas:
         for_result = {
-            "feedback_id": feedback[SUGGESTION_HIT_ID],
-            SUGGESTION_COUNT: feedback[SUGGESTION_COUNT]
+            IDEA_ID: idea[IDEA_ID],
+            SUGGESTION_COUNT: idea[SUGGESTION_COUNT]
         }
         result.append(for_result)
     return result
@@ -451,8 +452,8 @@ def get_accepted_schemas_count(problem_id):
 
 
 def get_suggestions(idea_slug):
-    idea_id = ideas_collection.find_one({SLUG: idea_slug})
-    return suggestions_collection.find({IDEA_ID: idea_id})
+    idea = ideas_collection.find_one({SLUG: idea_slug})
+    return suggestions_collection.find({IDEA_ID: idea[IDEA_ID]})
 
 
 def slugify(s):

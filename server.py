@@ -146,7 +146,6 @@ def render_ideas_page(problem_slug):
             idea["problem_text"] = problem_text
             idea["schema_text"] = schema_text
             idea["inspiration_text"] = inspiration_summary
-            idea[mongodb_controller.SUGGESTIONS_PAGE_LINK] = "/{}/suggestions".format(idea[mongodb_controller.SLUG])
             ideas_dicts_list.append(idea)
         return template.render(ideas=ideas_dicts_list, problem_id=problem_id)
 
@@ -173,8 +172,9 @@ def render_suggestions_page(idea_slug):
     suggestions = []
     for suggestion in mongodb_controller.get_suggestions(idea_slug):
         suggestions.append(suggestion)
-    template = env.get_template('suggestions.html')
-    return template.render(suggestions=suggestions)
+    return str(suggestions)
+    # template = env.get_template('suggestions.html')
+    # return template.render(suggestions=suggestions)
 
 
 def check_problem_access(problem_slug):
@@ -530,15 +530,16 @@ class IdeaTaskHandler(object):
             if not inspiration[mongodb_controller.IS_REJECTED]:
                 submitted_inspirations_count += 1
                 problem_text = mongodb_controller.get_problem_text(inspiration[PROBLEM_ID])
-                link = inspiration[mongodb_controller.INSPIRATION_LINK]
+                source_link = inspiration[mongodb_controller.INSPIRATION_LINK]
+                image_link = inspiration[mongodb_controller.INSPIRATION_ADDITIONAL]
                 explanation = inspiration[mongodb_controller.INSPIRATION_REASON]
 
-                hit_id = mturk_controller.create_idea_hit(problem_text, link, explanation, count_goal)
+                hit_id = mturk_controller.create_idea_hit(problem_text, source_link, image_link, explanation,count_goal)
                 # add the hit_id to schema
                 if hit_id == "FAIL":
                     print "submitting one of the inspirations create_idea_hit FAILED!!"
                     continue
-                mongodb_controller.add_idea_hit_id_to_inspiration(hit_id, inspiration[mongodb_controller.INSPIRATION_ID])
+                mongodb_controller.add_idea_hit_id_to_inspiration(hit_id,inspiration[mongodb_controller.INSPIRATION_ID])
         mongodb_controller.set_idea_stage(problem_id, submitted_inspirations_count*count_goal)
         return {"success": True,
                 "url": "problems"}
@@ -632,7 +633,8 @@ class SuggestionUpdatesHandler(object):
         data = cherrypy.request.json
         problem_id = data[PROBLEM_ID]
         update_suggestions(problem_id)
-        return mongodb_controller.get_suggestion_counts(problem_id)
+        result = mongodb_controller.get_suggestion_counts(problem_id)
+        return result
 
 
 class AcceptedSchemasCountHandler(object):

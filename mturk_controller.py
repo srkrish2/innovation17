@@ -158,9 +158,10 @@ def get_inspiration_hit_results(hit_id):
     return inspirations
 
 
-def create_idea_hit(problem, link, explanation, assignments_num):
+def create_idea_hit(problem, source_link, image_link, explanation, assignments_num):
     # run the jarred java file for submitting mturk task, passing problem as args[0]
-    p = subprocess.Popen(['java', '-jar', 'PostIdeaHIT.jar', problem, link, explanation, str(assignments_num)],
+    p = subprocess.Popen(['java', '-jar', 'PostIdeaHIT.jar', problem, source_link, image_link, explanation,
+                          str(assignments_num)],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
