@@ -14,6 +14,8 @@ import string
 import mturk_controller
 import mongodb_controller
 import datetime
+from threading import Thread
+import time
 
 from jinja2 import Environment, PackageLoader
 # import passlib.hash
@@ -114,7 +116,9 @@ def render_schemas_page(problem_slug):
         problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
         schemas = mongodb_controller.get_schemas(problem_id)
         template = env.get_template('schemas.html')
-        return template.render(schemas=schemas, problem_id=problem_id)
+        return template.render(schemas=schemas, problem_id=problem_id,
+                               problem_stage=mongodb_controller.get_stage(problem_id),
+                               stage_page_links=make_links_list(problem_slug, problem_id))
 
 
 def render_inspirations_page(problem_slug):
@@ -129,7 +133,9 @@ def render_inspirations_page(problem_slug):
             inspiration["problem_text"] = problem_text
             inspiration["schema_text"] = schema_text
             inspiration_dicts_list.append(inspiration)
-        return template.render(inspirations=inspiration_dicts_list, problem_id=problem_id)
+        return template.render(inspirations=inspiration_dicts_list, problem_id=problem_id,
+                               problem_stage=mongodb_controller.get_stage(problem_id),
+                               stage_page_links=make_links_list(problem_slug, problem_id))
 
 
 def render_ideas_page(problem_slug):
@@ -147,7 +153,9 @@ def render_ideas_page(problem_slug):
             idea["schema_text"] = schema_text
             idea["inspiration_text"] = inspiration_summary
             ideas_dicts_list.append(idea)
-        return template.render(ideas=ideas_dicts_list, problem_id=problem_id)
+        return template.render(ideas=ideas_dicts_list, problem_id=problem_id,
+                               problem_stage=mongodb_controller.get_stage(problem_id),
+                               stage_page_links=make_links_list(problem_slug, problem_id))
 
 
 def render_edit_page(problem_slug):
@@ -189,6 +197,24 @@ def check_problem_access(problem_slug):
         raise cherrypy.HTTPRedirect("/sign_in")
 
 
+def update_hit_results(username):
+    start = time.clock()
+    for problem_id in mongodb_controller.get_users_problem_ids(username):
+        stage = mongodb_controller.get_stage(problem_id)
+        if stage == mongodb_controller.STAGE_SCHEMA:
+            if not mongodb_controller.did_reach_schema_count_goal(problem_id):
+                update_schemas_for_problem(problem_id)
+        elif stage == mongodb_controller.STAGE_INSPIRATION:
+            if not mongodb_controller.did_reach_inspiration_count_goal(problem_id):
+                update_inspirations_for_problem(problem_id)
+        elif stage == mongodb_controller.STAGE_IDEA:
+            if not mongodb_controller.did_reach_idea_count_goal(problem_id):
+                update_ideas_for_problem(problem_id)
+    elapsed = time.clock()
+    elapsed = elapsed - start
+    print "Done updating! Time spent:", elapsed*1000
+
+
 class CountUpdatesHandler(object):
     exposed = True
 
@@ -198,20 +224,16 @@ class CountUpdatesHandler(object):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
         username = cherrypy.session[USERNAME_KEY]
-        for problem_id in mongodb_controller.get_users_problem_ids(username):
-            stage = mongodb_controller.get_stage(problem_id)
-            if stage == mongodb_controller.STAGE_SCHEMA:
-                update_schemas_for_problem(problem_id)
-            elif stage == mongodb_controller.STAGE_INSPIRATION:
-                update_inspirations_for_problem(problem_id)
-            elif stage == mongodb_controller.STAGE_IDEA:
-                update_ideas_for_problem(problem_id)
+        thread = Thread(target=update_hit_results, args=[username])
+        thread.start()
         return mongodb_controller.get_counts_for_user(username)
 
 
 def update_schemas_for_problem(hit_id):
     schema_dicts = mturk_controller.get_schema_making_results(hit_id)
-
+    if schema_dicts == "FAIL":
+        print "mturk_controller.update_schemas_for_problem - FAIL!"
+        return
     schema_count = 0
     # replace time with a readable one and add to DB
     for schema_dict in schema_dicts:
@@ -651,15 +673,6 @@ class AcceptedSchemasCountHandler(object):
         return {"count": count}
 
 
-class TestHandler(object):
-    exposed = True
-
-    def POST(self):
-        import time
-        time.sleep(10)
-        return "lol"
-
-
 def render_new_problem():
     template = env.get_template('new_problem.html')
     return template.render()
@@ -690,6 +703,18 @@ def unanticipated_error():
     cherrypy.response.body = [
         "<html><body>Sorry, an error occurred. Please contact the admin</body></html>"
     ]
+
+
+def make_links_list(slug, problem_id):
+    result = ["/{}/schemas".format(slug),"/{}/inspirations".format(slug),"/{}/ideas".format(slug)]
+    stage = mongodb_controller.get_stage(problem_id)
+    if stage == mongodb_controller.STAGE_IDEA:
+        return result
+    result.pop()
+    if stage == mongodb_controller.STAGE_INSPIRATION:
+        return result
+    result.pop()
+    return result
 
 
 if __name__ == '__main__':
@@ -744,9 +769,6 @@ if __name__ == '__main__':
         },
         '/get_accepted_schemas_count': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        },
-        '/test': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -766,7 +788,6 @@ if __name__ == '__main__':
     webapp.post_feedback = FeedbackHandler()
     webapp.suggestion_updates = SuggestionUpdatesHandler()
     webapp.get_accepted_schemas_count = AcceptedSchemasCountHandler()
-    webapp.test = TestHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 

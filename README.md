@@ -58,7 +58,7 @@ array of maps (dictionaries). each map has the following format:
     "worker_id": string,
     "schema_id": string
 }
-also problem_id. see render_schemas_page in server.py
+also problem_id, problem_stage, stage_page_links
 ```
 
 ### /{{problem_slug}}/inspirations page parser input
@@ -77,6 +77,7 @@ array of maps (dictionaries). each map has the following format:
     "schema_id":string,
     "schema_text": string
 }
+also problem_id, problem_stage, stage_page_links
 ```
 
 ### /{{problem_slug}}/ideas page parser input
@@ -96,6 +97,7 @@ array of maps (dictionaries). each map has the following format:
     "suggestion_count": int,
     "suggestions_page_link": string  // if launched
 }
+also problem_id, problem_stage, stage_page_links
 ```
 
 ### /{{idea_slug}}/suggestions page parser input

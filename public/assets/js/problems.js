@@ -1,6 +1,6 @@
 (function(global){
     makePostRequest();
-    var interval = setInterval(makePostRequest,30000);
+    var interval = setInterval(makePostRequest,10000);
     $(document).on('click', 'a.schemalist, div.button', function(e){
         clearInterval(interval);
     });
@@ -22,7 +22,6 @@
                 $('tr.'+sdata['new_id']+' .ui.button.publish').addClass('hidden');
                 $('tr.'+sdata['new_id']+' .ui.button.view').removeClass('hidden');
                 makePostRequest();
-                interval = setInterval(makePostRequest,30000);
                 ///$('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";
             }
         });
