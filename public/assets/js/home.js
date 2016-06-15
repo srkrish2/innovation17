@@ -20,14 +20,14 @@
 
 
 // Pls don't remove
-$.ajax({
-    type: 'POST',
-    url: '/test',
-    error: function(e){
-        console.log("error! "+e)
-    },
-    success: function(e){
-        console.log("returned!")
-    }
-})
-window.alert("line after")
+//$.ajax({
+//    type: 'POST',
+//    url: '/test',
+//    error: function(e){
+//        console.log("error! "+e)
+//    },
+//    success: function(e){
+//        console.log("returned!")
+//    }
+//})
+//window.alert("line after")

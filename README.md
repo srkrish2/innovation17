@@ -54,7 +54,7 @@ array of maps (dictionaries). each map has the following format:
 array of maps (dictionaries). each map has the following format:
 {
     "text": string,
-    "time": "19 May 2016 12:19 PM",
+    "time_created": "19 May 2016 12:19 PM",
     "worker_id": string,
     "schema_id": string
 }
@@ -112,6 +112,7 @@ array of maps:
 	"feedback_text" : string,
 	"problem_id" : string
 }
+also idea_text
 ```
 
 
@@ -120,8 +121,7 @@ input
 ```
 {
   "title": string,
-  "description": string,
-  "schema_count_goal": int
+  "description": string
 }
 ```
 output
@@ -131,6 +131,7 @@ output
   "url": string,       //only if success=true
 }
 ```
+
 
 ### /post_new_problem POST request
 input
@@ -148,6 +149,12 @@ output
   "url": string,       //only if success=true
 }
 ```
+
+### /post_schema_task
+problem id
+count_goal
+
+
 
 ### /publish_problem POST request
 input
@@ -206,17 +213,6 @@ array of maps. each map has the following format:
     "schema_count": int,
     "inspiration_count": int,
     "idea_count": int
-}
-```
-
-### /post_schemas_for_inspiration POST request
-input
-```
-{
-    "schemas": [
-        {"schema_id":string},
-        {"schema_id":string}
-    ]
 }
 ```
 

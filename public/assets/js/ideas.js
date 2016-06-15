@@ -1,6 +1,6 @@
 (function(global){
 	if($('.suggestion-list').length) makePostRequest();
-    var interval = setInterval(makePostRequest,30000);
+    var interval = setInterval(makePostRequest,10000);
 	var currentIdea;
 	$(document).on('click','.proceed',function(e){
 		$('.ui.modal .teal.ui.label').html($(e.currentTarget.parentElement).siblings()[0]).innerHTML;
@@ -26,8 +26,7 @@
 				$('tr.'+currentIdea+' td')[4].html('<div class="ui button view"><a href='+ sdata["suggestions_page_link"]+'><i class="icon doctor"></i>0</a></div>');
 				console.log('launched suggestion seeking');
 				$('.ui.modal').modal('hide');
-				 makePostRequest();
-                interval = setInterval(makePostRequest,30000);
+				makePostRequest();
 			},
 			error: function(e){
 				console.log("error! "+e);
