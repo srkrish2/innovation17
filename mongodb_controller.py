@@ -456,6 +456,21 @@ def get_suggestions(idea_slug):
     return suggestions_collection.find({IDEA_ID: idea[IDEA_ID]})
 
 
+def did_reach_schema_count_goal(problem_id):
+    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
+    return problem[SCHEMA_COUNT] == problem[SCHEMA_COUNT_GOAL]
+
+
+def did_reach_idea_count_goal(problem_id):
+    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
+    return problem[IDEA_COUNT] == problem[IDEA_COUNT_GOAL]
+
+
+def did_reach_inspiration_count_goal(problem_id):
+    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
+    return problem[INSPIRATION_COUNT] == problem[INSPIRATION_COUNT_GOAL]
+
+
 def slugify(s):
     s = s.lower()
     for c in [' ', '-', '.', '/']:

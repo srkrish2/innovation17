@@ -349,23 +349,4 @@ def get_schema_ranking_results(hit_id):
         else:
             break
     return ranks
-
-
-def get_schema_making_status(hit_id):
-    p = subprocess.Popen(['java', '-jar', 'SchemaMakingStatus.jar', hit_id],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # output format:
-    # submitted_assignments_count if success
-    # else:
-    # FAIL
-    # localizedMessage
-    jar_output_file = p.stdout
-    submitted_assignments_count = jar_output_file.readline().rstrip()
-    if submitted_assignments_count == "FAIL":
-        print "SchemaMakingStatus - FAIL"
-        print "message:", jar_output_file.readline().rstrip()
-        return 0
-    print "get_schema_making_status:", "count =", submitted_assignments_count
-    return submitted_assignments_count
 """

@@ -1,28 +1,28 @@
 (function(global){
     makePostRequest();
-    var interval = setInterval(makePostRequest,30000);
+    var interval = setInterval(makePostRequest,10000);
     $(document).on('click', 'a.schemalist, div.button', function(e){
         clearInterval(interval);
     });
     $(document).on('click','div.button.publish',function(e){
         e.preventDefault();
         $(e.currentTarget).innerHTML="<i class='paw icon'></i>0";
+        var rowclass = $(e.currentTarget.parentElement.parentElement).attr('class');
         $.ajax({
             type: "POST",
             url: "/publish_problem",
             contentType: "application/json",
             data: JSON.stringify({
-                "problem_id": $(e.currentTarget.parentElement.parentElement).attr('class')
+                "problem_id": rowclass
             }),
             success: function(sdata){
                 console.log("return back from sdata");
-                if(sdata['success'])$(e.currentTarget.parentElement.parentElement).attr('class',sdata['new_id']);
-                $('tr.'+sdata['new_id']+' .ui.button.edit').addClass('hidden');
-                $('tr.'+sdata['new_id']+' .ui.button.delete').addClass('hidden');
-                $('tr.'+sdata['new_id']+' .ui.button.publish').addClass('hidden');
-                $('tr.'+sdata['new_id']+' .ui.button.view').removeClass('hidden');
+                // if(sdata['success'])$(e.currentTarget.parentElement.parentElement).attr('class',sdata['new_id']);
+                $('tr.'+rowclass+' .ui.button.edit').addClass('hidden');
+                $('tr.'+rowclass+' .ui.button.delete').addClass('hidden');
+                $('tr.'+rowclass+' .ui.button.publish').addClass('hidden');
+                $('tr.'+rowclass+' .ui.button.view').removeClass('hidden');
                 makePostRequest();
-                interval = setInterval(makePostRequest,30000);
                 ///$('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";
             }
         });

@@ -1,7 +1,7 @@
 $(init);
 
 var POST_URL = "/post_sign_in";
-var LOGIN_SELECTOR = ".ui.form";
+var LOGIN_SELECTOR = ".login.ui.form";
 
 function init() {
     $(LOGIN_SELECTOR).form(VALIDATION_RULES);
@@ -25,11 +25,10 @@ var VALIDATION_RULES = {
             }
             ]
         }
-    },
-    onSuccess: submitForm
+    }
 };
 
-function submitForm(e) {
+$(document).on('click','.login',function(e){
     var name = $(LOGIN_SELECTOR).form("get value", "name");
     var password = $(LOGIN_SELECTOR).form("get value", "password");
     var data = {
@@ -57,9 +56,11 @@ function submitForm(e) {
         }
     });
     e.preventDefault();
-}
+})
 
-var REG_SELECTOR = '.ui.form';
+
+
+var REG_SELECTOR = '.register.ui.form';
 var REG_RULES = {
     fields: {
         username: {

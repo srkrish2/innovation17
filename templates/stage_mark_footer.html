@@ -1,0 +1,67 @@
+ {% extends "base.html" %}
+{% set active_page = "home" %}
+{% set active_stage = active_stage|default('unpublished') -%}
+{% block progress %}
+ <div class="row">
+        <div class="one wide column"></div>
+        <div class="fourteen wide column">
+          <div class="ui five bottom attached steps">
+  {% if problem_stage == "unpublished" %}
+    <div class="active step unpublished">
+      {% else %}
+      <div class="step unpublished">
+        {% endif %}
+        <i class="icon edit"></i>
+        <div class="content">
+          <div class="title">Unpublished problem</div>
+          <div class="description">Compose the descriptios and frame the problem</div>
+        </div>
+      </div>
+      {% if problem_stage == "schema" %}
+      <div class="active step schema">
+        {% else %}
+        <div class="step schema">
+          {% endif %}
+          <i class="icon sitemap"></i>
+          <div class="content">
+            <div class="title"><a href={{schemas_page_link|default('#')}}>Schema</a></div>
+            <div class="description">Gathering abstract structure or patterns of the problem</div>
+          </div>
+        </div>
+        {% if problem_stage=='inspiration' %}
+        <div class="active step inspiration">
+          {% else %}
+          <div class="step inspiration">
+            {% endif %}
+            <i class="icon write"></i>
+            <div class="content">
+              <div class="title"><a href={{inspirations_page_link|default('#')}}>Inspiration</a></div>
+              <div class="description">Inquiring analogous situations or solutions based on schemas</div>
+            </div>
+          </div>
+          {% if problem_stage == "idea" %}
+          <div class="active step idea">
+            {% else %}
+            <div class="step idea">
+              {% endif %}
+              <i class="icon idea"></i>
+              <div class="content">
+                <div class="title"><a href={{ideas_page_link|default('#')}}>Idea</a></div>
+                <div class="description">Develop solutions based on the inspirations and original problems</div>
+              </div>
+            </div>
+            {% if problem_stage == "suggestion" %}
+            <div class="active step suggestion">
+             {% else %}
+             <div class="step suggestion">
+               {% endif %}
+               <i class="icon paint brush"></i>
+               <div class="content">
+                <div class="title"><a href={{suggestions_page_link|default('#')}}>Suggestion</a></div>
+                <div class="description">Revise solutions with suggestions based on feedbacks from requesters</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endblock %}

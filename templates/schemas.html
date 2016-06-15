@@ -1,107 +1,80 @@
-{% extends "base.html" %}
+{% extends "stage_mark_footer.html" %}
 {% set active_page = "home" %}
 {% block content %}
-<div class="ui middle aligned center container content first-page-element">
-  <div class="ui schema-list equal width attached grid">
-    <table class='ui fixed celled padded table'>
-      <thead class={{problem_id}}>
-        <tr>
-          <th>Schema Content</th>
-          <th>Date</th>
-          <th>By</th>
-          <th>Action</th>
+{% set navigation_bar = [
+  'rejected',
+  'accepted',
+  'processed'
+  ] -%}
+  <div class="ui middle aligned center container content first-page-element">
+    <div class="ui schema-list equal width attached grid">
+      <table class='ui fixed celled padded table'>
+        <thead class={{problem_id}}>
+          <tr>
+            <th>Schema Content</th>
+            <th>Date</th>
+            <th>By</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for schema in schemas %}
+          <tr class="{{'schema-id-'~schema.schema_id}}{% if schema.is_rejected == true %} rj
+          {% endif %}"
+          >
+          <td>
+            <h2 class="ui aligned sortable centered header">
+              <a href="get_schema" class="schema-content">{{schema.text}}</a>
+            </h2>
+          </td>
+
+          <td>{{schema.time}}</td>
+          <td>{{schema.worker_id}}</td>
+          <td>
+            {% if schema.is_rejected == true %}
+            <div class="ui button rj">Accept</div>
+            {% else %}
+            <div class="ui button red rj">Reject</div>
+            {% endif %}
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        {% for schema in schemas %}
-        <tr class="{{'schema-id-'~schema.schema_id}}{% if schema.is_rejected == true %} rj
-        {% endif %}"
-        >
-        <td>
-          <h2 class="ui aligned sortable centered header">
-            <a href="get_schema" class="schema-content">{{schema.text}}</a>
-          </h2>
-        </td>
+        {% endfor %}
 
-        <td>{{schema.time}}</td>
-        <td>{{schema.worker_id}}</td>
-        <td>
-          {% if schema.is_rejected == true %}
-          <div class="ui button rj">Accept</div>
-          {% else %}
-          <div class="ui button red rj">Reject</div>
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-
-    </tbody>
-    <tfoot class="full-width">
-      <tr class="padded">
-        <th colspan="4">
-          <div class="ui button">Accept all</div>
-          <div class="ui button colspan-btn">Reject all</div>
-          <div class="ui float right blue button colspan-btn relaunch">Relaunch</div>
-          {% if problem_stage == "schema" %}
-          <div class="ui float right teal button colspan-btn proceed">Proceed</div>
-          {% endif %}
-        </th>
-      </tr>
-    </tfoot>
-  </table>
-  <div class="ui twelve wide column">
-    <div class="ui modal launchnext inspiration">
-      <div class="ui text container aligned center middle padded">
-        <h3 class="ui header">Configure Inspiration Collection Task</h3>
-        <div class="ui form">
-          <div class="two fields">
-            <div class="field">
-              <div class="ui inverted black label">You have {{schemas|length}} schema(s) to initiate the inspirations from</div>
-            </div>
-            <div class="field">
-              <div class="field"><input type="text" class="count_goal" placeholder="Enter the number of inspiration for each schema">
+      </tbody>
+      <tfoot class="full-width">
+        <tr class="padded">
+          <th colspan="4">
+            <div class="ui button">Accept all</div>
+            <div class="ui button colspan-btn">Reject all</div>
+            <div class="ui float right teal button colspan-btn proceed">Proceed</div>
+          </th>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="ui twelve wide column">
+      <div class="ui modal launchnext inspiration">
+        <div class="ui text container aligned center middle padded">
+          <h3 class="ui header">Configure Inspiration Collection Task</h3>
+          <div class="ui form">
+            <div class="two fields">
+              <div class="field">
+                <div class="ui inverted black label">You have {{schemas|length}} schema(s) to initiate the inspirations from</div>
+              </div>
+              <div class="field">
+                <div class="field"><input type="text" class="count_goal" placeholder="Enter the number of inspiration for each schema">
+                </div>
               </div>
             </div>
+            <button class="ui button teal startinspiration">Confirm</button>
+            <button class="ui button teal cancelinspiration">Cancel</button>
           </div>
-          <button class="ui button teal startinspiration">Confirm</button>
-          <button class="ui button teal cancelinspiration">Cancel</button>
         </div>
       </div>
     </div>
   </div>
-</div>
-<div class="ui four bottom attached steps">
-  <div class="step schema">
-    <i class="icon sitemap"></i>
-    <div class="content">
-      <div class="title">Schema</div>
-      <div class="description">Gathering abstract structure or patterns of the problem</div>
-    </div>
-  </div>
-  <div class="step inspiration">
-    <i class="icon write"></i>
-    <div class="content">
-      <div class="title">Inspiration</div>
-      <div class="description">Inquiring analogous situations or solutions based on schemas</div>
-    </div>
-  </div>
-  <div class="step idea">
-    <i class="icon idea"></i>
-    <div class="content">
-      <div class="title">Idea</div>
-      <div class="description">Develop solutions based on the inspirations and original problems</div>
-    </div>
-  </div>
-  <div class="step">
-    <i class="icon paint brush"></i>
-    <div class="content">
-      <div class="title">Suggestion</div>
-      <div class="description">Revise solutions with suggestions based on feedbacks from requesters</div>
-    </div>
-  </div>
-</div>
-</div>
+  
+        </div>
 
-<script src="/static/assets/js/schemas.js"></script>
+        <script src="/static/assets/js/schemas.js"></script>
 
-{% endblock %}
+        {% endblock %}

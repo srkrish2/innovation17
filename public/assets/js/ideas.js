@@ -7,7 +7,7 @@
 		$('.ui.modal').modal('show');
 	});
 	$(document).on('click','.startsuggestion',function(e){
-		$('.ui.modal').hide();
+		$('.ui.modal').modal('hide');
 		var feedbacks = $('input.feedback'), feedbackArray = [];
 		for (var i = 0; i<feedbacks.length; i++){
 			feedbackArray.push(feedbacks[i].value);
