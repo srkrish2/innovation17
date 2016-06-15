@@ -93,3 +93,8 @@ input.fluid {
 tr.rj {
   background-color: rgba(0, 0, 0,0.28)!important;
 }
+
+/*.field .ui.input > .ui.corner.label {
+    top: 1px;
+    right: 0.8285714em;
+}*/

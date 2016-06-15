@@ -7,20 +7,21 @@
     $(document).on('click','div.button.publish',function(e){
         e.preventDefault();
         $(e.currentTarget).innerHTML="<i class='paw icon'></i>0";
+        var rowclass = $(e.currentTarget.parentElement.parentElement).attr('class');
         $.ajax({
             type: "POST",
             url: "/publish_problem",
             contentType: "application/json",
             data: JSON.stringify({
-                "problem_id": $(e.currentTarget.parentElement.parentElement).attr('class')
+                "problem_id": rowclass
             }),
             success: function(sdata){
                 console.log("return back from sdata");
-                if(sdata['success'])$(e.currentTarget.parentElement.parentElement).attr('class',sdata['new_id']);
-                $('tr.'+sdata['new_id']+' .ui.button.edit').addClass('hidden');
-                $('tr.'+sdata['new_id']+' .ui.button.delete').addClass('hidden');
-                $('tr.'+sdata['new_id']+' .ui.button.publish').addClass('hidden');
-                $('tr.'+sdata['new_id']+' .ui.button.view').removeClass('hidden');
+                // if(sdata['success'])$(e.currentTarget.parentElement.parentElement).attr('class',sdata['new_id']);
+                $('tr.'+rowclass+' .ui.button.edit').addClass('hidden');
+                $('tr.'+rowclass+' .ui.button.delete').addClass('hidden');
+                $('tr.'+rowclass+' .ui.button.publish').addClass('hidden');
+                $('tr.'+rowclass+' .ui.button.view').removeClass('hidden');
                 makePostRequest();
                 ///$('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";
             }
@@ -43,6 +44,13 @@
 }(window));
 
 function makePostRequest(){
+    // get total seconds between the times
+    // var delta = Math.abs(date_future - date_now) / 1000;
+
+    // // calculate (and subtract) whole days
+    // var days = Math.floor(delta / 86400);
+    // if(days>3)return;
+
     $.ajax({
         type: "GET",
         url: '/get_count_updates',
