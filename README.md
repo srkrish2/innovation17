@@ -83,6 +83,7 @@ inspirations = array of the format:
 also problem_id, problem_stage, schemas_page_link, inspirations_page_link,ideas_page_link
 ```
 
+
 ### /{{problem_slug}}/ideas page parser input
 ```
 ideas = array of the format:
@@ -153,12 +154,6 @@ output
 }
 ```
 
-### /post_schema_task
-problem id
-count_goal
-
-
-
 ### /publish_problem POST request
 input
 ```
@@ -216,17 +211,6 @@ array of maps. each map has the following format:
   "schema_count": int,
   "inspiration_count": int,
   "idea_count": int
-}
-```
-
-### /post_schemas_for_inspiration POST request
-input
-```
-{
-  "schemas": [
-  {"schema_id":string},
-  {"schema_id":string}
-  ]
 }
 ```
 
@@ -340,7 +324,29 @@ output
 input
 ```
 {
+    "schema_id": string,
+    'count": int
+}
+```
+output
+```
+{
+    "success": boolean
+}
+```
+
+
+### /more_schemas POST request
+input
+```
+{
     "problem_id": string,
     'schema_count_goal": int
+}
+```
+output
+```
+{
+    "success": boolean
 }
 ```

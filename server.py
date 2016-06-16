@@ -189,13 +189,23 @@ def render_view_page(problem_slug):
 
 
 def render_suggestions_page(idea_slug):
-    suggestions = []
-    for suggestion in mongodb_controller.get_suggestions(idea_slug):
-        suggestions.append(suggestion)
-    idea_text = mongodb_controller.get_idea_text(idea_slug)
-    return str(suggestions), idea_text
-    # template = env.get_template('suggestions.html')
-    # return template.render(suggestions=suggestions, idea_text=idea_text)
+    idea_dict = mongodb_controller.get_idea_dict_for_slug(idea_slug)
+    idea_id = idea_dict[mongodb_controller.IDEA_ID]
+    feedbacks_with_suggestions = []
+    for feedback_dict in mongodb_controller.get_feedback_dicts(idea_id):
+        feedback_id = feedback_dict[mongodb_controller.FEEDBACK_ID]
+        suggestions = []
+        for suggestion in mongodb_controller.get_suggestion_dicts(feedback_id):
+            suggestions.append(suggestion)
+        feedback_dict["suggestions"] = suggestions
+        feedbacks_with_suggestions.append(feedback_dict)
+    idea_text = idea_dict[mongodb_controller.TEXT]
+    problem_id = idea_dict[mongodb_controller.PROBLEM_ID]
+
+    print str(feedbacks_with_suggestions), idea_id, idea_text, problem_id
+    template = env.get_template('suggestions.html')
+    return template.render(suggestions=feedbacks_with_suggestions, idea_id=idea_id, idea_text=idea_text,
+                           problem_id=problem_id)
 
 
 def render_new_problem():
@@ -488,17 +498,6 @@ class CountUpdatesHandler(object):
         return mongodb_controller.get_counts_for_user(username)
 
 
-def relaunch_schema_task(problem_id, assignments_num):
-    problem_fields = mongodb_controller.get_problem_fields(problem_id)
-    description = problem_fields[mongodb_controller.DESCRIPTION]
-    hit_id = mturk_controller.create_schema_making_hit(description, assignments_num)
-    if hit_id == "FAIL":
-        return {"success": False}
-    mongodb_controller.insert_new_schema_hit(problem_id, assignments_num, hit_id)
-    mongodb_controller.increment_schema_count_goal(problem_id, assignments_num)
-    return {"success": True}
-
-
 class InspirationTaskHandler(object):
     exposed = True
 
@@ -669,6 +668,92 @@ class SuggestionUpdatesHandler(object):
         return mongodb_controller.get_suggestion_counts(problem_id)
 
 
+def relaunch_schema_task(problem_id, assignments_num):
+    problem_fields = mongodb_controller.get_problem_fields(problem_id)
+    description = problem_fields[mongodb_controller.DESCRIPTION]
+    hit_id = mturk_controller.create_schema_making_hit(description, assignments_num)
+    if hit_id == "FAIL":
+        return {"success": False}
+    mongodb_controller.insert_new_schema_hit(problem_id, assignments_num, hit_id)
+    mongodb_controller.increment_schema_count_goal(problem_id, assignments_num)
+    return {"success": True}
+
+
+class MoreSchemasHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+        data = cherrypy.request.json
+        problem_id = data[PROBLEM_ID]
+        count = convert_input_count(data["count"])
+        if count == -1:
+            return {"success": False}
+        return relaunch_schema_task(problem_id, count)
+
+
+def relaunch_inspiration_task(schema_id, count):
+    schema = mongodb_controller.get_schema_dict(schema_id)
+    hit_id = mturk_controller.create_inspiration_hit(schema[mongodb_controller.TEXT], count)
+    if hit_id == "FAIL":
+        return {"success": False}
+    schema_id = schema[mongodb_controller.SCHEMA_ID]
+    problem_id = schema[mongodb_controller.PROBLEM_ID]
+    mongodb_controller.insert_new_inspiration_hit(problem_id, schema_id, count, hit_id)
+    mongodb_controller.increment_inspiration_count_goal(problem_id, count)
+
+
+class MoreInspirationsHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+        data = cherrypy.request.json
+        schema_id = data["schema_id"]
+        count = convert_input_count(data["count"])
+        if count == -1:
+            return {"success": False}
+        return relaunch_inspiration_task(schema_id, count)
+
+
+def relaunch_idea_task(inspiration_id, count):
+    inspiration = mongodb_controller.get_inspiration_dict(inspiration_id)
+    inspiration_id = inspiration[mongodb_controller.INSPIRATION_ID]
+    problem_id = inspiration_id[mongodb_controller.PROBLEM_ID]
+    problem_description = mongodb_controller.get_problem_description(problem_id)
+    source_link = inspiration[mongodb_controller.INSPIRATION_LINK]
+    image_link = inspiration[mongodb_controller.INSPIRATION_ADDITIONAL]
+    explanation = inspiration[mongodb_controller.INSPIRATION_REASON]
+    hit_id = mturk_controller.create_idea_hit(problem_description, source_link, image_link, explanation, count)
+    schema_id = inspiration[mongodb_controller.SCHEMA_ID]
+    if hit_id == "FAIL":
+        return {"success": False}
+    mongodb_controller.insert_new_idea_hit(problem_id, schema_id, inspiration_id, count, hit_id)
+    mongodb_controller.increment_idea_count_goal(problem_id, count)
+
+
+class MoreIdeasHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+        data = cherrypy.request.json
+        inspiration_id = data["inspiration_id"]
+        count = convert_input_count(data["count"])
+        if count == -1:
+            return {"success": False}
+        return relaunch_idea_task(inspiration_id, count)
+
+
 class AcceptedSchemasCountHandler(object):
     exposed = True
 
@@ -751,8 +836,8 @@ class SignInHandler(object):
         name = data['name']
         password = data['password']
         print "name={},pass={}".format(name,password)
-        name = "aaaaaa"
-        password = "123123"
+        # name = "aaaaaa"
+        # password = "123123"
 
         is_email = '@' in name
         success = False
@@ -849,6 +934,12 @@ if __name__ == '__main__':
         },
         '/get_accepted_schemas_count': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/more_schemas': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/more_inspirations': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -868,6 +959,8 @@ if __name__ == '__main__':
     webapp.post_feedback = FeedbackHandler()
     webapp.suggestion_updates = SuggestionUpdatesHandler()
     webapp.get_accepted_schemas_count = AcceptedSchemasCountHandler()
+    webapp.more_schemas = MoreSchemasHandler()
+    webapp.more_inspirations = MoreInspirationsHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 
