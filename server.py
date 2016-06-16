@@ -28,7 +28,7 @@ PROBLEM_ID = "problem_id"
 READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 PREVIOUS_URL_KEY = "previous_url"
 USERNAME_KEY = "username"
-
+SUGGESTIONS_PAGE_LINK = "suggestions_page_link"
 
 @cherrypy.popargs('problem_slug')
 class HtmlPageLoader(object):
@@ -360,7 +360,6 @@ def pull_schema_hit_results(schema_hit):
     for schema_dict in schema_dicts:
         schema_id = schema_dict[mongodb_controller.SCHEMA_ID]
         if mongodb_controller.contains_schema(schema_id):
-            print "schema is contained already"
             continue
 
         # pop epoch time
@@ -441,11 +440,11 @@ def pull_idea_hit_results(idea_hit):
         epoch_time = epoch_time_ms / 1000.0
         readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
         idea[mongodb_controller.TIME_CREATED] = readable_time
-        # add problem id, schema id, inspiration_id, and status
+        # add problem id, schema id, inspiration_id, and is_launched
         idea[mongodb_controller.PROBLEM_ID] = problem_id
         idea[mongodb_controller.SCHEMA_ID] = schema_id
         idea[mongodb_controller.INSPIRATION_ID] = inspiration_id
-        idea[mongodb_controller.STATUS] = mongodb_controller.STATUS_ACCEPTED
+        idea[mongodb_controller.IS_LAUNCHED] = False
         mongodb_controller.add_idea(idea)
         new_ideas_count += 1
     mongodb_controller.increment_inspiration_hit_count(idea_hit_id, new_ideas_count)
@@ -605,48 +604,51 @@ class FeedbackHandler(object):
             return {"success": False}
 
         idea_dict = mongodb_controller.get_idea_dict(idea_id)
-        problem_text = mongodb_controller.get_problem_fields(idea_dict[PROBLEM_ID])[mongodb_controller.DESCRIPTION]
+        problem_id = idea_dict[PROBLEM_ID]
+        problem_text = mongodb_controller.get_problem_description(problem_id)
         idea_text = idea_dict[mongodb_controller.TEXT]
-
         for feedback in feedbacks:
             hit_id = mturk_controller.create_suggestion_hit(problem_text, idea_text, feedback, count_goal)
             # add the hit_id to schema
             if hit_id == "FAIL":
                 return {"success": False}
-            mongodb_controller.save_feedback(idea_id, feedback, count_goal, hit_id, idea_dict[PROBLEM_ID])
-            mongodb_controller.idea_launched(idea_id)
-        idea_dict = mongodb_controller.get_idea_dict(idea_id)
+            feedback_id = ''.join(random.sample(string.hexdigits, 8))
+            mongodb_controller.add_feedback(feedback_id, feedback, idea_id)
+            mongodb_controller.insert_new_suggestion_hit(problem_id, idea_id, feedback_id, count_goal, hit_id)
+        mongodb_controller.idea_launched(idea_id)
+        mongodb_controller.increment_suggestion_count_goal(idea_id, count_goal)
         return {"success": True,
-                "suggestion_page_link": idea_dict[mongodb_controller.SUGGESTIONS_PAGE_LINK]}
+                SUGGESTIONS_PAGE_LINK: "/{}/suggestions".format(idea_dict[mongodb_controller.SLUG])}
 
 
 def update_suggestions(problem_id):
     start = time.clock()
-    idea_to_count = {}
-    for feedback in mongodb_controller.get_feedbacks(problem_id):
-        suggestion_hit_id = feedback[mongodb_controller.SUGGESTION_HIT_ID]
+    for suggestion_hit in mongodb_controller.get_suggestion_hits(problem_id):
+        if suggestion_hit[mongodb_controller.COUNT_GOAL] == suggestion_hit[mongodb_controller.COUNT]:
+            continue
+        suggestion_hit_id = suggestion_hit[mongodb_controller.HIT_ID]
+        feedback_id = suggestion_hit[mongodb_controller.FEEDBACK_ID]
+        problem_id = suggestion_hit[mongodb_controller.PROBLEM_ID]
+        idea_id = suggestion_hit[mongodb_controller.IDEA_ID]
         suggestions = mturk_controller.get_suggestion_hit_results(suggestion_hit_id)
         if suggestions == "FAIL":
             continue
-        idea_id = feedback[mongodb_controller.IDEA_ID]
         for suggestion in suggestions:
-            if idea_id in idea_to_count:
-                idea_to_count[idea_id] += 1
-            else:
-                idea_to_count[idea_id] = 1
+            if mongodb_controller.contains_suggestion(suggestion[mongodb_controller.SUGGESTION_ID]):
+                continue
+            mongodb_controller.increment_suggestion_hit_count_by_one(suggestion_hit_id)
+            mongodb_controller.increment_suggestion_count_by_one(idea_id)
+
             # replace time with a readable one and add to DB
             epoch_time_ms = long(suggestion.pop(mongodb_controller.TIME_CREATED))
             epoch_time = epoch_time_ms / 1000.0
             readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
             suggestion[mongodb_controller.TIME_CREATED] = readable_time
-            # add problem id
+            # add feedback_id, problem_id, idea_id
             suggestion[mongodb_controller.PROBLEM_ID] = problem_id
-            # add idea id
             suggestion[mongodb_controller.IDEA_ID] = idea_id
-            # add feedback text
-            suggestion[mongodb_controller.FEEDBACK_TEXT] = feedback[mongodb_controller.TEXT]
+            suggestion[mongodb_controller.FEEDBACK_ID] = feedback_id
             mongodb_controller.add_suggestion(suggestion)
-    mongodb_controller.update_suggestions_count(idea_to_count)
     elapsed = time.clock()
     elapsed = elapsed - start
     # print "Done updating suggestions! Time spent:", elapsed*1000
@@ -748,6 +750,9 @@ class SignInHandler(object):
         data = cherrypy.request.json
         name = data['name']
         password = data['password']
+        print "name={},pass={}".format(name,password)
+        name = "aaaaaa"
+        password = "123123"
 
         is_email = '@' in name
         success = False

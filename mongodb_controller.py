@@ -69,10 +69,12 @@ IDEA_ID = "idea_id"
 # TIME_CREATED
 # SLUG
 # WORKER_ID
-# STATUS
 # PROBLEM_ID
 # SCHEMA_ID
 # INSPIRATION_ID
+SUGGESTION_COUNT = "suggestion_count"
+SUGGESTION_COUNT_GOAL = "suggestion_count_goal"
+IS_LAUNCHED = "is_launched"
 # }
 
 # FEEDBACK: {
@@ -85,6 +87,16 @@ FEEDBACK_ID = "feedback_id"
 # HIT_ID
 # COUNT
 # COUNT_GOAL
+# FEEDBACK_ID
+# PROBLEM_ID
+# IDEA_ID
+# }
+
+# SUGGESTION: {
+SUGGESTION_ID = "suggestion_id"
+# TEXT
+# TIME_CREATED
+# WORKER_ID
 # IDEA_ID
 # }
 
@@ -101,7 +113,6 @@ VIEW_PAGE_LINK = "view_page_link"
 SCHEMAS_PAGE_LINK = "schemas_page_link"
 INSPIRATIONS_PAGE_LINK = "inspirations_page_link"
 IDEAS_PAGE_LINK = "ideas_page_link"
-SUGGESTIONS_PAGE_LINK = "suggestions_page_link"
 
 
 # FIELD CONSTANTS
@@ -174,6 +185,18 @@ def insert_new_idea_hit(problem_id, schema_id, inspiration_id, count_goal, hit_i
         INSPIRATION_ID: inspiration_id
     }
     idea_hits_collection.insert_one(new_idea_hit)
+
+
+def insert_new_suggestion_hit(problem_id, idea_id, feedback_id, count_goal, hit_id):
+    new_suggestion_hit = {
+        PROBLEM_ID: problem_id,
+        IDEA_ID: idea_id,
+        FEEDBACK_ID: feedback_id,
+        COUNT: 0,
+        COUNT_GOAL: count_goal,
+        HIT_ID: hit_id
+    }
+    suggestion_hits_collection.insert_one(new_suggestion_hit)
 
 
 def set_inspiration_stage(problem_id):
@@ -272,6 +295,10 @@ def get_inspiration_hits(problem_id):
     return inspiration_hits_collection.find({PROBLEM_ID: problem_id})
 
 
+def get_suggestion_hits(problem_id):
+    return suggestion_hits_collection.find({PROBLEM_ID: problem_id})
+
+
 def increment_schema_count(problem_id, how_much):
     query_filter = {PROBLEM_ID: problem_id}
     update = {'$inc': {SCHEMA_COUNT: how_much}}
@@ -326,6 +353,24 @@ def increment_idea_hit_count(hit_id, count):
     idea_hits_collection.update_one(query_filter, update)
 
 
+def increment_suggestion_count_goal(idea_id, count_goal):
+    query_filter = {IDEA_ID: idea_id}
+    update = {'$inc': {SUGGESTION_COUNT_GOAL: count_goal}}
+    ideas_collection.update_one(query_filter, update)
+
+
+def increment_suggestion_hit_count_by_one(suggestion_hit_id):
+    query_filter = {HIT_ID: suggestion_hit_id}
+    update = {'$inc': {COUNT: 1}}
+    suggestion_hits_collection.update_one(query_filter, update)
+
+
+def increment_suggestion_count_by_one(idea_id):
+    query_filter = {IDEA_ID: idea_id}
+    update = {'$inc': {SUGGESTION_COUNT: 1}}
+    ideas_collection.update_one(query_filter, update)
+
+
 def add_schema(schema):
     schemas_collection.insert_one(schema)
 
@@ -342,9 +387,12 @@ def contains_inspiration(inspiration_id):
     return inspirations_collection.find_one({INSPIRATION_ID: inspiration_id}) is not None
 
 
+def contains_suggestion(suggestion_id):
+    return suggestions_collection.find_one({SUGGESTION_ID: suggestion_id}) is not None
+
+
 def add_inspiration(inspiration):
-    if inspirations_collection.find_one(inspiration) is None:
-        inspirations_collection.insert_one(inspiration)
+    inspirations_collection.insert_one(inspiration)
 
 
 def add_idea(idea):
@@ -352,10 +400,18 @@ def add_idea(idea):
         # replace title with slug
         title = idea.pop(TITLE)
         idea[SLUG] = slugify(title)
+        idea[SUGGESTION_COUNT] = 0
+        idea[SUGGESTION_COUNT_GOAL] = 0
         ideas_collection.insert_one(idea)
-        # set suggestion count to 0, launched
-        # idea[SUGGESTION_COUNT] = 0
-        # idea[LAUNCHED] = False
+
+
+
+def add_feedback(feedback_id, text, idea_id):
+    feedbacks_collection.insert_one({
+        FEEDBACK_ID: feedback_id,
+        TEXT: text,
+        IDEA_ID: idea_id
+    })
 
 
 def new_account(username, email, password):
@@ -419,13 +475,6 @@ def get_stage(problem_id):
     return problems_collection.find_one({PROBLEM_ID: problem_id})[STAGE]
 
 
-def get_inspiration_ids(problem_id):
-    result = []
-    for inspiration in inspirations_collection.find({PROBLEM_ID: problem_id}):
-        result.append(inspiration[INSPIRATION_ID])
-    return result
-
-
 def get_inspirations(problem_id):
     return inspirations_collection.find({PROBLEM_ID: problem_id})
 
@@ -475,37 +524,34 @@ def edit_problem(problem_dict):
     problems_collection.update_one(query_filter, update)
 
 
-# def set_schema_rejected_flag(schema_id, to_reject):
-#     query_filter = {SCHEMA_ID: schema_id}
-#     new_fields = {
-#         IS_REJECTED: to_reject
-#     }
-#     update = {'$set': new_fields}
-#     schemas_collection.update_one(query_filter, update)
-#
-#
-# def set_inspiration_rejected_flag(inspiration_id, to_reject):
-#     query_filter = {INSPIRATION_ID: inspiration_id}
-#     new_fields = {
-#         IS_REJECTED: to_reject
-#     }
-#     update = {'$set': new_fields}
-#     inspirations_collection.update_one(query_filter, update)
+def set_schema_rejected_flag(schema_id, to_reject):
+    query_filter = {SCHEMA_ID: schema_id}
+    if to_reject:
+        status = STATUS_REJECTED
+    else:
+        status = STATUS_ACCEPTED
+    new_fields = {
+        STATUS: status
+    }
+    update = {'$set': new_fields}
+    schemas_collection.update_one(query_filter, update)
+
+
+def set_inspiration_rejected_flag(inspiration_id, to_reject):
+    query_filter = {INSPIRATION_ID: inspiration_id}
+    if to_reject:
+        status = STATUS_REJECTED
+    else:
+        status = STATUS_ACCEPTED
+    new_fields = {
+        STATUS: status
+    }
+    update = {'$set': new_fields}
+    inspirations_collection.update_one(query_filter, update)
 
 
 def get_idea_dict(idea_id):
     return ideas_collection.find_one({IDEA_ID: idea_id})
-
-
-def save_feedback(idea_id, feedback_text, count_goal, hit_id, problem_id):
-    feedback = {
-        IDEA_ID: idea_id,
-        TEXT: feedback_text,
-        COUNT_GOAL: count_goal,
-        SUGGESTION_HIT_ID: hit_id,
-        PROBLEM_ID: problem_id,
-    }
-    feedbacks_collection.insert_one(feedback)
 
 
 def get_feedbacks(problem_id):
@@ -515,16 +561,6 @@ def get_feedbacks(problem_id):
 def add_suggestion(suggestion):
     if suggestions_collection.find_one(suggestion) is None:
         suggestions_collection.insert_one(suggestion)
-
-
-def update_suggestions_count(idea_to_count):
-    for idea_id in idea_to_count:
-        query_filter = {IDEA_ID: idea_id}
-        new_fields = {
-            SUGGESTION_COUNT: idea_to_count[idea_id]
-        }
-        update = {'$set': new_fields}
-        ideas_collection.update_one(query_filter, update)
 
 
 def get_suggestion_counts(problem_id):
@@ -542,7 +578,7 @@ def get_suggestion_counts(problem_id):
 def idea_launched(idea_id):
     query_filter = {IDEA_ID: idea_id}
     new_fields = {
-        LAUNCHED: True
+        IS_LAUNCHED: True
     }
     update = {'$set': new_fields}
     ideas_collection.update_one(query_filter, update)
@@ -638,4 +674,5 @@ inspirations_collection = db.inspirations
 idea_hits_collection = db.idea_hits
 ideas_collection = db.ideas
 feedbacks_collection = db.feedbacks
+suggestion_hits_collection = db.suggestion_hits
 suggestions_collection = db.suggestions

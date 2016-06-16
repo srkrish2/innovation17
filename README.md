@@ -228,7 +228,6 @@ input
 }
 ```
 
->>>>>>> 708bd2961b6cad8c9bfe65f71563448199cde622
 ### /delete_problem POST request
 input
 ```
