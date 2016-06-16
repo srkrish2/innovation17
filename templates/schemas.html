@@ -31,10 +31,23 @@
           <td>{{schema.time_created}}</td>
           <td>{{schema.worker_id}}</td>
           <td>
-            {% if schema.is_rejected == true %}
-            <div class="ui button rj">Accept</div>
+            {% if schema.status == 1 or schema.status ==0}
+            {% if schema.status == 1 %}
+            <div class="ui buttons">
+              <div class="ui button active">Accept</div>
+              <div class="or"></div>
+              <div class="ui button red rj">Reject</div>
+            </div>
+            {% else if schema.status ==0 %}
+            <div class="ui buttons">
+            <div class="ui button">Accept</div>
+              <div class="or"></div>
+              <div class="ui button active red rj">Reject</div>
+            </div>
+            {% endif %}
             {% else %}
-            <div class="ui button red rj">Reject</div>
+            <div class="ui label">Processed</div>
+            <div class="ui label"><a href="" class="moreinspiration"></a></div>
             {% endif %}
           </td>
         </tr>
@@ -73,8 +86,8 @@
     </div>
   </div>
   
-        </div>
+</div>
 
-        <script src="/static/assets/js/schemas.js"></script>
+<script src="/static/assets/js/schemas.js"></script>
 
-        {% endblock %}
+{% endblock %}

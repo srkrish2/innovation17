@@ -51,53 +51,55 @@ array of maps (dictionaries). each map has the following format:
 
 ### /{{problem_slug}}/schemas page parser input
 ```
-array of maps (dictionaries). each map has the following format:
+schemas = array of the format:
 {
-  "text": string,
-  "time": "19 May 2016 12:19 PM",
-  "worker_id": string,
-  "schema_id": string
+    "status" : 0, 1, or 2
+	"text" : string,
+	"time_created" : string,
+	"schema_id" : string,
+	"worker_id" : string,
+	"problem_id" : string
+
 }
-also problem_id, problem_stage, stage_page_links
+also problem_id, problem_stage, schemas_page_link, inspirations_page_link,ideas_page_link
 ```
 
 ### /{{problem_slug}}/inspirations page parser input
 ```
-array of maps (dictionaries). each map has the following format:
+inspirations = array of the format:
 {
-  "summary": string,
-  "reason": string,
-  "time": "19 May 2016 12:19 PM",
-  "worker_id": string,
-  "inspiration_id": string,
-  "source_link": string,
-  "image_link": string,
-  "problem_id": string,
-  "problem_text": string,
-  "schema_id":string,
-  "schema_text": string
+    "status" : int,
+	"source_link" : string,
+	"inspiration_id" : string,
+	"schema_id" : string,
+	"time_created" : string,
+	"summary" : string,
+	"image_link" : string,
+	"reason" : string,
+	"worker_id" : string,
+	"problem_id" : string,
+
 }
-also problem_id, problem_stage, stage_page_links
+also problem_id, problem_stage, schemas_page_link, inspirations_page_link,ideas_page_link
 ```
 
 ### /{{problem_slug}}/ideas page parser input
 ```
-array of maps (dictionaries). each map has the following format:
+ideas = array of the format:
 {
-  "text": string,
-  "time_created": string,
-  "worker_id": string,
-  "idea_id": string,
-  "problem_id": string,
-  "problem_text": string,
-  "schema_text": string,
-  "inspiration_id": string,
-  "inspiration_text": string,
-  "launched": boolean,
-  "suggestion_count": int,
-  "suggestions_page_link": string  // if launched
+    "is_launched" : boolean
+	"suggestion_count" : int
+	"text" : string,
+	"inspiration_id" : string,
+	"idea_id" : string,
+	"time_created" : string,
+	"slug" : string,
+	"schema_id" : string,
+	"worker_id" : string,
+	"suggestion_count_goal" : int,
+	"problem_id" : string
 }
-also problem_id, problem_stage, stage_page_links
+also problem_id, problem_stage, schemas_page_link, inspirations_page_link,ideas_page_link
 ```
 
 ### /{{idea_slug}}/suggestions page parser input
@@ -107,14 +109,13 @@ array of maps: //array of feedbacks, each associating with an array of suggestio
   "feedback_id":string,
   "feedback_text" : string,
   "suggestions" : [{ //array of suggestons for each feedback
-  "time_created" : string,
-  "suggestion_id" : string,
-  "worker_id" : string,
-  "text": string
-}]
-
+      "time_created" : string,
+      "suggestion_id" : string,
+      "worker_id" : string,
+      "text": string
+  }]
 }
-also idea_id, idea_text, problem_d
+also idea_id, idea_text, problem_id
 ```
 
 
@@ -123,8 +124,7 @@ input
 ```
 {
   "title": string,
-  "description": string,
-  "schema_count_goal": int
+  "description": string
 }
 ```
 output
@@ -134,6 +134,7 @@ output
   "url": string,       //only if success=true
 }
 ```
+
 
 ### /post_new_problem POST request
 input
@@ -151,6 +152,12 @@ output
   "url": string,       //only if success=true
 }
 ```
+
+### /post_schema_task
+problem id
+count_goal
+
+
 
 ### /publish_problem POST request
 input
@@ -326,5 +333,14 @@ output
 ```
 {
   "count": int
+}
+```
+
+### /more_inspirations POST request
+input
+```
+{
+    "problem_id": string,
+    'schema_count_goal": int
 }
 ```
