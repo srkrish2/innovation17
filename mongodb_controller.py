@@ -554,8 +554,16 @@ def get_idea_dict(idea_id):
     return ideas_collection.find_one({IDEA_ID: idea_id})
 
 
-def get_feedbacks(problem_id):
-    return feedbacks_collection.find({PROBLEM_ID: problem_id})
+def get_schema_dict(schema_id):
+    return schemas_collection.find_one({SCHEMA_ID: schema_id})
+
+
+def get_inspiration_dict(inspiration_id):
+    return inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})
+
+
+def get_feedback_dicts(idea_id):
+    return feedbacks_collection.find({IDEA_ID: idea_id})
 
 
 def add_suggestion(suggestion):
@@ -591,13 +599,12 @@ def get_accepted_schemas_count(problem_id):
     })
 
 
-def get_suggestions(idea_slug):
-    idea = ideas_collection.find_one({SLUG: idea_slug})
-    return suggestions_collection.find({IDEA_ID: idea[IDEA_ID]})
+def get_suggestion_dicts(feedback_id):
+    return suggestions_collection.find({FEEDBACK_ID: feedback_id})
 
 
-def get_idea_text(idea_slug):
-    return ideas_collection.find_one({SLUG: idea_slug})[TEXT]
+def get_idea_dict_for_slug(idea_slug):
+    return ideas_collection.find_one({SLUG: idea_slug})
 
 
 def did_reach_schema_count_goal(problem_id):
