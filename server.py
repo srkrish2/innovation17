@@ -689,7 +689,7 @@ class MoreSchemasHandler(object):
             raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
         problem_id = data[PROBLEM_ID]
-        count = convert_input_count(data["schema_count_goal"])
+        count = convert_input_count(data["count"])
         if count == -1:
             return {"success": False}
         return relaunch_schema_task(problem_id, count)
@@ -836,8 +836,8 @@ class SignInHandler(object):
         name = data['name']
         password = data['password']
         print "name={},pass={}".format(name,password)
-        name = "aaaaaa"
-        password = "123123"
+        # name = "aaaaaa"
+        # password = "123123"
 
         is_email = '@' in name
         success = False
@@ -937,6 +937,9 @@ if __name__ == '__main__':
         },
         '/more_schemas': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/more_inspirations': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -957,6 +960,7 @@ if __name__ == '__main__':
     webapp.suggestion_updates = SuggestionUpdatesHandler()
     webapp.get_accepted_schemas_count = AcceptedSchemasCountHandler()
     webapp.more_schemas = MoreSchemasHandler()
+    webapp.more_inspirations = MoreInspirationsHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 
