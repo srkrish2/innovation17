@@ -98,3 +98,13 @@ tr.rj {
     top: 1px;
     right: 0.8285714em;
 }*/
+
+.ui.popup {
+  /*overflow: auto;*/
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.ui.labeled.input {
+  padding-bottom: 10px;
+}
