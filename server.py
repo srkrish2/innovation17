@@ -67,8 +67,8 @@ class HtmlPageLoader(object):
 
     @cherrypy.expose
     def log_out(self):
-        cherrypy.session.pop(USERNAME_KEY)
-        return render_homepage()
+        cherrypy.lib.sessions.expire()
+        raise cherrypy.HTTPRedirect("sign_in")
 
     @cherrypy.expose
     def sign_in(self):
@@ -839,8 +839,8 @@ class SignInHandler(object):
         name = data['name']
         password = data['password']
         print "name={},pass={}".format(name,password)
-        # name = "aaaaaa"
-        # password = "123123"
+        name = "aaaaaa"
+        password = "123123"
 
         is_email = '@' in name
         success = False
@@ -893,7 +893,8 @@ if __name__ == '__main__':
         '/': {
             'tools.sessions.on': True,
             'tools.sessions.storage_type': "file",
-            'tools.sessions.storage_path': "./session_data/"
+            'tools.sessions.storage_path': "./session_data/",
+            'tools.sessions.timeout': 365*24*60
         },
         # these are for rest api requests, not html pages, so create method dispatchers
         '/save_new_problem': {
@@ -971,7 +972,7 @@ if __name__ == '__main__':
         '/': {
             'tools.staticdir.root': os.path.abspath(os.getcwd()),  # cherrypy requires absolute path
             'tools.staticdir.on': True,
-            'tools.staticdir.dir': './public'
+            'tools.staticdir.dir': './public',
         }
     }
     cherrypy.tree.mount(None, '/static', static_conf)
