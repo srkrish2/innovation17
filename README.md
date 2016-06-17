@@ -273,7 +273,6 @@ output
   "id": string
 }
 ```
-
 ### /post_feedback POST request
 ```
 {
@@ -320,7 +319,7 @@ output
 }
 ```
 
-### /more_inspirations POST request
+### /set_accept POST request
 input
 ```
 {
@@ -341,7 +340,7 @@ input
 ```
 {
     "problem_id": string,
-    'schema_count_goal": int
+    'count": int
 }
 ```
 output

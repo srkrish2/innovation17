@@ -43,18 +43,7 @@
     });
 
     $(document).on('click','div.button.addschemas',function(e){
-        $.ajax({
-            type: "POST",
-            url: "/more_schemas",
-            contentType: 'application/json',
-            data: JSON.stringify({
-                "problem_id": $(e.currentTarget.parentElement.parentElement).attr('class'),
-                "schema_count_goal": $('input.moreschemas').val()
-            }),
-            success: function(sdata){
-                console.log("return back from sdata");
-            }
-        });
+        $('.addschemas').popup('show');
     });
 
     $(document).ready(function(e){
@@ -66,6 +55,20 @@
                 hide: 800
             }
         });
+        $(document).on('click','.reactivate', function(e){
+            $.ajax({
+                type: "POST",
+                url: "/more_schemas",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "problem_id": $(e.currentTarget.parentElement.parentElement).attr('class'),
+                    "schema_count_goal": $('input.moreschemas').val()
+                }),
+                success: function(sdata){
+                    console.log("return back from sdata");
+                }
+            });
+        })
     });
 }(window));
 

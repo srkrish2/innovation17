@@ -19,7 +19,7 @@
         </thead>
         <tbody>
           {% for schema in schemas %}
-          <tr class="{{'schema-id-'~schema.schema_id}}{% if schema.is_rejected == true %} rj
+          <tr class="{{'schema-id-'~schema.schema_id}}{% if schema.status == 0 %} rj
           {% endif %}"
           >
           <td>
@@ -30,24 +30,35 @@
 
           <td>{{schema.time_created}}</td>
           <td>{{schema.worker_id}}</td>
-          <td>
-            {% if schema.status == 1 or schema.status ==0}
+          <td class='action'>
+            {% if schema.status == 1 or schema.status ==0 %}
             {% if schema.status == 1 %}
             <div class="ui buttons">
-              <div class="ui button active">Accept</div>
+              <div class="ui button ac active">Accept</div>
               <div class="or"></div>
               <div class="ui button red rj">Reject</div>
             </div>
-            {% else if schema.status ==0 %}
-            <div class="ui buttons">
-            <div class="ui button">Accept</div>
+            <div class="processed hidden">
+              <div class="ui label">Processed</div>
+              <div class="ui button blue reactivate">Activate</div>
+            </div>
+            {% elif schema.status ==0 %}
+            <div class="ui buttons decision">
+              <div class="ui ac button">Accept</div>
               <div class="or"></div>
               <div class="ui button active red rj">Reject</div>
             </div>
             {% endif %}
             {% else %}
-            <div class="ui label">Processed</div>
-            <div class="ui label"><a href="" class="moreinspiration"></a></div>
+            <div class="ui buttons decision hidden">
+              <div class="ui button ac active">Accept</div>
+              <div class="or"></div>
+              <div class="ui button red rj">Reject</div>
+            </div>
+            <div class="processed">
+              <div class="ui label">Processed</div>
+              <div class="ui button labeled blue reactivate">Activate</a></div>
+            </div>
             {% endif %}
           </td>
         </tr>

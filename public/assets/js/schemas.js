@@ -4,6 +4,8 @@
 	});
 	$(document).on('click','.startinspiration',function(e){
 		$('.ui.modal').hide();
+		var acceptedschemas = $('.ui.button.ac').parents('td.action');
+
 		$.ajax({
 			type: 'POST',
 			url: '/post_inspiration_task',
@@ -13,21 +15,25 @@
 				'count_goal': $('.count_goal').val()
 			}),
 			success: function(sdata){
-				console.log('launched inspiration');
-				window.location.replace('/problems');
-			},
-			error: function(e){
-				console.log("error! "+e);
-			}
-		})
+		// 		for (var i =0; i<acceptedschemas.length; i++){ if after launching we need to come back to schema list page, implement this, otherwise delete
+			
+		// }
+		console.log('launched inspiration');
+		window.location.replace('/problems');
+	},
+	error: function(e){
+		console.log("error! "+e);
+	}
+})
 		
 	});
 	$(document).on('click','.cancelinspiration',function(e){
 		$('.ui.modal').modal('hide');
 	});
 	//reject or accept schema items
-	$(document).on('click','.ui.button.rj',function(e){
-		var itemType = "schema", toreject=$(e.currentTarget).hasClass('red'), item_id = $(e.currentTarget.parentElement.parentElement).attr('class').split('-')[2];//if red exist, that means currently is accepted, now being hit-> changing to rej
+	$(document).on('click','.ui.button.rj, .ui.button.ac, .reactivate',function(e){
+		e.preventDefault();
+		var itemType = "schema", toreject=$(e.currentTarget).hasClass('red'), item_id = $(e.currentTarget.parentElement.parentElement.parentElement).attr('class').split('-')[2];//if red exist, that means currently is accepted, now being hit-> changing to rej
 
 		$.ajax({
 			type: 'POST',
@@ -40,21 +46,26 @@
 			}),
 			
 			success: function(sdata){
-				if(toreject){
-					$(e.currentTarget).removeClass('red');
-					$(e.currentTarget).html('Accept');
-					$(e.currentTarget.parentElement.parentElement).addClass('rj');
+				if($(e.currentTarget).hasClass('reactivate')){
+					$(e.currentTarget).html('Activated into accepted');
 				}
 				else {
-					$(e.currentTarget).addClass('red');
-					$(e.currentTarget).html('Reject');
-					$(e.currentTarget.parentElement.parentElement).removeClass('rj');
+					if(toreject){
+						$(e.currentTarget).addClass('active');
+						$(e.currentTarget).siblings().removeClass('active');
+						$(e.currentTarget.parentElement.parentElement.parentElement).addClass('rj');
+					}
+				else {//accept it, next available action is reject
+					$(e.currentTarget).addClass('active');
+					$(e.currentTarget).siblings().removeClass('active');
+					$(e.currentTarget.parentElement.parentElement.parentElement).removeClass('rj');
 				}
-				console.log('rejected schema id '+item_id);
-			},
-			error: function(e){
-				console.log('error! ' + e);
 			}
-		});
+			console.log('rejected schema id '+item_id);
+		},
+		error: function(e){
+			console.log('error! ' + e);
+		}
+	});
 	});
 }(window));
