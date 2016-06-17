@@ -839,8 +839,8 @@ class SignInHandler(object):
         name = data['name']
         password = data['password']
         print "name={},pass={}".format(name,password)
-        name = "aaaaaa"
-        password = "123123"
+        # name = "aaaaaa"
+        # password = "123123"
 
         is_email = '@' in name
         success = False
