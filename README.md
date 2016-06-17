@@ -36,7 +36,6 @@ array of maps (dictionaries). each map has the following format:
   //// if stage=inspiration ////
   "inspirations_page_link": string,
   "view_page_link": string
-
 }
 ```
 
@@ -53,13 +52,12 @@ array of maps (dictionaries). each map has the following format:
 ```
 schemas = array of the format:
 {
-    "status" : 0, 1, or 2
+    "status" : int,
 	"text" : string,
 	"time_created" : string,
 	"schema_id" : string,
 	"worker_id" : string,
 	"problem_id" : string
-
 }
 also problem_id, problem_stage, schemas_page_link, inspirations_page_link,ideas_page_link
 ```
@@ -319,12 +317,12 @@ output
 }
 ```
 
-### /set_accept POST request
+### /more_schemas POST request
 input
 ```
 {
-    "schema_id": string,
-    'count": int
+    "problem_id": string,
+    'schema_count_goal": int
 }
 ```
 output
@@ -334,13 +332,12 @@ output
 }
 ```
 
-
-### /more_schemas POST request
+### /more_suggestions GET request
 input
 ```
 {
-    "problem_id": string,
-    'count": int
+    "feedback_id": string,
+    "count": int
 }
 ```
 output

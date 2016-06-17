@@ -148,6 +148,9 @@ def set_schema_stage(problem_id):
     query_filter = {
         PROBLEM_ID: problem_id
     }
+    cur_stage = problems_collection.find_one(query_filter)
+    if cur_stage != STAGE_UNPUBLISHED:
+        return
     update = {'$set': {
         STAGE: STAGE_SCHEMA
     }}
@@ -203,6 +206,9 @@ def set_inspiration_stage(problem_id):
     query_filter = {
         PROBLEM_ID: problem_id
     }
+    cur_stage = problems_collection.find_one(query_filter)
+    if cur_stage != STAGE_SCHEMA:
+        return
     update = {'$set': {
         STAGE: STAGE_INSPIRATION
     }}
@@ -213,6 +219,9 @@ def set_idea_stage(problem_id):
     query_filter = {
         PROBLEM_ID: problem_id
     }
+    cur_stage = problems_collection.find_one(query_filter)
+    if cur_stage != STAGE_INSPIRATION:
+        return
     update = {'$set': {
         STAGE: STAGE_IDEA
     }}
@@ -560,6 +569,10 @@ def get_schema_dict(schema_id):
 
 def get_inspiration_dict(inspiration_id):
     return inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})
+
+
+def get_feedback_dict(feedback_id):
+    return feedbacks_collection.find({FEEDBACK_ID: feedback_id})
 
 
 def get_feedback_dicts(idea_id):
