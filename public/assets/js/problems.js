@@ -6,7 +6,7 @@
     });
     $(document).on('click','div.button.publish',function(e){
         e.preventDefault();
-        $(e.currentTarget).innerHTML="<i class='paw icon'></i>0";
+        // $(e.currentTarget).innerHTML="<i class='paw icon'></i>0";
         var rowclass = $(e.currentTarget.parentElement.parentElement).attr('class');
         $.ajax({
             type: "POST",
@@ -41,15 +41,38 @@
             }
         });
     });
+
+    $(document).on('click','div.button.addschemas',function(e){
+        $('.addschemas').popup('show');
+    });
+
+    $(document).ready(function(e){
+        $('.addschemas').popup({
+            hoverable: true,
+            position: 'bottom left',
+            delay: {
+                show: 300,
+                hide: 800
+            }
+        });
+        $(document).on('click','.reactivate', function(e){
+            $.ajax({
+                type: "POST",
+                url: "/more_schemas",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "problem_id": $(e.currentTarget.parentElement.parentElement).attr('class'),
+                    "schema_count_goal": $('input.moreschemas').val()
+                }),
+                success: function(sdata){
+                    console.log("return back from sdata");
+                }
+            });
+        })
+    });
 }(window));
 
 function makePostRequest(){
-    // get total seconds between the times
-    // var delta = Math.abs(date_future - date_now) / 1000;
-
-    // // calculate (and subtract) whole days
-    // var days = Math.floor(delta / 86400);
-    // if(days>3)return;
 
     $.ajax({
         type: "GET",

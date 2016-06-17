@@ -1,15 +1,11 @@
-$(init);
 
 var POST_URL = "/post_sign_in";
 var LOGIN_SELECTOR = ".login.ui.form";
 
-function init() {
-    $(LOGIN_SELECTOR).form(VALIDATION_RULES);
-}
 
 var VALIDATION_RULES = {
     fields: {
-        name: {
+        Loginusername: {
             rules: [
             {
                 type   : 'empty',
@@ -17,7 +13,7 @@ var VALIDATION_RULES = {
             }
             ]
         },
-        password: {
+        Loginpassword: {
             rules: [
             {
                 type   : 'empty',
@@ -28,34 +24,37 @@ var VALIDATION_RULES = {
     }
 };
 
-$(document).on('click','.login',function(e){
-    var name = $(LOGIN_SELECTOR).form("get value", "name");
-    var password = $(LOGIN_SELECTOR).form("get value", "password");
-    var data = {
-        "name": name,
-        "password": password
-    };
-    $.ajax({
-        type : "POST",
-        url: POST_URL,
-        data: JSON.stringify(data),
-        contentType: 'application/json; charset=utf-8',
-        timeout : 100000,
+$(document).on('click','.ui.button.submit.login',function(e){
+    $(LOGIN_SELECTOR).form(VALIDATION_RULES);
+    if($(LOGIN_SELECTOR).form('is valid')){
+        var name = $(LOGIN_SELECTOR).form("get value", "Loginusername");
+        var password = $(LOGIN_SELECTOR).form("get value", "Loginpassword");
+        var data = {
+            "name": name,
+            "password": password
+        };
+        $.ajax({
+            type : "POST",
+            url: POST_URL,
+            data: JSON.stringify(data),
+            contentType: 'application/json; charset=utf-8',
+            timeout : 100000,
 
-        success : function(data) {
-            console.log('wait a second');
-            if (data["success"]) {
-                window.location.replace("/"+data["url"]);
-            } else {
-                $(LOGIN_SELECTOR).form("add errors", ["Your email or password was incorrect. Please try again."]);
+            success : function(data) {
+                console.log('wait a second');
+                if (data["success"]) {
+                    window.location.replace("/"+data["url"]);
+                } else {
+                    $(LOGIN_SELECTOR).form("add errors", ["Your email or password was incorrect. Please try again."]);
+                }
+            },
+
+            error : function(e) {
+                console.log("ERROR: ", e);
             }
-        },
-
-        error : function(e) {
-            console.log("ERROR: ", e);
-        }
-    });
-    e.preventDefault();
+        });
+        e.preventDefault();
+    }
 })
 
 
@@ -110,9 +109,9 @@ $(document).on('click', '.profileregister', function(e){
     if($(REG_SELECTOR).form('is valid')){
         e.preventDefault();
         console.log("i am in");
-        var username = $('.ui.form').form('get value','username'),
-        password = $('.ui.form').form('get value', 'password'),
-        email = $('.ui.form').form('get value','email');
+        var username = $(REG_SELECTOR).form('get value','username'),
+        password = $(REG_SELECTOR).form('get value', 'password'),
+        email = $(REG_SELECTOR).form('get value','email');
         $.ajax({
             type: 'POST',
             url: '/post_new_account',

@@ -12,10 +12,34 @@
 				<div class="extra"><a href={{inspiration.source_link}} target="_blank">Source</a></div>
 			</div>
 			<div class="action">
-				{% if inspiration.is_rejected == true %}
-				<div class="ui button rj">Accept</div>
+				{% if inspiration.status == 1 or inspiration.status ==0 %}
+				{% if inspiration.status == 1 %}
+				<div class="ui buttons">
+					<div class="ui button ac active">Accept</div>
+					<div class="or"></div>
+					<div class="ui button red rj">Reject</div>
+				</div>
+				<div class="processed hidden">
+					<div class="ui label">Processed</div>
+					<div class="ui button blue reactivate">Activate</div>
+				</div>
+				{% elif inspiration.status ==0 %}
+				<div class="ui buttons decision">
+					<div class="ui ac button">Accept</div>
+					<div class="or"></div>
+					<div class="ui button active red rj">Reject</div>
+				</div>
+				{% endif %}
 				{% else %}
-				<div class="ui button red rj">Reject</div>
+				<div class="ui buttons decision hidden">
+					<div class="ui button ac active">Accept</div>
+					<div class="or"></div>
+					<div class="ui button red rj">Reject</div>
+				</div>
+				<div class="processed">
+					<div class="ui label">Processed</div>
+					<div class="ui button labeled blue reactivate">Activate</a></div>
+				</div>
 				{% endif %}
 			</div>
 		</div>
@@ -34,7 +58,7 @@
 							<div class="ui inverted black label">You have {{inspirations|length}} inspirations(s) to initiate the idea generation from.</div>
 						</div>
 						<div class="field">
-						<div class="field"><input type="text" class="count_goal" placeholder="Enter the number of ideas targeted for each inspiration">
+							<div class="field"><input type="text" class="count_goal" placeholder="Enter the number of ideas targeted for each inspiration">
 							</div>
 						</div>
 

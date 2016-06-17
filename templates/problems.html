@@ -33,6 +33,14 @@
             <div class="ui button delete hidden">Delete</div>
             <div class="ui button publish hidden">Publish</div>
             <div class="ui button view"><a href= {{problem.view_page_link}}>View</a></div>
+            <div class="ui button addschemas"><a href='#'>More schemas</a></div>
+            <div class="ui popup flowing hidden">
+              <div class="ui labeled input">
+                <div class="ui label" >Enter the additional </div>
+                <input type="text" class="moreschemas" placeholder="number of schemas">
+              </div>
+              <div class="ui blue button reactivate" style="display: block">Go!</div>
+            </div>
             {% endif %}
           </td>
           <td>
@@ -61,6 +69,7 @@
     </table>
   </div>
 </div>
+<!-- <script src="/static/semantic/dist/semantic.js"></script> -->
 <script src="/static/assets/js/problems.js"></script>
 
 {% endblock %}

@@ -271,7 +271,6 @@ output
   "id": string
 }
 ```
-
 ### /post_feedback POST request
 ```
 {

@@ -10,24 +10,7 @@
         $(this).parent().remove();
     });
   $("<i class='plus icon addproject'></i>").appendTo($('#new_project'));
-  // $(document).on('click','i.addproject', function(e){
-  //   console.log('click plus icon');
-  //   window.location.href="localhost:8080/new_project.html";
-  //   global.location.replace = "localhost:8080/new_project.html";
-  //   console.log(window.location.href);
-  // })
 }(window));
 
 
-// Pls don't remove
-//$.ajax({
-//    type: 'POST',
-//    url: '/test',
-//    error: function(e){
-//        console.log("error! "+e)
-//    },
-//    success: function(e){
-//        console.log("returned!")
-//    }
-//})
-//window.alert("line after")
+
