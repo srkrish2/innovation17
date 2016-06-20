@@ -74,7 +74,7 @@ IDEA_ID = "idea_id"
 # INSPIRATION_ID
 SUGGESTION_COUNT = "suggestion_count"
 SUGGESTION_COUNT_GOAL = "suggestion_count_goal"
-IS_LAUNCHED = "is_launched"
+# STATUS
 # }
 
 # FEEDBACK: {
@@ -120,9 +120,12 @@ STAGE_UNPUBLISHED = "unpublished"
 STAGE_SCHEMA = "schema"
 STAGE_INSPIRATION = "inspiration"
 STAGE_IDEA = "idea"
+STAGE_SUGGESTION = "suggestion"
+
 STATUS_REJECTED = 0
 STATUS_ACCEPTED = 1
 STATUS_PROCESSED = 2
+STATUS_NEW = 1
 
 
 def save_problem(problem_id, title, description, owner_username, schema_count_goal, time_created):
@@ -224,6 +227,19 @@ def set_idea_stage(problem_id):
         return
     update = {'$set': {
         STAGE: STAGE_IDEA
+    }}
+    problems_collection.update_one(query_filter, update)
+
+
+def set_suggestion_stage(problem_id):
+    query_filter = {
+        PROBLEM_ID: problem_id
+    }
+    cur_stage = problems_collection.find_one(query_filter)[STAGE]
+    if cur_stage != STAGE_IDEA:
+        return
+    update = {'$set': {
+        STAGE: STAGE_SUGGESTION
     }}
     problems_collection.update_one(query_filter, update)
 
@@ -559,6 +575,19 @@ def set_inspiration_rejected_flag(inspiration_id, to_reject):
     inspirations_collection.update_one(query_filter, update)
 
 
+def set_idea_rejected_flag(idea_id, to_reject):
+    query_filter = {IDEA_ID: idea_id}
+    if to_reject:
+        status = STATUS_REJECTED
+    else:
+        status = STATUS_ACCEPTED
+    new_fields = {
+        STATUS: status
+    }
+    update = {'$set': new_fields}
+    ideas_collection.update_one(query_filter, update)
+
+
 def get_idea_dict(idea_id):
     return ideas_collection.find_one({IDEA_ID: idea_id})
 
@@ -599,7 +628,7 @@ def get_suggestion_counts(problem_id):
 def idea_launched(idea_id):
     query_filter = {IDEA_ID: idea_id}
     new_fields = {
-        IS_LAUNCHED: True
+        STATUS: STATUS_PROCESSED
     }
     update = {'$set': new_fields}
     ideas_collection.update_one(query_filter, update)
