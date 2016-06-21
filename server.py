@@ -122,7 +122,7 @@ def render_schemas_page(problem_slug):
         schemas = mongodb_controller.get_schemas_for_problem(problem_id)
         template = env.get_template('schemas.html')
         [schemas_page_link, inspirations_page_link, ideas_page_link] = make_links_list(problem_slug, problem_id)
-        print schemas
+        print [schemas_page_link, inspirations_page_link, ideas_page_link]
         return template.render(schemas=schemas, problem_id=problem_id,
                                problem_stage=mongodb_controller.get_stage(problem_id),
                                schemas_page_link=schemas_page_link, inspirations_page_link=inspirations_page_link,
@@ -204,7 +204,7 @@ def render_suggestions_page(idea_slug):
 
     print str(feedbacks_with_suggestions), idea_id, idea_text, problem_id
     template = env.get_template('suggestions.html')
-    return template.render(suggestions=feedbacks_with_suggestions, idea_id=idea_id, idea_text=idea_text,
+    return template.render(feedbacks=feedbacks_with_suggestions, idea_id=idea_id, idea_text=idea_text,
                            problem_id=problem_id)
 
 
