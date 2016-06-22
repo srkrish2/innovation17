@@ -2,6 +2,7 @@
 {% set active_page = "home" %}
 {% set active_stage = active_stage|default('unpublished') -%}
 {% block progress %}
+
  <div class="row">
         <div class="one wide column"></div>
         <div class="fourteen wide column">
@@ -13,7 +14,7 @@
         {% endif %}
         <i class="icon edit"></i>
         <div class="content">
-          <div class="title">Unpublished problem</div>
+          <div class="title"><a href='/problems'>Problem list</a></div>
           <div class="description">Compose the descriptios and frame the problem</div>
         </div>
       </div>

@@ -1,0 +1,16 @@
+ {% extends "stage_mark_footer.html" %}
+ {% set active_page = "home" %}
+ {% set active_stage = active_stage|default('unpublished') -%}
+ {% block sidebar_nav %}
+
+ <div class="ui first-page-element home sidebar vertical menu left">
+
+ 	{% for href, id, caption in sidebar %}
+ 	<a href="{{ href|e }}" id= {{id|e}} 
+ 	{% if id == active_tab %} class="active red item"
+ 	{% else %}
+ 	class="item"
+ 	{% endif%}>{{ caption|e }}</a>
+ 	{% endfor %}
+ </div>
+ {% endblock %}
