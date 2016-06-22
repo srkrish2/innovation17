@@ -1,5 +1,5 @@
 import cherrypy
-import mongodb_controller
+import mongodb_controller as mc
 PREVIOUS_URL_KEY = "previous_url"
 USERNAME_KEY = "username"
 
@@ -23,11 +23,11 @@ class NewAccountHandler(object):
             result["issue"] = "Illegal email"
             print "Illegal email"
             return result
-        if mongodb_controller.is_email_in_use(email):
+        if mc.is_email_in_use(email):
             result["issue"] = "Email already in use"
             print "Email already in use"
             return result
-        if mongodb_controller.is_username_taken(username):
+        if mc.is_username_taken(username):
             result["issue"] = "This username is already taken"
             print "This username is already taken"
             return result
@@ -35,7 +35,7 @@ class NewAccountHandler(object):
         # encrypt the password
         # password_hash = sha256_crypt.encrypt(password)
 
-        mongodb_controller.new_account(username, email, password)  # password_hash)
+        mc.new_account(username, email, password)  # password_hash)
         result["success"] = True
         cherrypy.session[USERNAME_KEY] = username
         if PREVIOUS_URL_KEY in cherrypy.session:
@@ -59,14 +59,14 @@ class SignInHandler(object):
         is_email = '@' in name
         success = False
         if is_email:
-            if mongodb_controller.is_email_in_use(name):
-                hashed_password = mongodb_controller.get_password_for_email(name)
+            if mc.is_email_in_use(name):
+                hashed_password = mc.get_password_for_email(name)
                 if password == hashed_password:
                     # if sha256_crypt.verify(password, hashed_password):
                     success = True
-                    name = mongodb_controller.get_username_from_email(name)
-        elif mongodb_controller.is_username_taken(name):
-            hashed_password = mongodb_controller.get_password_for_username(name)
+                    name = mc.get_username_from_email(name)
+        elif mc.is_username_taken(name):
+            hashed_password = mc.get_password_for_username(name)
             if password == hashed_password:
                 # if sha256_crypt.verify(password, hashed_password):
                 success = True
