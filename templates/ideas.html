@@ -21,11 +21,11 @@
 					<td>{{idea.schema_text}}</td>
 					<td>{{idea.problem_text}}</td>
 					<td>
-						{% if idea.launched == true %}
+						{% if idea.status == 2 %}
 						<div class="ui button view"><a href="{{idea.suggestions_page_link|default('#')}}" class="ui label suggestion suggestion-list"><i class="icon doctor"></i>{{idea.suggestion_count|default(0)}}</a></div>
 						{% else %}
-						<div class="ui button ac proceed">Accept</div>
-						<div class="ui button red rj">Reject</div>
+						<div class="ui button ac proceed" idea.status==1?" selected":"">Accept</div>
+						<div class="ui button red rj" idea.status==0?" selected":"">Reject</div>
 						{% endif %}
 					</td>
 				</tr>

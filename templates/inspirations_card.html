@@ -4,7 +4,7 @@
 <div class="ui container center middle aligned first-page-element">
 	<div class="ui divided items {{problem_id}}">
 		{% for inspiration in inspirations %}
-		<div class="item">
+		<div class="item {{inspiration.inspiration_id}}">
 			<div class="image"><img src={{inspiration.image_link}} alt=""></div>
 			<div class="content">
 				<a href="" class="header">{{inspiration.summary}}</a>
@@ -38,16 +38,17 @@
 				</div>
 				<div class="processed">
 					<div class="ui label">Processed</div>
-					<div class="ui button labeled blue reactivate">Activate</a></div>
+					<div class="ui button label blue reactivate">Activate</div>
 				</div>
 				{% endif %}
 			</div>
 		</div>
 		{% endfor %}
-		<div class="ui button acall">Accept all</div>
-		<div class="ui red button rjall">Reject all</div>
-		<div class="ui teal button proceed">Proceed</div>
+		
 	</div>
+	<div class="ui button acall">Accept all</div>
+	<div class="ui red button rjall">Reject all</div>
+	<div class="ui teal button proceed">Proceed</div>
 	<div class="ui twelve wide column">
 		<div class="ui modal launchnext inspiration">
 			<div class="ui text container aligned center middle padded">

@@ -1,73 +1,91 @@
 {% extends "base.html" %}
 {% set active_page = "home" %}
+{% set sidebar = [
+  ('/problems', 'problems', 'My problems'),
+  ('/starredprj', 'starredprj','Starred problems'),
+  ('/following','following','Following'),
+  ('/follower/', 'follower','Follower'),
+  ('/messages/', 'messages','Messages'),
+  ('/new_problem', 'new_problem','Add Problem')
+  ] -%}
 {% block content %}
-<div class="ui middle aligned center container content first-page-element">
-  <div class="ui project-list equal width grid">
-    <table class="ui celled padded table">
-      <thead>
-        <tr>
-          <th>Problem name</th>
-          <th>Created</th>
+<div class="ui middle aligned center container sidebar-context pushable content first-page-element">
+ <!-- <div class="ui first-page-element home sidebar vertical menu left">
 
-          <th>Action</th>
+  {% for href, id, caption in sidebar %}
+  <a href="{{ href|e }}" id= {{id|e}} 
+  {% if id == active_tab %} class="active red item"
+  {% else %}
+  class="item"
+  {% endif%}>{{ caption|e }}</a>
+  {% endfor %}
+</div> -->
+<div class="ui project-list equal width grid pusher">
+  <table class="ui celled padded table">
+    <thead>
+      <tr>
+        <th>Problem name</th>
+        <th>Created</th>
 
-          <th class="social">Brief summary</th>
+        <th>Action</th>
 
-        </tr>
-      </thead>
-      <tbody>
-        {% for problem in problems%}
-        <tr class={{problem.problem_id|e}} >
-          <td>
-            <h2 class="ui aligned sortable centered header">{{problem.title}}</h2>
-          </td>
-          <td>{{problem.time_created}}</td>
-          <td>
-            {% if problem.stage=='unpublished' %}
-            <div class="ui button edit" ><a href={{problem.edit_page_link}}>Edit</a> </div>
-            <div class="ui button delete">Delete</div>
-            <div class="ui button publish">Publish</div>
-            <div class="ui button view hidden"><a href={{problem.view_page_link}}>View</a></div>
-            {% else %}
-            <div class="ui button hidden" ><a href={{problem.edit_page_link}}>Edit</a></div>
-            <div class="ui button delete hidden">Delete</div>
-            <div class="ui button publish hidden">Publish</div>
-            <div class="ui button view"><a href= {{problem.view_page_link}}>View</a></div>
-            <div class="ui button addschemas"><a href='#'>More schemas</a></div>
-            <div class="ui popup flowing hidden">
-              <div class="ui labeled input">
-                <div class="ui label" >Enter the additional </div>
-                <input type="text" class="moreschemas" placeholder="number of schemas">
-              </div>
-              <div class="ui blue button reactivate" style="display: block">Go!</div>
+        <th class="social">Brief summary</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for problem in problems%}
+      <tr class={{problem.problem_id|e}} >
+        <td>
+          <h2 class="ui aligned sortable centered header">{{problem.title}}</h2>
+        </td>
+        <td>{{problem.time_created}}</td>
+        <td>
+          {% if problem.stage=='unpublished' %}
+          <div class="ui button edit" ><a href={{problem.edit_page_link}}>Edit</a> </div>
+          <div class="ui button delete">Delete</div>
+          <div class="ui button publish">Publish</div>
+          <div class="ui button view hidden"><a href={{problem.view_page_link}}>View</a></div>
+          {% else %}
+          <div class="ui button hidden" ><a href={{problem.edit_page_link}}>Edit</a></div>
+          <div class="ui button delete hidden">Delete</div>
+          <div class="ui button publish hidden">Publish</div>
+          <div class="ui button view"><a href= {{problem.view_page_link}}>View</a></div>
+          <div class="ui button addschemas"><a href='#'>More schemas</a></div>
+          <div class="ui popup flowing hidden">
+            <div class="ui labeled input">
+              <div class="ui label" >Enter the additional </div>
+              <input type="text" class="moreschemas" placeholder="number of schemas">
             </div>
-            {% endif %}
-          </td>
-          <td>
-            {% if problem.stage=='schema' or 'inspiration' or 'idea'%}
-            <a href={{problem.schemas_page_link|default('#')}} class="ui label schema schema-list"><i class="sitemap icon"></i> {{problem.schema_count|default(0)}} </a>
-            {% endif %}
-            {% if problem.stage == 'inspiration' or 'idea'%}
-            <a href={{ problem.inspirations_page_link|default('#')}} class="ui label inspiration-list"><i class="write icon"></i> {{problem.inspiration_count|default(0)}}</a>
-            {% endif %}
-            {% if problem.stage == 'idea' or 'suggestion'%}
-            <a href={{ problem.ideas_page_link|default('#')}} class="ui label idea-list"><i class="idea icon"></i> {{problem.idea_count|default(0)}}</a>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-      <tfoot class="full-width">
-        <tr class="padded">
-          <th colspan="5">
-            <div class="ui button">Publish all</div>
-            <div class="ui button colspan-btn">Delete all</div>
-            <div class="ui float right button colspan-btn"><a href="/new_problem">New problem</a></div>
-          </th>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
+            <div class="ui blue button reactivate" style="display: block">Go!</div>
+          </div>
+          {% endif %}
+        </td>
+        <td>
+          {% if problem.stage=='schema' or 'inspiration' or 'idea'%}
+          <a href={{problem.schemas_page_link|default('#')}} class="ui label schema schema-list"><i class="sitemap icon"></i> {{problem.schema_count|default(0)}} </a>
+          {% endif %}
+          {% if problem.stage == 'inspiration' or 'idea'%}
+          <a href={{ problem.inspirations_page_link|default('#')}} class="ui label inspiration-list"><i class="write icon"></i> {{problem.inspiration_count|default(0)}}</a>
+          {% endif %}
+          {% if problem.stage == 'idea' or 'suggestion'%}
+          <a href={{ problem.ideas_page_link|default('#')}} class="ui label idea-list"><i class="idea icon"></i> {{problem.idea_count|default(0)}}</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot class="full-width">
+      <tr class="padded">
+        <th colspan="5">
+          <div class="ui button">Publish all</div>
+          <div class="ui button colspan-btn">Delete all</div>
+          <div class="ui float right button colspan-btn"><a href="/new_problem">New problem</a></div>
+        </th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
 </div>
 <!-- <script src="/static/semantic/dist/semantic.js"></script> -->
 <script src="/static/assets/js/problems.js"></script>

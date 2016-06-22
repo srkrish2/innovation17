@@ -21,11 +21,12 @@
 			}
 		})	
 	});
+
 	$(document).on('click','.cancelidea',function(e){
 		$('.ui.modal').modal('hide');
 	});
-	$(document).on('click','.rj',function(e){
-		var itemType = "schema", toreject=$(e.currentTarget).hasClass('red'), item_id = $(e.currentTarget.parentElement.parentElement).attr('class').split('-')[2];//if red exist, that means currently is accepted, now being hit-> changing to rej
+	$(document).on('click','.rj, .ac, .reactivate',function(e){
+		var itemType = "inspiration", toreject=$(e.currentTarget).hasClass('red'), item_id = $(e.currentTarget.parentElement.parentElement.parentElement).attr('class').split(' ')[1];//the fourth class name
 
 		$.ajax({
 			type: 'POST',
@@ -38,13 +39,19 @@
 			}),
 			
 			success: function(sdata){
-				if(toreject){
-					$(e.currentTarget).removeClass('red');
-					$(e.currentTarget).html('Accept');
+				if($(e.currentTarget).hasClass('reactivate')){
+					$(e.currentTarget).html('Activated into accepted');
 				}
 				else {
-					$(e.currentTarget).addClass('red');
-					$(e.currentTarget).html('Reject');
+					if(toreject){
+						$(e.currentTarget).addClass('active');
+						$(e.currentTarget).siblings().removeClass('active');
+						// $(e.currentTarget).html('Accept');
+					}
+					else {
+						$(e.currentTarget).addClass('active');
+						$(e.currentTarget).siblings().removeClass('active');
+					}
 				}
 				console.log('rejected schema id '+item_id);
 			},

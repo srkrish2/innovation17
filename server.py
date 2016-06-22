@@ -202,7 +202,7 @@ def render_suggestions_page(idea_slug):
 
     print str(feedbacks_with_suggestions), idea_id, idea_text, problem_id
     template = env.get_template('suggestions.html')
-    return template.render(suggestions=feedbacks_with_suggestions, idea_id=idea_id, idea_text=idea_text,
+    return template.render(feedbacks=feedbacks_with_suggestions, idea_id=idea_id, idea_text=idea_text,
                            problem_id=problem_id)
 
 
