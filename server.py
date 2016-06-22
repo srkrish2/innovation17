@@ -15,20 +15,18 @@ import mturk_controller
 import mongodb_controller
 import datetime
 from threading import Thread
-import time
-
+import updaters
+import authorization
+from utility_functions import convert_input_count, check_problem_access, get_problem_parameters, make_links_list
+from constants import USERNAME_KEY, PREVIOUS_URL_KEY, READABLE_TIME_FORMAT
 from jinja2 import Environment, PackageLoader
-# import passlib.hash
-env = Environment(loader=PackageLoader('server', '/templates'))
-# sha256_crypt = passlib.hash.sha256_crypt
-
 
 PROBLEM_ID = "problem_id"
-# format example: 23 Apr 2012 4:00 PM
-READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
-PREVIOUS_URL_KEY = "previous_url"
-USERNAME_KEY = "username"
 SUGGESTIONS_PAGE_LINK = "suggestions_page_link"
+env = Environment(loader=PackageLoader('server', '/templates'))
+# import passlib.hash
+# sha256_crypt = passlib.hash.sha256_crypt
+
 
 @cherrypy.popargs('problem_slug')
 class HtmlPageLoader(object):
@@ -119,7 +117,7 @@ def render_problems_page():
 def render_schemas_page(problem_slug):
     if check_problem_access(problem_slug) is True:
         problem_id = mongodb_controller.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-        schemas = mongodb_controller.get_schemas_for_problem(problem_id)
+        schemas = list(mongodb_controller.get_well_ranked_schemas(problem_id))
         template = env.get_template('schemas.html')
         [schemas_page_link, inspirations_page_link, ideas_page_link] = make_links_list(problem_slug, problem_id)
         return template.render(schemas=schemas, problem_id=problem_id,
@@ -161,6 +159,7 @@ def render_ideas_page(problem_slug):
             idea["problem_text"] = problem_text
             idea["schema_text"] = schema_text
             idea["inspiration_text"] = inspiration_summary
+            idea[SUGGESTIONS_PAGE_LINK] = "/{}/suggestions".format(idea[mongodb_controller.SLUG])
             ideas_dicts_list.append(idea)
         [schemas_page_link, inspirations_page_link, ideas_page_link] = make_links_list(problem_slug, problem_id)
         return template.render(ideas=ideas_dicts_list, problem_id=problem_id,
@@ -238,62 +237,10 @@ def unanticipated_error():
         "<html><body>Sorry, an error occurred. Please contact the admin</body></html>"
     ]
 
-###############################################################################
-################################UTILITY FUNCTIONS##############################
-###############################################################################
-
-
-def check_problem_access(problem_slug):
-    if USERNAME_KEY in cherrypy.session:
-        username = cherrypy.session[USERNAME_KEY]
-        if mongodb_controller.does_user_have_problem(username, problem_slug):
-            return True
-        else:
-            raise cherrypy.HTTPError(404, "You, {}, aren't allowed here".format(username))
-    else:
-        cherrypy.session[PREVIOUS_URL_KEY] = "problems"
-        raise cherrypy.HTTPRedirect("/sign_in")
-
-
-def get_problem_parameters():
-    if USERNAME_KEY not in cherrypy.session:
-        raise cherrypy.HTTPError(403)
-    owner_username = cherrypy.session[USERNAME_KEY]
-    data = cherrypy.request.json
-    title = data["title"]
-    description = data["description"]
-    schema_count_goal = convert_input_count(data["schema_count_goal"])
-
-    return owner_username, title, description, schema_count_goal
-
-
-def convert_input_count(user_input):
-    if not isinstance(user_input, int):
-        try:
-            schema_count_goal = int(user_input)
-        except ValueError:
-            print "Casting fail!!!"
-            schema_count_goal = -1
-    return schema_count_goal
-
-
-def make_links_list(slug, problem_id):
-    schemas_page_link = "/{}/schemas".format(slug)
-    inspirations_page_link = "/{}/inspirations".format(slug)
-    ideas_page_link = "/{}/ideas".format(slug)
-    stage = mongodb_controller.get_stage(problem_id)
-    if stage == mongodb_controller.STAGE_SUGGESTION:
-        return schemas_page_link, inspirations_page_link, ideas_page_link
-    if stage != mongodb_controller.STAGE_IDEA:
-        ideas_page_link = ""
-    elif stage != mongodb_controller.STAGE_INSPIRATION:
-        inspirations_page_link = ""
-    return schemas_page_link, inspirations_page_link, ideas_page_link
 
 ###############################################################################
 ##################################AJAX HANDLERS################################
 ###############################################################################
-
 
 class SaveNewProblemHandler(object):
     exposed = True
@@ -338,16 +285,6 @@ class PostNewProblemHandler(object):
         }
 
 
-def publish_problem(problem_id):
-    [title, description, schema_count_goal] = mongodb_controller.get_problem_fields(problem_id)
-    hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
-    if hit_id == "FAIL":
-        return {"success": False}
-    mongodb_controller.set_schema_stage(problem_id)
-    mongodb_controller.insert_new_schema_hit(problem_id, schema_count_goal, hit_id)
-    return {"success": True}
-
-
 class PublishProblemHandler(object):
     exposed = True
 
@@ -355,134 +292,14 @@ class PublishProblemHandler(object):
     @cherrypy.tools.json_in()
     def POST(self):
         data = cherrypy.request.json
-        return publish_problem(data[PROBLEM_ID])
-
-###############################################################################
-
-def pull_schema_hit_results(schema_hit):
-    schema_hit_id = schema_hit[mongodb_controller.HIT_ID]
-    problem_id = schema_hit[mongodb_controller.PROBLEM_ID]
-    schema_dicts = mturk_controller.get_schema_making_results(schema_hit_id)
-    if schema_dicts == "FAIL":
-        print "mturk_controller.update_schemas_for_problem - FAIL!"
-        return
-    new_schemas_count = 0
-    # replace time with a readable one and add to DB
-    for schema_dict in schema_dicts:
-        schema_id = schema_dict[mongodb_controller.SCHEMA_ID]
-        if mongodb_controller.contains_schema(schema_id):
-            continue
-
-        # pop epoch time
-        epoch_time_ms = long(schema_dict.pop(mongodb_controller.TIME_CREATED))
-        epoch_time = epoch_time_ms / 1000.0
-        readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
-        # add readable time
-        schema_dict[mongodb_controller.TIME_CREATED] = readable_time
-        # add problem_id and status
-        schema_dict[mongodb_controller.STATUS] = mongodb_controller.STATUS_ACCEPTED
-        schema_dict[mongodb_controller.PROBLEM_ID] = problem_id
-        mongodb_controller.add_schema(schema_dict)
-        new_schemas_count += 1
-    mongodb_controller.increment_schema_hit_count(schema_hit_id, new_schemas_count)
-    return new_schemas_count
-
-
-def update_schemas_for_problem(problem_id):
-    new_schemas_count = 0
-    for schema_hit in mongodb_controller.get_schema_hits(problem_id):
-        if schema_hit[mongodb_controller.COUNT] != schema_hit[mongodb_controller.COUNT_GOAL]:
-            new_schemas_count += pull_schema_hit_results(schema_hit)
-    mongodb_controller.increment_schema_count(problem_id, new_schemas_count)
-
-###############################################################################
-
-def pull_inspiration_hit_results(inspiration_hit):
-    inspiration_hit_id = inspiration_hit[mongodb_controller.HIT_ID]
-    schema_id = inspiration_hit[mongodb_controller.SCHEMA_ID]
-    problem_id = inspiration_hit[mongodb_controller.PROBLEM_ID]
-    inspirations = mturk_controller.get_inspiration_hit_results(inspiration_hit_id)
-    if inspirations == "FAIL":
-        print "mturk_controller.get_inspiration_hit_results - FAIL!"
-        return
-    new_inspirations_count = 0
-    for inspiration in inspirations:
-        inspiration_id = inspiration[mongodb_controller.INSPIRATION_ID]
-        if mongodb_controller.contains_inspiration(inspiration_id):
-            continue
-        # replace time with a readable one
-        epoch_time_ms = long(inspiration.pop(mongodb_controller.TIME_CREATED))
-        epoch_time = epoch_time_ms / 1000.0
-        readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
-        inspiration[mongodb_controller.TIME_CREATED] = readable_time
-        # add problem id, schema id, and status
-        inspiration[mongodb_controller.PROBLEM_ID] = problem_id
-        inspiration[mongodb_controller.SCHEMA_ID] = schema_id
-        inspiration[mongodb_controller.STATUS] = mongodb_controller.STATUS_ACCEPTED
-        mongodb_controller.add_inspiration(inspiration)
-        new_inspirations_count += 1
-    mongodb_controller.increment_inspiration_hit_count(inspiration_hit_id, new_inspirations_count)
-    return new_inspirations_count
-
-
-def update_inspirations_for_problem(problem_id):
-    new_inspirations_count = 0
-    for inspiration_hit in mongodb_controller.get_inspiration_hits(problem_id):
-        if inspiration_hit[mongodb_controller.COUNT] != inspiration_hit[mongodb_controller.COUNT_GOAL]:
-            new_inspirations_count += pull_inspiration_hit_results(inspiration_hit)
-    mongodb_controller.increment_inspiration_count(problem_id, new_inspirations_count)
-
-###############################################################################
-
-def pull_idea_hit_results(idea_hit):
-    idea_hit_id = idea_hit[mongodb_controller.HIT_ID]
-    schema_id = idea_hit[mongodb_controller.SCHEMA_ID]
-    inspiration_id = idea_hit[mongodb_controller.INSPIRATION_ID]
-    problem_id = idea_hit[mongodb_controller.PROBLEM_ID]
-
-    ideas = mturk_controller.get_idea_hit_results(idea_hit_id)
-    new_ideas_count = 0
-    for idea in ideas:
-        idea_id = idea[mongodb_controller.IDEA_ID]
-        if mongodb_controller.contains_idea(idea_id):
-            continue
-        # replace time with a readable one
-        epoch_time_ms = long(idea.pop(mongodb_controller.TIME_CREATED))
-        epoch_time = epoch_time_ms / 1000.0
-        readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
-        idea[mongodb_controller.TIME_CREATED] = readable_time
-        # add problem id, schema id, inspiration_id, and status
-        idea[mongodb_controller.PROBLEM_ID] = problem_id
-        idea[mongodb_controller.SCHEMA_ID] = schema_id
-        idea[mongodb_controller.INSPIRATION_ID] = inspiration_id
-        idea[mongodb_controller.STATUS] = mongodb_controller.STATUS_NEW
-        mongodb_controller.add_idea(idea)
-        new_ideas_count += 1
-    mongodb_controller.increment_inspiration_hit_count(idea_hit_id, new_ideas_count)
-    return new_ideas_count
-
-
-def update_ideas_for_problem(problem_id):
-    new_ideas_count = 0
-    for idea_hit in mongodb_controller.get_idea_hits(problem_id):
-        if idea_hit[mongodb_controller.COUNT] != idea_hit[mongodb_controller.COUNT_GOAL]:
-            new_ideas_count += pull_idea_hit_results(idea_hit)
-    mongodb_controller.increment_idea_count(problem_id, new_ideas_count)
-
-###############################################################################
-
-def update_hit_results(username):
-    start = time.clock()
-    for problem_id in mongodb_controller.get_users_problem_ids(username):
-        if not mongodb_controller.did_reach_schema_count_goal(problem_id):
-            update_schemas_for_problem(problem_id)
-        if not mongodb_controller.did_reach_inspiration_count_goal(problem_id):
-            update_inspirations_for_problem(problem_id)
-        if not mongodb_controller.did_reach_idea_count_goal(problem_id):
-            update_ideas_for_problem(problem_id)
-    elapsed = time.clock()
-    elapsed = elapsed - start
-    # print "Done updating! Time spent:", elapsed*1000
+        problem_id = data[PROBLEM_ID]
+        [title, description, schema_count_goal] = mongodb_controller.get_problem_fields(problem_id)
+        hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
+        if hit_id == "FAIL":
+            return {"success": False}
+        mongodb_controller.set_schema_stage(problem_id)
+        mongodb_controller.insert_new_schema_hit(problem_id, schema_count_goal, hit_id)
+        return {"success": True}
 
 
 class CountUpdatesHandler(object):
@@ -494,7 +311,7 @@ class CountUpdatesHandler(object):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
         username = cherrypy.session[USERNAME_KEY]
-        thread = Thread(target=update_hit_results, args=[username])
+        thread = Thread(target=updaters.update_hit_results, args=[username])
         thread.start()
         return mongodb_controller.get_counts_for_user(username)
 
@@ -654,39 +471,6 @@ class MoreSuggestionsHandler(object):
         mongodb_controller.increment_suggestion_count_goal(idea_id, count_goal)
 
 
-def update_suggestions(problem_id):
-    start = time.clock()
-    for suggestion_hit in mongodb_controller.get_suggestion_hits(problem_id):
-        if suggestion_hit[mongodb_controller.COUNT_GOAL] == suggestion_hit[mongodb_controller.COUNT]:
-            continue
-        suggestion_hit_id = suggestion_hit[mongodb_controller.HIT_ID]
-        feedback_id = suggestion_hit[mongodb_controller.FEEDBACK_ID]
-        problem_id = suggestion_hit[mongodb_controller.PROBLEM_ID]
-        idea_id = suggestion_hit[mongodb_controller.IDEA_ID]
-        suggestions = mturk_controller.get_suggestion_hit_results(suggestion_hit_id)
-        if suggestions == "FAIL":
-            continue
-        for suggestion in suggestions:
-            if mongodb_controller.contains_suggestion(suggestion[mongodb_controller.SUGGESTION_ID]):
-                continue
-            mongodb_controller.increment_suggestion_hit_count_by_one(suggestion_hit_id)
-            mongodb_controller.increment_suggestion_count_by_one(idea_id)
-
-            # replace time with a readable one and add to DB
-            epoch_time_ms = long(suggestion.pop(mongodb_controller.TIME_CREATED))
-            epoch_time = epoch_time_ms / 1000.0
-            readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
-            suggestion[mongodb_controller.TIME_CREATED] = readable_time
-            # add feedback_id, problem_id, idea_id
-            suggestion[mongodb_controller.PROBLEM_ID] = problem_id
-            suggestion[mongodb_controller.IDEA_ID] = idea_id
-            suggestion[mongodb_controller.FEEDBACK_ID] = feedback_id
-            mongodb_controller.add_suggestion(suggestion)
-    elapsed = time.clock()
-    elapsed = elapsed - start
-    # print "Done updating suggestions! Time spent:", elapsed*1000
-
-
 class SuggestionUpdatesHandler(object):
     exposed = True
 
@@ -697,14 +481,13 @@ class SuggestionUpdatesHandler(object):
             raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
         problem_id = data[PROBLEM_ID]
-        thread = Thread(target=update_suggestions, args=[problem_id])
+        thread = Thread(target=updaters.update_suggestions, args=[problem_id])
         thread.start()
         return mongodb_controller.get_suggestion_counts(problem_id)
 
 
 def relaunch_schema_task(problem_id, assignments_num):
-    problem_fields = mongodb_controller.get_problem_fields(problem_id)
-    description = problem_fields[mongodb_controller.DESCRIPTION]
+    description = mongodb_controller.get_problem_description(problem_id)
     hit_id = mturk_controller.create_schema_making_hit(description, assignments_num)
     if hit_id == "FAIL":
         return {"success": False}
@@ -791,91 +574,6 @@ class ProblemEditHandler(object):
                 "url": "problems"}
 
 
-class NewAccountHandler(object):
-    exposed = True
-
-    # post requests go here
-    @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def POST(self):
-        data = cherrypy.request.json
-        username = data['username']
-        email = data['email']
-        password = data['password']
-
-        result = {
-            "success": False
-        }
-        if "@" not in email:
-            result["issue"] = "Illegal email"
-            print "Illegal email"
-            return result
-        if mongodb_controller.is_email_in_use(email):
-            result["issue"] = "Email already in use"
-            print "Email already in use"
-            return result
-        if mongodb_controller.is_username_taken(username):
-            result["issue"] = "This username is already taken"
-            print "This username is already taken"
-            return result
-
-        # encrypt the password
-        # password_hash = sha256_crypt.encrypt(password)
-
-        mongodb_controller.new_account(username, email, password)  # password_hash)
-        result["success"] = True
-        cherrypy.session[USERNAME_KEY] = username
-        if PREVIOUS_URL_KEY in cherrypy.session:
-            result["url"] = cherrypy.session[PREVIOUS_URL_KEY]
-            cherrypy.session.pop(PREVIOUS_URL_KEY)
-        else:
-            result["url"] = "index"
-        return result
-
-
-class SignInHandler(object):
-    exposed = True
-
-    @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def POST(self):
-        data = cherrypy.request.json
-        name = data['name']
-        password = data['password']
-        print "name={},pass={}".format(name,password)
-        # name = "aaaaaa"
-        # password = "123123"
-
-        is_email = '@' in name
-        success = False
-        if is_email:
-            if mongodb_controller.is_email_in_use(name):
-                hashed_password = mongodb_controller.get_password_for_email(name)
-                if password == hashed_password:
-                    # if sha256_crypt.verify(password, hashed_password):
-                    success = True
-                    name = mongodb_controller.get_username_from_email(name)
-        elif mongodb_controller.is_username_taken(name):
-            hashed_password = mongodb_controller.get_password_for_username(name)
-            if password == hashed_password:
-                # if sha256_crypt.verify(password, hashed_password):
-                success = True
-        result = {}
-        if not success:
-            result["success"] = False
-            result["url"] = "index"
-            return result
-        else:
-            result["success"] = True
-            cherrypy.session[USERNAME_KEY] = name
-            if PREVIOUS_URL_KEY in cherrypy.session:
-                result["url"] = cherrypy.session[PREVIOUS_URL_KEY]
-                cherrypy.session.pop(PREVIOUS_URL_KEY)
-            else:
-                result["url"] = "index"
-            return result
-
-
 class DeleteProblemHandler(object):
     exposed = True
 
@@ -953,11 +651,11 @@ if __name__ == '__main__':
     # class for serving static homepage
     webapp = HtmlPageLoader()
 
-    webapp.post_sign_in = SignInHandler()
+    webapp.post_sign_in = authorization.SignInHandler()
     webapp.save_new_problem = SaveNewProblemHandler()
     webapp.post_new_problem = PostNewProblemHandler()
     webapp.publish_problem = PublishProblemHandler()
-    webapp.post_new_account = NewAccountHandler()
+    webapp.post_new_account = authorization.NewAccountHandler()
     webapp.get_count_updates = CountUpdatesHandler()
     webapp.post_inspiration_task = InspirationTaskHandler()
     webapp.delete_problem = DeleteProblemHandler()

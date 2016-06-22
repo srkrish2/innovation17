@@ -1,9 +1,6 @@
 (function(global){
     makePostRequest();
     var interval = setInterval(makePostRequest,10000);
-    $(document).on('click', 'a.schemalist, div.button', function(e){
-        clearInterval(interval);
-    });
     $(document).on('click','div.button.publish',function(e){
         e.preventDefault();
         // $(e.currentTarget).innerHTML="<i class='paw icon'></i>0";

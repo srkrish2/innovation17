@@ -96,7 +96,8 @@ ideas = array of the format:
 	"schema_id" : string,
 	"worker_id" : string,
 	"suggestion_count_goal" : int,
-	"problem_id" : string
+	"problem_id" : string,
+	"suggestions_page_link": string
 }
 also problem_id, problem_stage, schemas_page_link, inspirations_page_link,ideas_page_link
 ```
@@ -322,7 +323,7 @@ input
 ```
 {
     "problem_id": string,
-    'schema_count_goal": int
+    "count": int
 }
 ```
 output

@@ -31,6 +31,22 @@ WORKER_ID = "worker_id"
 STATUS = "status"
 # TIME_CREATED
 # PROBLEM_ID
+RANK = "rank"
+# }
+
+# RANK_SCHEMA_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
+# SCHEMA_ID
+# }
+
+# SCHEMA_RANK: {
+RANK_ID = "rank_id"
+# RANK
+# TIME_CREATED
+# WORKER_ID
+# SCHEMA_ID
 # }
 
 # INSPIRATION_HIT: {
@@ -39,7 +55,7 @@ STATUS = "status"
 # COUNT_GOAL
 # PROBLEM_ID
 # SCHEMA_ID
-#  }
+# }
 
 # INSPIRATION: {
 INSPIRATION_LINK = "source_link"
@@ -127,6 +143,7 @@ STATUS_ACCEPTED = 1
 STATUS_PROCESSED = 2
 STATUS_NEW = 1
 
+from constants import MIN_RANK
 
 def save_problem(problem_id, title, description, owner_username, schema_count_goal, time_created):
     problem = {
@@ -168,6 +185,16 @@ def insert_new_schema_hit(problem_id, count_goal, hit_id):
         HIT_ID: hit_id
     }
     schema_hits_collection.insert_one(new_schema_hit)
+
+
+def insert_new_rank_schema_hit(schema_id, count_goal, hit_id):
+    new_schema_hit = {
+        SCHEMA_ID: schema_id,
+        COUNT: 0,
+        COUNT_GOAL: count_goal,
+        HIT_ID: hit_id
+    }
+    rank_schema_hits_collection.insert_one(new_schema_hit)
 
 
 def insert_new_inspiration_hit(problem_id, schema_id, count_goal, hit_id):
@@ -324,9 +351,9 @@ def get_suggestion_hits(problem_id):
     return suggestion_hits_collection.find({PROBLEM_ID: problem_id})
 
 
-def increment_schema_count(problem_id, how_much):
+def set_schema_count(problem_id, count):
     query_filter = {PROBLEM_ID: problem_id}
-    update = {'$inc': {SCHEMA_COUNT: how_much}}
+    update = {'$set': {SCHEMA_COUNT: count}}
     problems_collection.update_one(query_filter, update)
 
 
@@ -360,9 +387,9 @@ def increment_idea_count_goal(problem_id, how_much):
     problems_collection.update_one(query_filter, update)
 
 
-def increment_schema_hit_count(hit_id, count):
+def increment_schema_hit_count_by_one(hit_id):
     query_filter = {HIT_ID: hit_id}
-    update = {'$inc': {COUNT: count}}
+    update = {'$inc': {COUNT: 1}}
     schema_hits_collection.update_one(query_filter, update)
 
 
@@ -396,6 +423,18 @@ def increment_suggestion_count_by_one(idea_id):
     ideas_collection.update_one(query_filter, update)
 
 
+def increment_rank_schema_hit_count(rank_schema_hit_id, how_much):
+    query_filter = {HIT_ID: rank_schema_hit_id}
+    update = {'$inc': {COUNT: how_much}}
+    rank_schema_hits_collection.update_one(query_filter, update)
+
+
+def increment_schema_rank(schema_id, how_much):
+    query_filter = {SCHEMA_ID: schema_id}
+    update = {'$inc': {RANK: how_much}}
+    schemas_collection.update_one(query_filter, update)
+
+
 def add_schema(schema):
     schemas_collection.insert_one(schema)
 
@@ -416,19 +455,21 @@ def contains_suggestion(suggestion_id):
     return suggestions_collection.find_one({SUGGESTION_ID: suggestion_id}) is not None
 
 
+def contains_schema_rank(rank_id):
+    return schema_ranks_collection.find_one({RANK_ID: rank_id}) is not None
+
+
 def add_inspiration(inspiration):
     inspirations_collection.insert_one(inspiration)
 
 
 def add_idea(idea):
-    if ideas_collection.find_one(idea) is None:
-        # replace title with slug
-        title = idea.pop(TITLE)
-        idea[SLUG] = slugify(title)
-        idea[SUGGESTION_COUNT] = 0
-        idea[SUGGESTION_COUNT_GOAL] = 0
-        ideas_collection.insert_one(idea)
-
+    # replace title with slug
+    title = idea.pop(TITLE)
+    idea[SLUG] = slugify(title)
+    idea[SUGGESTION_COUNT] = 0
+    idea[SUGGESTION_COUNT_GOAL] = 0
+    ideas_collection.insert_one(idea)
 
 
 def add_feedback(feedback_id, text, idea_id):
@@ -437,6 +478,10 @@ def add_feedback(feedback_id, text, idea_id):
         TEXT: text,
         IDEA_ID: idea_id
     })
+
+
+def add_schema_rank(rank_dict):
+    schema_ranks_collection.insert_one(rank_dict)
 
 
 def new_account(username, email, password):
@@ -601,11 +646,15 @@ def get_inspiration_dict(inspiration_id):
 
 
 def get_feedback_dict(feedback_id):
-    return feedbacks_collection.find({FEEDBACK_ID: feedback_id})
+    return feedbacks_collection.find_one({FEEDBACK_ID: feedback_id})
 
 
 def get_feedback_dicts(idea_id):
     return feedbacks_collection.find({IDEA_ID: idea_id})
+
+
+def get_rank_schema_hit_dict(schema_id):
+    return rank_schema_hits_collection.find_one({SCHEMA_ID: schema_id})
 
 
 def add_suggestion(suggestion):
@@ -664,18 +713,15 @@ def did_reach_inspiration_count_goal(problem_id):
     return problem[INSPIRATION_COUNT] == problem[INSPIRATION_COUNT_GOAL]
 
 
-def get_schemas_for_problem(problem_id):
-    result = []
-    for schema in schemas_collection.find({PROBLEM_ID: problem_id}):
-        for_result = {
-            TEXT: schema[TEXT],
-            TIME_CREATED: schema[TIME_CREATED],
-            WORKER_ID: schema[WORKER_ID],
-            SCHEMA_ID: schema[SCHEMA_ID],
-            STATUS: schema[STATUS]
-        }
-        result.append(for_result)
-    return result
+def get_schema_dicts(problem_id):
+    return schemas_collection.find({PROBLEM_ID: problem_id})
+
+
+def get_well_ranked_schemas(problem_id):
+    return db.schemas.find({
+        RANK: {"$gte": MIN_RANK},
+        PROBLEM_ID: problem_id
+    })
 
 
 def set_schema_processed_status(schema_id):
@@ -718,6 +764,8 @@ users_collection = db.users
 problems_collection = db.problems
 schema_hits_collection = db.schema_hits
 schemas_collection = db.schemas
+rank_schema_hits_collection = db.rank_schema_hits
+schema_ranks_collection = db.schema_ranks
 inspiration_hits_collection = db.inspiration_hits
 inspirations_collection = db.inspirations
 idea_hits_collection = db.idea_hits

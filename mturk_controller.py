@@ -309,43 +309,64 @@ def get_suggestion_hit_results(hit_id):
     return suggestions
 
 
-"""
-def get_schema_ranking_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', 'SchemaMakingResults.jar', hit_id],
+def create_rank_schema_hit(schema, assignment_num):
+    p = subprocess.Popen(['java', '-jar', 'PostRankSchemaHIT.jar', schema, str(assignment_num)],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
-    # "SUCCESS"
-    # "--[ANSWER START]--"
+    #  * "SUCCESS"
+    #  * HIT_ID
+    #  * URL
+
+    jar_output_file = p.stdout
+    first_line = jar_output_file.readline().rstrip()
+    if first_line == "FAIL":
+        print "PostRankSchemaHIT.jar: FAIL"
+        print jar_output_file.readline().rstrip()
+        return "FAIL"
+    if first_line != "SUCCESS":
+        print "UNEXPECTED! neither fail/success: {}".format(first_line)
+        return "FAIL"
+
+    hit_id = jar_output_file.readline().rstrip()
+    url = jar_output_file.readline().rstrip()
+    print "url =", url
+    return hit_id
+
+
+def get_schema_ranking_results(hit_id):
+    p = subprocess.Popen(['java', '-jar', 'RankSchemaHITResults.jar', hit_id],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    # output format:
+    #  "SUCCESS"
+    #  how_many
+    #  assignment_id
     #  worker_id
     #  epoch_time_ms
     #  answer: GOOD or BAD
-    # "--[ANSWER END]--"
-    # "--[END]--"
 
     jar_output_file = p.stdout
-    if jar_output_file.readline().rstrip() == "FAIL":
-        print "SchemaRankingResults.jar: FAIL"
+    first_line = jar_output_file.readline().rstrip()
+    if first_line == "FAIL":
+        print "RankSchemaHITResults.jar: FAIL"
         print jar_output_file.readline().rstrip()
         return "FAIL"
-
+    if first_line != "SUCCESS":
+        print "UNEXPECTED! neither fail/success: {}".format(first_line)
+        return "FAIL"
+    how_many = int(jar_output_file.readline().rstrip())
     ranks = []
-    header = jar_output_file.readline().rstrip()
-    while True:
-        if header == "--[ANSWER START]--":
-            worker_id = jar_output_file.readline().rstrip()
-            epoch_time_ms_string = jar_output_file.readline().rstrip()
-            rank = jar_output_file.readline().rstrip()
-
-            print "RANK:", rank
-
-            rank = {
-
-            }
-            ranks.append(rank)
-
-            header = jar_output_file.readline().rstrip()
-        else:
-            break
+    for i in xrange(how_many):
+        assignment_id = jar_output_file.readline().rstrip()
+        worker_id = jar_output_file.readline().rstrip()
+        epoch_time_ms_string = jar_output_file.readline().rstrip()
+        rank = int(jar_output_file.readline().rstrip())
+        rank_dict = {
+            mongodb_controller.RANK: rank,
+            mongodb_controller.TIME_CREATED: epoch_time_ms_string,
+            mongodb_controller.WORKER_ID: worker_id,
+            mongodb_controller.RANK_ID: assignment_id
+        }
+        ranks.append(rank_dict)
     return ranks
-"""
