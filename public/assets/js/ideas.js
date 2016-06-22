@@ -3,7 +3,7 @@
     var interval = setInterval(makePostRequest,10000);
 	var currentIdea;
 	$(document).on('click','.proceed',function(e){
-		$('.ui.modal .teal.ui.label').html($(e.currentTarget.parentElement).siblings()[0]).innerHTML;
+		$('.ui.modal .teal.ui.label').html($(e.currentTarget.parentElement).siblings()[0].innerHTML);
 		$('.ui.modal').modal('show');
 	});
 	$(document).on('click','.startsuggestion',function(e){

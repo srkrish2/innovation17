@@ -267,7 +267,7 @@ output
 ```
 {
   "to_reject": boolean,
-  "type": "schema" or "inspiration"
+  "type": "schema" or "inspiration" or "idea"
   "id": string
 }
 ```

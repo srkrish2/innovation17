@@ -1,9 +1,20 @@
- body {
+html, body {
+  margin:0;
+  padding: 0;
+  height: 100%;
+}
+body {
   background-color: #DADADA;
 
 }
 body .first-page-element {
  padding-top:80px!important;
+ padding-bottom: 60px;
+}
+
+body > .ui.container {
+  min-height:100%;
+  position:relative;
 }
 /*
 div.fixed.menu {
@@ -17,7 +28,7 @@ div.footer {
   bottom:1em;
   left:0em;
   width:100%;
-  /*height: 3em;*/
+  height: 60px;
   /*margin-top: -3em;*/
 }
 
@@ -116,5 +127,5 @@ tr.rj {
       /*border-radius: 2em;*/
      /* width: 100px;
 
-      height: 100px;*/
-    }
+     height: 100px;*/
+   }

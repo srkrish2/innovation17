@@ -26,7 +26,7 @@
 		$('.ui.modal').modal('hide');
 	});
 	$(document).on('click','.rj, .ac, .reactivate',function(e){
-		var itemType = "schema", toreject=$(e.currentTarget).hasClass('red'), item_id = $('.ui.divided.items').attr('class').split(' ')[3];//the fourth class name
+		var itemType = "inspiration", toreject=$(e.currentTarget).hasClass('red'), item_id = $(e.currentTarget.parentElement.parentElement.parentElement).attr('class').split(' ')[1];//the fourth class name
 
 		$.ajax({
 			type: 'POST',

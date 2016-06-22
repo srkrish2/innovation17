@@ -122,7 +122,6 @@ def render_schemas_page(problem_slug):
         schemas = mongodb_controller.get_schemas_for_problem(problem_id)
         template = env.get_template('schemas.html')
         [schemas_page_link, inspirations_page_link, ideas_page_link] = make_links_list(problem_slug, problem_id)
-        print [schemas_page_link, inspirations_page_link, ideas_page_link]
         return template.render(schemas=schemas, problem_id=problem_id,
                                problem_stage=mongodb_controller.get_stage(problem_id),
                                schemas_page_link=schemas_page_link, inspirations_page_link=inspirations_page_link,
@@ -283,6 +282,8 @@ def make_links_list(slug, problem_id):
     inspirations_page_link = "/{}/inspirations".format(slug)
     ideas_page_link = "/{}/ideas".format(slug)
     stage = mongodb_controller.get_stage(problem_id)
+    if stage == mongodb_controller.STAGE_SUGGESTION:
+        return schemas_page_link, inspirations_page_link, ideas_page_link
     if stage != mongodb_controller.STAGE_IDEA:
         ideas_page_link = ""
     elif stage != mongodb_controller.STAGE_INSPIRATION:
@@ -450,11 +451,11 @@ def pull_idea_hit_results(idea_hit):
         epoch_time = epoch_time_ms / 1000.0
         readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
         idea[mongodb_controller.TIME_CREATED] = readable_time
-        # add problem id, schema id, inspiration_id, and is_launched
+        # add problem id, schema id, inspiration_id, and status
         idea[mongodb_controller.PROBLEM_ID] = problem_id
         idea[mongodb_controller.SCHEMA_ID] = schema_id
         idea[mongodb_controller.INSPIRATION_ID] = inspiration_id
-        idea[mongodb_controller.IS_LAUNCHED] = False
+        idea[mongodb_controller.STATUS] = mongodb_controller.STATUS_NEW
         mongodb_controller.add_idea(idea)
         new_ideas_count += 1
     mongodb_controller.increment_inspiration_hit_count(idea_hit_id, new_ideas_count)
@@ -584,6 +585,8 @@ class RejectHandler(object):
             mongodb_controller.set_schema_rejected_flag(_id, to_reject)
         elif _type == "inspiration":
             mongodb_controller.set_inspiration_rejected_flag(_id, to_reject)
+        elif _type == "idea":
+            mongodb_controller.set_idea_rejected_flag(_id, to_reject)
 
 
 class FeedbackHandler(object):
@@ -615,6 +618,7 @@ class FeedbackHandler(object):
             mongodb_controller.insert_new_suggestion_hit(problem_id, idea_id, feedback_id, count_goal, hit_id)
         mongodb_controller.idea_launched(idea_id)
         mongodb_controller.increment_suggestion_count_goal(idea_id, count_goal)
+        mongodb_controller.set_suggestion_stage(problem_id)
         return {"success": True,
                 SUGGESTIONS_PAGE_LINK: "/{}/suggestions".format(idea_dict[mongodb_controller.SLUG])}
 
