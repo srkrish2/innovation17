@@ -1,4 +1,3 @@
-import datetime
 import subprocess
 import mongodb_controller
 
@@ -334,7 +333,26 @@ def create_rank_schema_hit(schema, assignment_num):
     return hit_id
 
 
-def get_schema_ranking_results(hit_id):
+def create_rank_inspiration_hit(problem, schema, i_link, i_additional, i_reason, assignment_num):
+    p = subprocess.Popen(['java', '-jar', 'PostRankInspirationHIT.jar', problem, schema, i_link, i_additional,
+                         i_reason, str(assignment_num)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    jar_output_file = p.stdout
+    first_line = jar_output_file.readline().rstrip()
+    if first_line == "FAIL":
+        print "PostRankInspirationHIT.jar: FAIL"
+        print jar_output_file.readline().rstrip()
+        return "FAIL"
+    if first_line != "SUCCESS":
+        print "UNEXPECTED! neither fail/success: {}".format(first_line)
+        return "FAIL"
+
+    hit_id = jar_output_file.readline().rstrip()
+    url = jar_output_file.readline().rstrip()
+    print "url =", url
+    return hit_id
+
+
+def get_ranking_results(hit_id):
     p = subprocess.Popen(['java', '-jar', 'RankSchemaHITResults.jar', hit_id],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
