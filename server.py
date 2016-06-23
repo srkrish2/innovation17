@@ -269,20 +269,25 @@ class PostNewProblemHandler(object):
         [owner_username, title, description, schema_count_goal] = get_problem_parameters()
         if schema_count_goal == -1:
             return {"success": False}
-
         problem_id = ''.join(random.sample(string.hexdigits, 8))
         time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
         mc.save_problem(problem_id, title, description, owner_username, schema_count_goal, time_created)
-
-        hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
-        if hit_id == "FAIL":
-            return {"success": False}
         mc.set_schema_stage(problem_id)
-        mc.insert_new_schema_hit(problem_id, schema_count_goal, hit_id)
+        # thread = Thread(target=post_new_problem, args=[description, schema_count_goal, problem_id])
+        # thread.start()
+        post_new_problem(description, schema_count_goal, problem_id)
         return {
             "success": True,
             "url": "problems"
         }
+
+
+def post_new_problem(description, schema_count_goal, problem_id):
+    hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
+    if hit_id == "FAIL":
+        print "post_new_problem: FAIL!!"
+        return
+    mc.insert_new_schema_hit(problem_id, schema_count_goal, hit_id)
 
 
 class PublishProblemHandler(object):
@@ -293,13 +298,20 @@ class PublishProblemHandler(object):
     def POST(self):
         data = cherrypy.request.json
         problem_id = data[PROBLEM_ID]
-        [title, description, schema_count_goal] = mc.get_problem_fields(problem_id)
-        hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
-        if hit_id == "FAIL":
-            return {"success": False}
-        mc.set_schema_stage(problem_id)
-        mc.insert_new_schema_hit(problem_id, schema_count_goal, hit_id)
+        # thread = Thread(target=publish_problem, args=[problem_id])
+        # thread.start()
+        publish_problem(problem_id)
         return {"success": True}
+
+
+def publish_problem(problem_id):
+    [title, description, schema_count_goal] = mc.get_problem_fields(problem_id)
+    hit_id = mturk_controller.create_schema_making_hit(description, schema_count_goal)
+    if hit_id == "FAIL":
+        print "publish_problem: FAIL!!"
+        return
+    mc.set_schema_stage(problem_id)
+    mc.insert_new_schema_hit(problem_id, schema_count_goal, hit_id)
 
 
 class CountUpdatesHandler(object):
@@ -332,20 +344,25 @@ class InspirationTaskHandler(object):
         count_goal = convert_input_count(data['count_goal'])
         if count_goal == -1:
             return {"success": False}
-
-        for schema in mc.get_schemas_for_inspiration_task(problem_id):
-            # submitted_schema_count += 1
-            hit_id = mturk_controller.create_inspiration_hit(schema[mc.TEXT], count_goal)
-            if hit_id == "FAIL":
-                print "submitting one of the schemas for create_inspiration_hit FAILED!!"
-                continue
-            schema_id = schema[mc.SCHEMA_ID]
-            mc.insert_new_inspiration_hit(problem_id, schema_id, count_goal, hit_id)
-            mc.set_schema_processed_status(schema_id)
         mc.set_inspiration_stage(problem_id)
-        mc.increment_inspiration_count_goal(problem_id, count_goal)
+        # thread = Thread(target=post_inspiration_task, args=[problem_id, count_goal])
+        # thread.start()
+        post_inspiration_task(problem_id, count_goal)
         return {"success": True,
                 "url": "problems"}
+
+
+def post_inspiration_task(problem_id, count_goal):
+    for schema in mc.get_schemas_for_inspiration_task(problem_id):
+        # submitted_schema_count += 1
+        hit_id = mturk_controller.create_inspiration_hit(schema[mc.TEXT], count_goal)
+        if hit_id == "FAIL":
+            print "submitting one of the schemas for create_inspiration_hit FAILED!!"
+            continue
+        schema_id = schema[mc.SCHEMA_ID]
+        mc.insert_new_inspiration_hit(problem_id, schema_id, count_goal, hit_id)
+        mc.set_schema_processed_status(schema_id)
+    mc.increment_inspiration_count_goal(problem_id, count_goal)
 
 
 class IdeaTaskHandler(object):
@@ -364,27 +381,32 @@ class IdeaTaskHandler(object):
         count_goal = convert_input_count(data['count_goal'])
         if count_goal == -1:
             return {"success": False}
-
-        for inspiration in mc.get_accepted_inspirations(problem_id):
-            problem_description = mc.get_problem_description(inspiration[PROBLEM_ID])
-            source_link = inspiration[mc.INSPIRATION_LINK]
-            image_link = inspiration[mc.INSPIRATION_ADDITIONAL]
-            explanation = inspiration[mc.INSPIRATION_REASON]
-
-            hit_id = mturk_controller.create_idea_hit(problem_description, source_link,
-                                                      image_link, explanation, count_goal)
-            # add the hit_id to schema
-            if hit_id == "FAIL":
-                print "submitting one of the inspirations create_idea_hit FAILED!!"
-                continue
-            inspiration_id = inspiration[mc.INSPIRATION_ID]
-            schema_id = inspiration[mc.SCHEMA_ID]
-            mc.insert_new_idea_hit(problem_id, schema_id, inspiration_id, count_goal, hit_id)
-            mc.set_inspiration_processed_status(inspiration_id)
         mc.set_idea_stage(problem_id)
-        mc.increment_idea_count_goal(problem_id, count_goal)
+        # thread = Thread(target=post_idea_task, args=[problem_id, count_goal])
+        # thread.start()
+        post_idea_task(problem_id, count_goal)
         return {"success": True,
                 "url": "problems"}
+
+
+def post_idea_task(problem_id, count_goal):
+    for inspiration in mc.get_accepted_inspirations(problem_id):
+        problem_description = mc.get_problem_description(inspiration[PROBLEM_ID])
+        source_link = inspiration[mc.INSPIRATION_LINK]
+        image_link = inspiration[mc.INSPIRATION_ADDITIONAL]
+        explanation = inspiration[mc.INSPIRATION_REASON]
+
+        hit_id = mturk_controller.create_idea_hit(problem_description, source_link,
+                                                  image_link, explanation, count_goal)
+        # add the hit_id to schema
+        if hit_id == "FAIL":
+            print "submitting one of the inspirations create_idea_hit FAILED!!"
+            continue
+        inspiration_id = inspiration[mc.INSPIRATION_ID]
+        schema_id = inspiration[mc.SCHEMA_ID]
+        mc.insert_new_idea_hit(problem_id, schema_id, inspiration_id, count_goal, hit_id)
+        mc.set_inspiration_processed_status(inspiration_id)
+    mc.increment_idea_count_goal(problem_id, count_goal)
 
 
 class RejectHandler(object):
@@ -417,27 +439,32 @@ class FeedbackHandler(object):
         data = cherrypy.request.json
         idea_id = data["idea_id"]
         feedbacks = data["feedbacks"]
-
         count_goal = convert_input_count(data['count_goal'])
         if count_goal == -1:
             return {"success": False}
-
         idea_dict = mc.get_idea_dict(idea_id)
-        problem_id = idea_dict[PROBLEM_ID]
-        problem_text = mc.get_problem_description(problem_id)
-        idea_text = idea_dict[mc.TEXT]
-        for feedback in feedbacks:
-            hit_id = mturk_controller.create_suggestion_hit(problem_text, idea_text, feedback, count_goal)
-            if hit_id == "FAIL":
-                return {"success": False}
-            feedback_id = ''.join(random.sample(string.hexdigits, 8))
-            mc.add_feedback(feedback_id, feedback, idea_id)
-            mc.insert_new_suggestion_hit(problem_id, idea_id, feedback_id, count_goal, hit_id)
-        mc.idea_launched(idea_id)
-        mc.increment_suggestion_count_goal(idea_id, count_goal)
-        mc.set_suggestion_stage(problem_id)
+        mc.set_suggestion_stage(idea_dict[PROBLEM_ID])
+        # thread = Thread(target=post_feedback, args=[idea_dict, idea_id, feedbacks, count_goal])
+        # thread.start()
+        post_feedback(idea_dict, idea_id, feedbacks, count_goal)
         return {"success": True,
                 SUGGESTIONS_PAGE_LINK: "/{}/suggestions".format(idea_dict[mc.SLUG])}
+
+
+def post_feedback(idea_dict, idea_id, feedbacks, count_goal):
+    problem_id = idea_dict[PROBLEM_ID]
+    problem_text = mc.get_problem_description(problem_id)
+    idea_text = idea_dict[mc.TEXT]
+    for feedback in feedbacks:
+        hit_id = mturk_controller.create_suggestion_hit(problem_text, idea_text, feedback, count_goal)
+        if hit_id == "FAIL":
+            print "mturk_controller.create_suggestion_hit - FAIL!!"
+            continue
+        feedback_id = ''.join(random.sample(string.hexdigits, 8))
+        mc.add_feedback(feedback_id, feedback, idea_id)
+        mc.insert_new_suggestion_hit(problem_id, idea_id, feedback_id, count_goal, hit_id)
+    mc.idea_launched(idea_id)
+    mc.increment_suggestion_count_goal(idea_id, count_goal)
 
 
 class MoreSuggestionsHandler(object):
@@ -681,9 +708,9 @@ if __name__ == '__main__':
 
     cherrypy.config.update({'error_page.404': error_page_404,
                             'error_page.403': error_page_403,
-                            'request.error_response': unanticipated_error  # ,
-                            # 'server.socket_host': '192.168.1.100',
-                            # 'server.socket_port': 8080
+                            'request.error_response': unanticipated_error,
+                            'server.socket_host': '192.168.1.168',
+                            'server.socket_port': 8080
                             })
 
     cherrypy.engine.start()

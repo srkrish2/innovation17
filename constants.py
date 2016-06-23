@@ -2,5 +2,5 @@
 READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 USERNAME_KEY = "username"
 PREVIOUS_URL_KEY = "previous_url"
-HOW_MANY_RANKS = 2
+HOW_MANY_RANKS = 1
 MIN_RANK = 1
