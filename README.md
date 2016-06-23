@@ -26,16 +26,27 @@ array of maps (dictionaries). each map has the following format:
   "schema_count_goal": int,
   "inspiration_count": int,
   "inspiration_count_goal": int,
+  "idea_count": int,
+  "idea_count_goal": int,
+  "suggestion_count": int
   
   //// if stage=unpublished ////
   "edit_page_link": string,
   
+
+  //// if stage=schema ////
   "schemas_page_link": string,
-  "view_page_link": string,
+  "view_page_link": string
   
   //// if stage=inspiration ////
   "inspirations_page_link": string,
-  "view_page_link": string
+
+
+  //// if stage=idea ////
+  "ideas_page_link": string,
+
+  //// if stage=suggestion ////
+  "suggestions_page_link": string
 }
 ```
 
@@ -70,6 +81,7 @@ inspirations = array of the format:
 	"source_link" : string,
 	"inspiration_id" : string,
 	"schema_id" : string,
+  "schema_text": string,
 	"time_created" : string,
 	"summary" : string,
 	"image_link" : string,
@@ -101,8 +113,8 @@ ideas = array of the format:
 }
 also problem_id, problem_stage, schemas_page_link, inspirations_page_link,ideas_page_link
 ```
-
-### /{{idea_slug}}/suggestions page parser input
+/problem/problem-slug/suggestions
+### /idea/{{idea_slug}}/suggestions page parser input
 ```
 array of maps: //array of feedbacks, each associating with an array of suggestions
 {

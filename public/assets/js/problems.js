@@ -6,7 +6,7 @@
     });
     $(document).on('click','div.button.publish',function(e){
         e.preventDefault();
-        // $(e.currentTarget).innerHTML="<i class='paw icon'></i>0";
+        $(e.currentTarget).prop('disabled',true);
         var rowclass = $(e.currentTarget.parentElement.parentElement).attr('class');
         $.ajax({
             type: "POST",
@@ -22,6 +22,7 @@
                 $('tr.'+rowclass+' .ui.button.delete').addClass('hidden');
                 $('tr.'+rowclass+' .ui.button.publish').addClass('hidden');
                 $('tr.'+rowclass+' .ui.button.view').removeClass('hidden');
+                $(e.currentTarget).prop('disabled',false);
                 makePostRequest();
                 ///$('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";
             }
@@ -56,6 +57,7 @@
             }
         });
         $(document).on('click','.reactivate', function(e){
+            $(e.currentTarget).prop('disabled',true);
             $.ajax({
                 type: "POST",
                 url: "/more_schemas",
@@ -66,6 +68,7 @@
                 }),
                 success: function(sdata){
                     console.log("return back from sdata");
+                    $(e.currentTarget).prop('disabled',false);
                 }
             });
         });
