@@ -35,7 +35,7 @@
 		})
 		
 	});
-	$(document).on('click','.cancelinspiration',function(e){
+	$(document).on('click','.cancelsuggestion',function(e){
 		$('.ui.modal').modal('hide');
 	});
 	$(document).on('click','.ui.button.rj', function(e){
