@@ -25,6 +25,7 @@ var VALIDATION_RULES = {
 };
 
 $(document).on('click','.ui.button.submit.login',function(e){
+    $(e.currentTarget).prop('disabled',true);
     $(LOGIN_SELECTOR).form(VALIDATION_RULES);
     if($(LOGIN_SELECTOR).form('is valid')){
         var name = $(LOGIN_SELECTOR).form("get value", "Loginusername");
@@ -41,6 +42,7 @@ $(document).on('click','.ui.button.submit.login',function(e){
             timeout : 100000,
 
             success : function(data) {
+                $(e.currentTarget).prop('disabled',false);
                 console.log('wait a second');
                 if (data["success"]) {
                     window.location.replace("/"+data["url"]);
@@ -107,6 +109,7 @@ $(document).on('click', '.profileregister', function(e){
     $(REG_SELECTOR).form(REG_RULES);
     $(REG_SELECTOR).form('validate form');
     if($(REG_SELECTOR).form('is valid')){
+        $(e.currentTarget).prop('disabled',true);
         e.preventDefault();
         console.log("i am in");
         var username = $(REG_SELECTOR).form('get value','username'),
@@ -123,6 +126,7 @@ $(document).on('click', '.profileregister', function(e){
             }),
 
             success: function(sdata){
+                $(e.currentTarget).prop('disabled',false);
                 if (sdata["success"]) {
                     window.location.replace("/"+sdata["url"]);
                 } else {

@@ -10,6 +10,10 @@
 				<a href="" class="header">{{inspiration.summary}}</a>
 				<div class="description">{{inspiration.reason}}</div>
 				<div class="extra"><a href={{inspiration.source_link}} target="_blank">Source</a></div>
+				<div class="schema_description extra ui accordion">
+					<div class="title">schema description</div>
+					<div class="content">{{inspiration.schema_text}}</div>
+				</div>
 			</div>
 			<div class="action">
 				{% if inspiration.status == 1 or inspiration.status ==0 %}

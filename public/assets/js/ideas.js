@@ -12,7 +12,7 @@
 		for (var i = 0; i<feedbacks.length; i++){
 			feedbackArray.push(feedbacks[i].value);
 		}
-
+		$(e.currentTarget).prop('disabled',true);
 		$.ajax({
 			type: 'POST',
 			url: '/post_feedback',//per idea
@@ -26,6 +26,7 @@
 				$('tr.'+currentIdea+' td')[4].html('<div class="ui button view"><a href='+ sdata["suggestions_page_link"]+'><i class="icon doctor"></i>0</a></div>');
 				console.log('launched suggestion seeking');
 				$('.ui.modal').modal('hide');
+				$(e.currentTarget).prop('disabled',false);
 				makePostRequest();
 			},
 			error: function(e){

@@ -81,6 +81,7 @@ $(document).on('click','.ui.save, .ui.submit',function(e){
             "schema_count_goal": schemagoal
         };
         var URL_link = null;
+        $(e.currentTarget).prop('disabled',true);
         if($(e.currentTarget).hasClass('save')){
             if($('.problem_id').html()!=''){ //save an existing problem
                 URL_link = "/post_problem_edit";
@@ -106,6 +107,7 @@ $(document).on('click','.ui.save, .ui.submit',function(e){
                 } else {
                     console.log("UNEXPECTED ERROR")
                 }
+                $(e.currentTarget).prop('disabled',false);
             },
             error : function(e) {
                 console.log("ERROR: ", e);

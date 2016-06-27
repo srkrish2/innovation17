@@ -9,7 +9,7 @@ body {
 }
 body .first-page-element {
  padding-top:80px!important;
- padding-bottom: 60px;
+ padding-bottom: 60px!important;
 }
 
 body > .ui.container {
