@@ -101,6 +101,14 @@ IDEA_ID = "idea_id"
 SUGGESTION_COUNT = "suggestion_count"
 SUGGESTION_COUNT_GOAL = "suggestion_count_goal"
 # STATUS
+# RANK
+# }
+
+# RANK_IDEA_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
+# IDEA_ID
 # }
 
 # FEEDBACK: {
@@ -153,6 +161,7 @@ STATUS_ACCEPTED = 1
 STATUS_PROCESSED = 2
 STATUS_NEW = 1
 
+######################## INSERT ONE #################################
 
 def save_problem(problem_id, title, description, owner_username, schema_count_goal, time_created):
     problem = {
@@ -171,19 +180,6 @@ def save_problem(problem_id, title, description, owner_username, schema_count_go
         IDEA_COUNT_GOAL: 0
     }
     problems_collection.insert_one(problem)
-
-
-def set_schema_stage(problem_id):
-    query_filter = {
-        PROBLEM_ID: problem_id
-    }
-    cur_stage = problems_collection.find_one(query_filter)[STAGE]
-    if cur_stage != STAGE_UNPUBLISHED:
-        return
-    update = {'$set': {
-        STAGE: STAGE_SCHEMA
-    }}
-    problems_collection.update_one(query_filter, update)
 
 
 def insert_new_schema_hit(problem_id, count_goal, hit_id):
@@ -251,6 +247,82 @@ def insert_new_suggestion_hit(problem_id, idea_id, feedback_id, count_goal, hit_
     suggestion_hits_collection.insert_one(new_suggestion_hit)
 
 
+def insert_new_rank_idea_hit(idea_id, count_goal, hit_id):
+    new_rank_idea_hit = {
+        IDEA_ID: idea_id,
+        COUNT: 0,
+        COUNT_GOAL: count_goal,
+        HIT_ID: hit_id
+    }
+    rank_idea_hits_collection.insert_one(new_rank_idea_hit)
+
+
+def add_schema(schema):
+    schemas_collection.insert_one(schema)
+
+
+def add_inspiration(inspiration):
+    inspirations_collection.insert_one(inspiration)
+
+
+def add_idea(idea):
+    # replace title with slug
+    title = idea.pop(TITLE)
+    idea[SLUG] = slugify(title)
+    idea[SUGGESTION_COUNT] = 0
+    idea[SUGGESTION_COUNT_GOAL] = 0
+    ideas_collection.insert_one(idea)
+
+
+def add_feedback(feedback_id, text, idea_id):
+    feedbacks_collection.insert_one({
+        FEEDBACK_ID: feedback_id,
+        TEXT: text,
+        IDEA_ID: idea_id
+    })
+
+
+def add_schema_rank(rank_dict):
+    schema_ranks_collection.insert_one(rank_dict)
+
+
+def insert_inspiration_rank(rank_dict):
+    inspiration_ranks_collection.insert_one(rank_dict)
+
+
+def insert_idea_rank(rank_dict):
+    idea_ranks_collection.insert_one(rank_dict)
+
+
+def new_account(username, email, password):
+    new_user = {
+        USER_USERNAME: username,
+        USER_EMAIL: email,
+        USER_PASSWORD: password
+    }
+    users_collection.insert_one(new_user)
+
+
+def add_suggestion(suggestion):
+    if suggestions_collection.find_one(suggestion) is None:
+        suggestions_collection.insert_one(suggestion)
+
+
+######################## UPDATE ONE #################################
+
+def set_schema_stage(problem_id):
+    query_filter = {
+        PROBLEM_ID: problem_id
+    }
+    cur_stage = problems_collection.find_one(query_filter)[STAGE]
+    if cur_stage != STAGE_UNPUBLISHED:
+        return
+    update = {'$set': {
+        STAGE: STAGE_SCHEMA
+    }}
+    problems_collection.update_one(query_filter, update)
+
+
 def set_inspiration_stage(problem_id):
     query_filter = {
         PROBLEM_ID: problem_id
@@ -290,88 +362,6 @@ def set_suggestion_stage(problem_id):
     problems_collection.update_one(query_filter, update)
 
 
-def get_problems_by_user(username):
-    result = []
-    for problem in problems_collection.find({OWNER_USERNAME: username}):
-        for_result = {
-            PROBLEM_ID: problem[PROBLEM_ID],
-            TITLE: problem[TITLE],
-            DESCRIPTION: problem[DESCRIPTION],
-            STAGE: problem[STAGE],
-            TIME_CREATED: problem[TIME_CREATED],
-            EDIT_PAGE_LINK: "/{}/edit".format(problem[SLUG]),
-            SCHEMAS_PAGE_LINK: "/{}/schemas".format(problem[SLUG]),
-            IDEAS_PAGE_LINK: "/{}/ideas".format(problem[SLUG]),
-            INSPIRATIONS_PAGE_LINK: "/{}/inspirations".format(problem[SLUG]),
-            VIEW_PAGE_LINK: "/{}/view".format(problem[SLUG]),
-            SCHEMA_COUNT: problem[SCHEMA_COUNT],
-            SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
-            INSPIRATION_COUNT: problem[INSPIRATION_COUNT],
-            INSPIRATION_COUNT_GOAL: problem[INSPIRATION_COUNT_GOAL],
-            IDEA_COUNT: problem[IDEA_COUNT],
-            IDEA_COUNT_GOAL: problem[IDEA_COUNT_GOAL]
-        }
-        result.append(for_result)
-    return result
-
-
-def does_user_have_problem(username, problem_slug):
-    query = {
-        OWNER_USERNAME: username,
-        SLUG: problem_slug
-    }
-    return problems_collection.find_one(query) is not None
-
-
-def does_user_have_problem_with_id(username, problem_id):
-    query = {
-        OWNER_USERNAME: username,
-        PROBLEM_ID: problem_id
-    }
-    return problems_collection.find_one(query) is not None
-
-
-def get_problem_id(username, problem_title_slug):
-    query = {
-        OWNER_USERNAME: username,
-        SLUG: problem_title_slug
-    }
-    problem = problems_collection.find_one(query)
-    return problem[PROBLEM_ID]
-
-
-def get_schemas_for_inspiration_task(problem_id):
-    return schemas_collection.find({
-        PROBLEM_ID: problem_id,
-        STATUS: STATUS_ACCEPTED,
-        RANK: {"$gte": MIN_RANK}
-    })
-
-
-def get_accepted_inspirations(problem_id):
-    return inspirations_collection.find({
-        PROBLEM_ID: problem_id,
-        STATUS: STATUS_ACCEPTED,
-        RANK: {"$gte": MIN_RANK}
-    })
-
-
-def get_schema_hits(problem_id):
-    return schema_hits_collection.find({PROBLEM_ID: problem_id})
-
-
-def get_idea_hits(problem_id):
-    return idea_hits_collection.find({PROBLEM_ID: problem_id})
-
-
-def get_inspiration_hits(problem_id):
-    return inspiration_hits_collection.find({PROBLEM_ID: problem_id})
-
-
-def get_suggestion_hits(problem_id):
-    return suggestion_hits_collection.find({PROBLEM_ID: problem_id})
-
-
 def set_schema_count(problem_id, count):
     query_filter = {PROBLEM_ID: problem_id}
     update = {'$set': {SCHEMA_COUNT: count}}
@@ -384,15 +374,15 @@ def set_inspiration_count(problem_id, count):
     problems_collection.update_one(query_filter, update)
 
 
-def increment_inspiration_count(problem_id, how_much):
+def set_idea_count(problem_id, how_much):
     query_filter = {PROBLEM_ID: problem_id}
-    update = {'$inc': {INSPIRATION_COUNT: how_much}}
+    update = {'$set': {IDEA_COUNT: how_much}}
     problems_collection.update_one(query_filter, update)
 
 
-def increment_idea_count(problem_id, how_much):
+def set_suggestion_count(problem_id, how_much):
     query_filter = {PROBLEM_ID: problem_id}
-    update = {'$inc': {IDEA_COUNT: how_much}}
+    update = {'$set': {SUGGESTION_COUNT: how_much}}
     problems_collection.update_one(query_filter, update)
 
 
@@ -414,9 +404,9 @@ def increment_idea_count_goal(problem_id, how_much):
     problems_collection.update_one(query_filter, update)
 
 
-def increment_schema_hit_count_by_one(hit_id):
+def increment_schema_hit_count(hit_id, how_much):
     query_filter = {HIT_ID: hit_id}
-    update = {'$inc': {COUNT: 1}}
+    update = {'$inc': {COUNT: how_much}}
     schema_hits_collection.update_one(query_filter, update)
 
 
@@ -438,15 +428,16 @@ def increment_suggestion_count_goal(idea_id, count_goal):
     ideas_collection.update_one(query_filter, update)
 
 
-def increment_suggestion_hit_count_by_one(suggestion_hit_id):
+def increment_suggestion_hit_count(suggestion_hit_id, how_much):
     query_filter = {HIT_ID: suggestion_hit_id}
-    update = {'$inc': {COUNT: 1}}
+    update = {'$inc': {COUNT: how_much}}
     suggestion_hits_collection.update_one(query_filter, update)
 
 
-def increment_suggestion_count_by_one(idea_id):
+def increment_suggestion_count_in_idea(suggestion_hit_id, new_suggestions_count):
+    idea_id = suggestion_hits_collection.find_one({HIT_ID: suggestion_hit_id})[IDEA_ID]
     query_filter = {IDEA_ID: idea_id}
-    update = {'$inc': {SUGGESTION_COUNT: 1}}
+    update = {'$inc': {SUGGESTION_COUNT: new_suggestions_count}}
     ideas_collection.update_one(query_filter, update)
 
 
@@ -474,171 +465,16 @@ def increment_inspiration_rank(inspiration_id, how_much):
     inspirations_collection.update_one(query_filter, update)
 
 
-def add_schema(schema):
-    schemas_collection.insert_one(schema)
+def increment_idea_rank(idea_id, how_much):
+    query_filter = {IDEA_ID: idea_id}
+    update = {'$inc': {RANK: how_much}}
+    ideas_collection.update_one(query_filter, update)
 
 
-def contains_schema(schema_id):
-    return schemas_collection.find_one({SCHEMA_ID: schema_id}) is not None
-
-
-def contains_idea(idea_id):
-    return ideas_collection.find_one({IDEA_ID: idea_id}) is not None
-
-
-def contains_inspiration(inspiration_id):
-    return inspirations_collection.find_one({INSPIRATION_ID: inspiration_id}) is not None
-
-
-def contains_suggestion(suggestion_id):
-    return suggestions_collection.find_one({SUGGESTION_ID: suggestion_id}) is not None
-
-
-def contains_schema_rank(rank_id):
-    return schema_ranks_collection.find_one({RANK_ID: rank_id}) is not None
-
-
-def contains_inspiration_rank(rank_id):
-    return inspiration_ranks_collection.find_one({RANK_ID: rank_id}) is not None
-
-
-def add_inspiration(inspiration):
-    inspirations_collection.insert_one(inspiration)
-
-
-def add_idea(idea):
-    # replace title with slug
-    title = idea.pop(TITLE)
-    idea[SLUG] = slugify(title)
-    idea[SUGGESTION_COUNT] = 0
-    idea[SUGGESTION_COUNT_GOAL] = 0
-    ideas_collection.insert_one(idea)
-
-
-def add_feedback(feedback_id, text, idea_id):
-    feedbacks_collection.insert_one({
-        FEEDBACK_ID: feedback_id,
-        TEXT: text,
-        IDEA_ID: idea_id
-    })
-
-
-def add_schema_rank(rank_dict):
-    schema_ranks_collection.insert_one(rank_dict)
-
-
-def insert_inspiration_rank(rank_dict):
-    inspiration_ranks_collection.insert_one(rank_dict)
-
-
-def new_account(username, email, password):
-    new_user = {
-        USER_USERNAME: username,
-        USER_EMAIL: email,
-        USER_PASSWORD: password
-    }
-    users_collection.insert_one(new_user)
-
-
-def is_email_in_use(email):
-    return users_collection.find_one({USER_EMAIL: email}) is not None
-
-
-def is_username_taken(username):
-    return users_collection.find_one({USER_USERNAME: username}) is not None
-
-
-def get_password_for_email(email):
-    user_entry = users_collection.find_one({USER_EMAIL: email})
-    if user_entry is None:
-        print "MONGODB: no user with email %s" % email
-        return ""
-    return user_entry[USER_PASSWORD]
-
-
-def get_password_for_username(username):
-    user_entry = users_collection.find_one({USER_USERNAME: username})
-    if user_entry is None:
-        print "MONGODB: no user with name %s" % username
-        return ""
-    return user_entry[USER_PASSWORD]
-
-
-def get_username_from_email(email):
-    return users_collection.find_one({USER_EMAIL: email})[USER_USERNAME]
-
-
-def get_users_problem_ids(username):
-    hit_ids = []
-    for problem in problems_collection.find({OWNER_USERNAME: username}):
-        hit_ids.append(problem[PROBLEM_ID])
-    return hit_ids
-
-
-def get_counts_for_user(username):
-    result = []
-    for problem in problems_collection.find({OWNER_USERNAME: username}):
-        for_result = {
-            PROBLEM_ID: problem[PROBLEM_ID],
-            SCHEMA_COUNT: problem[SCHEMA_COUNT],
-            INSPIRATION_COUNT: problem[INSPIRATION_COUNT],
-            IDEA_COUNT: problem[IDEA_COUNT]
-        }
-        result.append(for_result)
-    return result
-
-
-def get_stage(problem_id):
-    return problems_collection.find_one({PROBLEM_ID: problem_id})[STAGE]
-
-
-def get_inspirations(problem_id):
-    return inspirations_collection.find({PROBLEM_ID: problem_id})
-
-
-def get_ideas(problem_id):
-    return ideas_collection.find({PROBLEM_ID: problem_id})
-
-
-def get_schema_text(schema_id):
-    return schemas_collection.find_one({SCHEMA_ID: schema_id})[TEXT]
-
-
-def get_schema_text_from_inspiration(inspiration_id):
-    schema_id = inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})[SCHEMA_ID]
-    return get_schema_text(schema_id)
-
-
-def get_inspiration_summary(inspiration_id):
-    return inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})[INSPIRATION_SUMMARY]
-
-
-def delete_problem(problem_id):
-    problems_collection.remove({PROBLEM_ID: problem_id})
-
-
-def get_problem_fields(problem_id):
-    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
-    return problem[TITLE], problem[DESCRIPTION], problem[SCHEMA_COUNT_GOAL]
-
-
-def get_problem_description(problem_id):
-    return problems_collection.find_one({PROBLEM_ID: problem_id})[DESCRIPTION]
-
-
-def edit_problem(problem_dict):
-    problem_id = problem_dict[PROBLEM_ID]
-    query_filter = {PROBLEM_ID: problem_id}
-    new_fields = {
-        DESCRIPTION: problem_dict[DESCRIPTION],
-        SCHEMA_COUNT_GOAL: problem_dict[SCHEMA_COUNT_GOAL]
-    }
-    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
-    if problem_dict[TITLE] != problem[TITLE]:
-        new_fields[TITLE] = problem_dict[TITLE]
-        new_fields[SLUG] = slugify(problem_dict[TITLE])
-    update = {'$set': new_fields}
-    problems_collection.update_one(query_filter, update)
+def increment_rank_idea_hit_count(rank_idea_hit_id, how_much):
+    query_filter = {HIT_ID: rank_idea_hit_id}
+    update = {'$inc': {COUNT: how_much}}
+    rank_idea_hits_collection.update_one(query_filter, update)
 
 
 def set_schema_rejected_flag(schema_id, to_reject):
@@ -680,6 +516,98 @@ def set_idea_rejected_flag(idea_id, to_reject):
     ideas_collection.update_one(query_filter, update)
 
 
+def idea_launched(idea_id):
+    query_filter = {IDEA_ID: idea_id}
+    new_fields = {
+        STATUS: STATUS_PROCESSED
+    }
+    update = {'$set': new_fields}
+    ideas_collection.update_one(query_filter, update)
+
+
+############################ FIND ONE ##########################
+
+def does_user_have_problem(username, problem_slug):
+    query = {
+        OWNER_USERNAME: username,
+        SLUG: problem_slug
+    }
+    return problems_collection.find_one(query) is not None
+
+
+def does_user_have_problem_with_id(username, problem_id):
+    query = {
+        OWNER_USERNAME: username,
+        PROBLEM_ID: problem_id
+    }
+    return problems_collection.find_one(query) is not None
+
+
+def get_problem_id(username, problem_title_slug):
+    query = {
+        OWNER_USERNAME: username,
+        SLUG: problem_title_slug
+    }
+    problem = problems_collection.find_one(query)
+    return problem[PROBLEM_ID]
+
+
+def contains_schema(schema_id):
+    return schemas_collection.find_one({SCHEMA_ID: schema_id}) is not None
+
+
+def contains_idea(idea_id):
+    return ideas_collection.find_one({IDEA_ID: idea_id}) is not None
+
+
+def contains_inspiration(inspiration_id):
+    return inspirations_collection.find_one({INSPIRATION_ID: inspiration_id}) is not None
+
+
+def contains_suggestion(suggestion_id):
+    return suggestions_collection.find_one({SUGGESTION_ID: suggestion_id}) is not None
+
+
+def contains_schema_rank(rank_id):
+    return schema_ranks_collection.find_one({RANK_ID: rank_id}) is not None
+
+
+def contains_inspiration_rank(rank_id):
+    return inspiration_ranks_collection.find_one({RANK_ID: rank_id}) is not None
+
+
+def contains_idea_rank(rank_id):
+    return idea_ranks_collection.find_one({RANK_ID: rank_id}) is not None
+
+
+def is_email_in_use(email):
+    return users_collection.find_one({USER_EMAIL: email}) is not None
+
+
+def is_username_taken(username):
+    return users_collection.find_one({USER_USERNAME: username}) is not None
+
+
+def get_password_for_email(email):
+    user_entry = users_collection.find_one({USER_EMAIL: email})
+    if user_entry is None:
+        print "MONGODB: no user with email %s" % email
+        return ""
+    return user_entry[USER_PASSWORD]
+
+
+def get_password_for_username(username):
+    user_entry = users_collection.find_one({USER_USERNAME: username})
+    if user_entry is None:
+        print "MONGODB: no user with name %s" % username
+        return ""
+    return user_entry[USER_PASSWORD]
+
+
+def get_username_from_email(email):
+    return users_collection.find_one({USER_EMAIL: email})[USER_USERNAME]
+
+
 def get_idea_dict(idea_id):
     return ideas_collection.find_one({IDEA_ID: idea_id})
 
@@ -696,53 +624,30 @@ def get_feedback_dict(feedback_id):
     return feedbacks_collection.find_one({FEEDBACK_ID: feedback_id})
 
 
-def get_feedback_dicts(idea_id):
-    return feedbacks_collection.find({IDEA_ID: idea_id})
+def get_stage(problem_id):
+    return problems_collection.find_one({PROBLEM_ID: problem_id})[STAGE]
 
 
-def get_rank_schema_hit_dict(schema_id):
-    return rank_schema_hits_collection.find_one({SCHEMA_ID: schema_id})
+def get_schema_text(schema_id):
+    return schemas_collection.find_one({SCHEMA_ID: schema_id})[TEXT]
 
 
-def get_rank_inspiration_hit_dict(inspiration_id):
-    return rank_inspiration_hits_collection.find_one({INSPIRATION_ID: inspiration_id})
+def get_schema_text_from_inspiration(inspiration_id):
+    schema_id = inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})[SCHEMA_ID]
+    return get_schema_text(schema_id)
 
 
-def add_suggestion(suggestion):
-    if suggestions_collection.find_one(suggestion) is None:
-        suggestions_collection.insert_one(suggestion)
+def get_inspiration_summary(inspiration_id):
+    return inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})[INSPIRATION_SUMMARY]
 
 
-def get_suggestion_counts(problem_id):
-    ideas = ideas_collection.find({PROBLEM_ID: problem_id})
-    result = []
-    for idea in ideas:
-        for_result = {
-            IDEA_ID: idea[IDEA_ID],
-            SUGGESTION_COUNT: idea[SUGGESTION_COUNT]
-        }
-        result.append(for_result)
-    return result
+def get_problem_fields(problem_id):
+    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
+    return problem[TITLE], problem[DESCRIPTION], problem[SCHEMA_COUNT_GOAL]
 
 
-def idea_launched(idea_id):
-    query_filter = {IDEA_ID: idea_id}
-    new_fields = {
-        STATUS: STATUS_PROCESSED
-    }
-    update = {'$set': new_fields}
-    ideas_collection.update_one(query_filter, update)
-
-
-def get_accepted_schemas_count(problem_id):
-    return schemas_collection.count({
-        PROBLEM_ID: problem_id,
-        STATUS: STATUS_ACCEPTED
-    })
-
-
-def get_suggestion_dicts(feedback_id):
-    return suggestions_collection.find({FEEDBACK_ID: feedback_id})
+def get_problem_description(problem_id):
+    return problems_collection.find_one({PROBLEM_ID: problem_id})[DESCRIPTION]
 
 
 def get_idea_dict_for_slug(idea_slug):
@@ -762,6 +667,155 @@ def did_reach_idea_count_goal(problem_id):
 def did_reach_inspiration_count_goal(problem_id):
     problem = problems_collection.find_one({PROBLEM_ID: problem_id})
     return problem[INSPIRATION_COUNT] == problem[INSPIRATION_COUNT_GOAL]
+
+
+def get_rank_schema_hit_dict(schema_id):
+    return rank_schema_hits_collection.find_one({SCHEMA_ID: schema_id})
+
+
+def get_rank_inspiration_hit_dict(inspiration_id):
+    return rank_inspiration_hits_collection.find_one({INSPIRATION_ID: inspiration_id})
+
+
+def get_rank_idea_hit_dict(idea_id):
+    return rank_idea_hits_collection.find_one({IDEA_ID: idea_id})
+
+######################### FIND ALL ###############################
+
+
+def get_problems_by_user(username):
+    result = []
+    for problem in problems_collection.find({OWNER_USERNAME: username}):
+        for_result = {
+            PROBLEM_ID: problem[PROBLEM_ID],
+            TITLE: problem[TITLE],
+            DESCRIPTION: problem[DESCRIPTION],
+            STAGE: problem[STAGE],
+            TIME_CREATED: problem[TIME_CREATED],
+            EDIT_PAGE_LINK: "/{}/edit".format(problem[SLUG]),
+            SCHEMAS_PAGE_LINK: "/{}/schemas".format(problem[SLUG]),
+            IDEAS_PAGE_LINK: "/{}/ideas".format(problem[SLUG]),
+            INSPIRATIONS_PAGE_LINK: "/{}/inspirations".format(problem[SLUG]),
+            VIEW_PAGE_LINK: "/{}/view".format(problem[SLUG]),
+            SCHEMA_COUNT: problem[SCHEMA_COUNT],
+            SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
+            INSPIRATION_COUNT: problem[INSPIRATION_COUNT],
+            INSPIRATION_COUNT_GOAL: problem[INSPIRATION_COUNT_GOAL],
+            IDEA_COUNT: problem[IDEA_COUNT],
+            IDEA_COUNT_GOAL: problem[IDEA_COUNT_GOAL]
+        }
+        result.append(for_result)
+    return result
+
+
+def get_schemas_for_inspiration_task(problem_id):
+    return schemas_collection.find({
+        PROBLEM_ID: problem_id,
+        STATUS: STATUS_ACCEPTED,
+        RANK: {"$gte": MIN_RANK}
+    })
+
+
+def get_accepted_inspirations(problem_id):
+    return inspirations_collection.find({
+        PROBLEM_ID: problem_id,
+        STATUS: STATUS_ACCEPTED,
+        RANK: {"$gte": MIN_RANK}
+    })
+
+
+def get_schema_hits(problem_id):
+    return schema_hits_collection.find({PROBLEM_ID: problem_id})
+
+
+def get_idea_hits(problem_id):
+    return idea_hits_collection.find({PROBLEM_ID: problem_id})
+
+
+def get_inspiration_hits(problem_id):
+    return inspiration_hits_collection.find({PROBLEM_ID: problem_id})
+
+
+def get_suggestion_hits(problem_id):
+    return suggestion_hits_collection.find({PROBLEM_ID: problem_id})
+
+
+def get_users_problem_ids(username):
+    hit_ids = []
+    for problem in problems_collection.find({OWNER_USERNAME: username}):
+        hit_ids.append(problem[PROBLEM_ID])
+    return hit_ids
+
+
+def get_counts_for_user(username):
+    result = []
+    for problem in problems_collection.find({OWNER_USERNAME: username}):
+        for_result = {
+            PROBLEM_ID: problem[PROBLEM_ID],
+            SCHEMA_COUNT: problem[SCHEMA_COUNT],
+            INSPIRATION_COUNT: problem[INSPIRATION_COUNT],
+            IDEA_COUNT: problem[IDEA_COUNT]
+        }
+        result.append(for_result)
+    return result
+
+
+def delete_problem(problem_id):
+    problems_collection.remove({PROBLEM_ID: problem_id})
+
+
+def edit_problem(problem_dict):
+    problem_id = problem_dict[PROBLEM_ID]
+    query_filter = {PROBLEM_ID: problem_id}
+    new_fields = {
+        DESCRIPTION: problem_dict[DESCRIPTION],
+        SCHEMA_COUNT_GOAL: problem_dict[SCHEMA_COUNT_GOAL]
+    }
+    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
+    if problem_dict[TITLE] != problem[TITLE]:
+        new_fields[TITLE] = problem_dict[TITLE]
+        new_fields[SLUG] = slugify(problem_dict[TITLE])
+    update = {'$set': new_fields}
+    problems_collection.update_one(query_filter, update)
+
+
+def get_ideas(problem_id):
+    return ideas_collection.find({PROBLEM_ID: problem_id})
+
+
+def get_inspirations(problem_id):
+    return inspirations_collection.find({PROBLEM_ID: problem_id})
+
+
+# def get_suggestions(problem_id):
+#     return suggestions_collection.find({PROBLEM_ID: problem_id})
+
+
+def get_suggestion_counts(problem_id):
+    ideas = ideas_collection.find({PROBLEM_ID: problem_id})
+    result = []
+    for idea in ideas:
+        for_result = {
+            IDEA_ID: idea[IDEA_ID],
+            SUGGESTION_COUNT: idea[SUGGESTION_COUNT]
+        }
+        result.append(for_result)
+    return result
+
+
+def get_feedback_dicts(idea_id):
+    return feedbacks_collection.find({IDEA_ID: idea_id})
+
+
+def get_accepted_schemas_count(problem_id):
+    return schemas_collection.count({
+        PROBLEM_ID: problem_id,
+        STATUS: STATUS_ACCEPTED
+    })
+
+
+def get_suggestion_dicts(feedback_id):
+    return suggestions_collection.find({FEEDBACK_ID: feedback_id})
 
 
 def get_schema_dicts(problem_id):
@@ -823,6 +877,8 @@ rank_inspiration_hits_collection = db.rank_inspiration_hits
 inspiration_ranks_collection = db.inspiration_ranks
 idea_hits_collection = db.idea_hits
 ideas_collection = db.ideas
+rank_idea_hits_collection = db.rank_idea_hits
+idea_ranks_collection = db.idea_ranks
 feedbacks_collection = db.feedbacks
 suggestion_hits_collection = db.suggestion_hits
 suggestions_collection = db.suggestions

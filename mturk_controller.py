@@ -1,33 +1,136 @@
 import subprocess
 import mongodb_controller
+import abc
 
 
-def create_schema_making_hit(problem, schema_count_goal):
-    # run the jarred java file for submitting mturk task, passing problem as args[0]
-    p = subprocess.Popen(['java', '-jar', 'SchemaMaking.jar', problem, str(schema_count_goal)],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # output format:
-    #  * "SUCCESS"
-    #  * HIT_ID
-    #  * URL
+class HITCreator:
+    __metaclass__ = abc.ABCMeta
 
-    jar_output_file = p.stdout
-    first_line = jar_output_file.readline().rstrip()
-    if first_line == "FAIL":
-        print "SchemaMaking.jar: FAIL"
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-    if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success: {}".format(first_line)
-        return "FAIL"
+    @abc.abstractmethod
+    def get_popen_args_arr(self):
+        return
 
-    hit_id = jar_output_file.readline().rstrip()
-    url = jar_output_file.readline().rstrip()
+    @abc.abstractmethod
+    def get_creator_name(self):
+        return
 
-    print "url =", url
+    def post(self):
+        args_arr = self.get_popen_args_arr()
+        p = subprocess.Popen(args_arr, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-    return hit_id
+        # output format:
+        #  * "SUCCESS"
+        #  * HIT_ID
+        #  * URL
+        jar_output_file = p.stdout
+        first_line = jar_output_file.readline().rstrip()
+        if first_line == "FAIL":
+            print "{}: FAIL".format(self.get_creator_name())
+            print jar_output_file.readline().rstrip()
+            return "FAIL"
+        if first_line != "SUCCESS":
+            print "UNEXPECTED! neither fail/success: {}".format(first_line)
+            return "FAIL"
+        hit_id = jar_output_file.readline().rstrip()
+        url = jar_output_file.readline().rstrip()
+        print "url =", url
+        return hit_id
+
+
+class SchemaHITCreator(HITCreator):
+    def __init__(self, p, goal):
+        self.problem = p
+        self.count_goal = goal
+
+    def get_creator_name(self):
+        return "SchemaHITCreator"
+
+    def get_popen_args_arr(self):
+        return ['java', '-jar', 'SchemaMaking.jar', self.problem, str(self.count_goal)]
+
+
+class InspirationHITCreator(HITCreator):
+    def __init__(self, s, goal):
+        self.schema = s
+        self.count_goal = goal
+
+    def get_creator_name(self):
+        return "InspirationHITCreator"
+
+    def get_popen_args_arr(self):
+        return ['java', '-jar', 'PostInspirationHIT.jar', self.schema, str(self.count_goal)]
+
+
+class IdeaHITCreator(HITCreator):
+    def __init__(self, prob, src_link, img_link, exp, goal):
+        self.problem = prob
+        self.source_link = src_link
+        self.image_link = img_link
+        self.explanation = exp
+        self.count_goal = goal
+
+    def get_creator_name(self):
+        return "IdeaHITCreator"
+
+    def get_popen_args_arr(self):
+        return ['java', '-jar', 'PostIdeaHIT.jar', self.problem, self.source_link, self.image_link, self.explanation,
+                str(self.count_goal)]
+
+
+class SuggestionHITCreator(HITCreator):
+    def __init__(self, prob, idea, feed, goal):
+        self.problem = prob
+        self.idea = idea
+        self.feedback = feed
+        self.count_goal = goal
+
+    def get_creator_name(self):
+        return "SuggestionHITCreator"
+
+    def get_popen_args_arr(self):
+        return ['java', '-jar', 'PostSuggestionHIT.jar', self.problem, self.idea, self.feedback, str(self.count_goal)]
+
+
+class RankSchemaHITCreator(HITCreator):
+    def __init__(self, schema, goal):
+        self.schema = schema
+        self.count_goal = goal
+
+    def get_creator_name(self):
+        return "RankSchemaHITCreator"
+
+    def get_popen_args_arr(self):
+        return ['java', '-jar', 'PostRankSchemaHIT.jar', self.schema, str(self.count_goal)]
+
+
+class RankInspirationHITCreator(HITCreator):
+    def __init__(self, problem, schema, i_link, i_add, i_reas, goal):
+        self.problem = problem
+        self.schema = schema
+        self.i_link = i_link
+        self.i_additional = i_add
+        self.i_reason = i_reas
+        self.count_goal = goal
+
+    def get_creator_name(self):
+        return "RankInspirationHITCreator"
+
+    def get_popen_args_arr(self):
+        return ['java', '-jar', 'PostRankInspirationHIT.jar', self.problem, self.schema, self.i_link,
+                self.i_additional, self.i_reason, str(self.count_goal)]
+
+
+class RankIdeaHITCreator(HITCreator):
+    def __init__(self, problem, idea, goal):
+        self.problem = problem
+        self.idea = idea
+        self.count_goal = goal
+
+    def get_creator_name(self):
+        return "RankIdeaHITCreator"
+
+    def get_popen_args_arr(self):
+        return ['java', '-jar', 'PostRankIdeaHIT.jar', self.problem, self.idea, str(self.count_goal)]
 
 
 def get_schema_making_results(hit_id):
@@ -76,34 +179,6 @@ def get_schema_making_results(hit_id):
         else:
             break
     return schemas
-
-
-def create_inspiration_hit(schema, count_goal):
-    # run the jarred java file for submitting mturk task, passing problem as args[0]
-    p = subprocess.Popen(['java', '-jar', 'PostInspirationHIT.jar', schema, str(count_goal)],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # output format:
-    #  * "SUCCESS"
-    #  * HIT_ID
-    #  * URL
-
-    jar_output_file = p.stdout
-    first_line = jar_output_file.readline().rstrip()
-    if first_line == "FAIL":
-        print "PostInspirationHIT.jar: FAIL"
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-    if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success: {}".format(first_line)
-        return "FAIL"
-
-    hit_id = jar_output_file.readline().rstrip()
-    url = jar_output_file.readline().rstrip()
-
-    print "url =", url
-
-    return hit_id
 
 
 def get_inspiration_hit_results(hit_id):
@@ -156,36 +231,6 @@ def get_inspiration_hit_results(hit_id):
     return inspirations
 
 
-def create_idea_hit(problem, source_link, image_link, explanation, assignments_num):
-    # run the jarred java file for submitting mturk task, passing problem as args[0]
-    p = subprocess.Popen(['java', '-jar', 'PostIdeaHIT.jar', problem, source_link, image_link, explanation,
-                          str(assignments_num)],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # output format:
-    #  * "SUCCESS"
-    #  * HIT_ID
-    #  * URL
-
-    jar_output_file = p.stdout
-    first_line = jar_output_file.readline().rstrip()
-    if first_line == "FAIL":
-        print "PostIdeaHIT.jar: FAIL"
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-    if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success: {}".format(first_line)
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-
-    hit_id = jar_output_file.readline().rstrip()
-    url = jar_output_file.readline().rstrip()
-
-    print "url =", url
-
-    return hit_id
-
-
 def get_idea_hit_results(hit_id):
     p = subprocess.Popen(['java', '-jar', 'IdeaHITResults.jar', hit_id],
                          stdout=subprocess.PIPE,
@@ -236,34 +281,6 @@ def get_idea_hit_results(hit_id):
     return ideas
 
 
-def create_suggestion_hit(problem, idea, feedback, assignments_num):
-    # run the jarred java file for submitting mturk task, passing problem as args[0]
-    p = subprocess.Popen(['java', '-jar', 'PostSuggestionHIT.jar', problem, idea, feedback, str(assignments_num)],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # output format:
-    #  * "SUCCESS"
-    #  * HIT_ID
-    #  * URL
-
-    jar_output_file = p.stdout
-    first_line = jar_output_file.readline().rstrip()
-    if first_line == "FAIL":
-        print "PostSuggestionHIT.jar: FAIL"
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-    if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success: {}".format(first_line)
-        return "FAIL"
-
-    hit_id = jar_output_file.readline().rstrip()
-    url = jar_output_file.readline().rstrip()
-
-    print "url =", url
-
-    return hit_id
-
-
 def get_suggestion_hit_results(hit_id):
     p = subprocess.Popen(['java', '-jar', 'SuggestionHITResults.jar', hit_id],
                          stdout=subprocess.PIPE,
@@ -306,50 +323,6 @@ def get_suggestion_hit_results(hit_id):
         }
         suggestions.append(suggestion)
     return suggestions
-
-
-def create_rank_schema_hit(schema, assignment_num):
-    p = subprocess.Popen(['java', '-jar', 'PostRankSchemaHIT.jar', schema, str(assignment_num)],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # output format:
-    #  * "SUCCESS"
-    #  * HIT_ID
-    #  * URL
-
-    jar_output_file = p.stdout
-    first_line = jar_output_file.readline().rstrip()
-    if first_line == "FAIL":
-        print "PostRankSchemaHIT.jar: FAIL"
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-    if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success: {}".format(first_line)
-        return "FAIL"
-
-    hit_id = jar_output_file.readline().rstrip()
-    url = jar_output_file.readline().rstrip()
-    print "url =", url
-    return hit_id
-
-
-def create_rank_inspiration_hit(problem, schema, i_link, i_additional, i_reason, assignment_num):
-    p = subprocess.Popen(['java', '-jar', 'PostRankInspirationHIT.jar', problem, schema, i_link, i_additional,
-                         i_reason, str(assignment_num)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    jar_output_file = p.stdout
-    first_line = jar_output_file.readline().rstrip()
-    if first_line == "FAIL":
-        print "PostRankInspirationHIT.jar: FAIL"
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-    if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success: {}".format(first_line)
-        return "FAIL"
-
-    hit_id = jar_output_file.readline().rstrip()
-    url = jar_output_file.readline().rstrip()
-    print "url =", url
-    return hit_id
 
 
 def get_ranking_results(hit_id):
