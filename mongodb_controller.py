@@ -1,6 +1,6 @@
 import pymongo
 import re
-from constants import MIN_RANK
+from constants import *
 
 
 # PROBLEM: {
@@ -692,11 +692,11 @@ def get_problems_by_user(username):
             DESCRIPTION: problem[DESCRIPTION],
             STAGE: problem[STAGE],
             TIME_CREATED: problem[TIME_CREATED],
-            EDIT_PAGE_LINK: "/{}/edit".format(problem[SLUG]),
-            SCHEMAS_PAGE_LINK: "/{}/schemas".format(problem[SLUG]),
-            IDEAS_PAGE_LINK: "/{}/ideas".format(problem[SLUG]),
-            INSPIRATIONS_PAGE_LINK: "/{}/inspirations".format(problem[SLUG]),
-            VIEW_PAGE_LINK: "/{}/view".format(problem[SLUG]),
+            EDIT_PAGE_LINK: EDIT_LINK_FORMAT.format(problem[SLUG]),
+            SCHEMAS_PAGE_LINK: SCHEMAS_LINK_FORMAT.format(problem[SLUG]),
+            IDEAS_PAGE_LINK: IDEAS_LINK_FORMAT.format(problem[SLUG]),
+            INSPIRATIONS_PAGE_LINK: INSPIRATIONS_LINK_FORMAT.format(problem[SLUG]),
+            VIEW_PAGE_LINK: VIEW_LINK_FORMAT.format(problem[SLUG]),
             SCHEMA_COUNT: problem[SCHEMA_COUNT],
             SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
             INSPIRATION_COUNT: problem[INSPIRATION_COUNT],

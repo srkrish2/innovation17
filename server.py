@@ -26,8 +26,20 @@ PROBLEM_ID = "problem_id"
 # sha256_crypt = passlib.hash.sha256_crypt
 
 
-@cherrypy.popargs('problem_slug')
 class HtmlPageLoader(object):
+
+    def _cp_dispatch(self, vpath):
+        if len(vpath) == 3:
+            if vpath[2] == "suggestions":
+                cherrypy.request.params['type'] = vpath.pop(0)
+                cherrypy.request.params['slug'] = vpath.pop(0)
+            else:
+                if vpath.pop(0) != "problem":
+                    vpath.pop(-1)
+                else:
+                    cherrypy.request.params['problem_slug'] = vpath.pop(0)
+            # print "new vpath =", vpath
+            return self
 
     @cherrypy.expose
     def index(self):
@@ -87,8 +99,13 @@ class HtmlPageLoader(object):
         return renderers.render_profile()
 
     @cherrypy.expose
-    def suggestions(self, problem_slug):
-        return renderers.render_suggestions_page(problem_slug)
+    def suggestions(self, arg_type, slug):
+        if arg_type == "problem":
+            return renderers.render_suggestions_page(slug)
+        elif arg_type == "idea":
+            return renderers.render_suggestions_page_for_idea(slug)
+        else:
+            raise cherrypy.HTTPError(404)
 
 
 class SaveNewProblemHandler(object):

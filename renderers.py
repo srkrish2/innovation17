@@ -95,7 +95,11 @@ def render_view_page(problem_slug):
                                operation="view", description=description)
 
 
-def render_suggestions_page(idea_slug):
+def render_suggestions_page(problem_slug):
+    return "implemtn ne"
+
+
+def render_suggestions_page_for_idea(idea_slug):
     idea_dict = mc.get_idea_dict_for_slug(idea_slug)
     idea_id = idea_dict[mc.IDEA_ID]
     feedbacks_with_suggestions = []

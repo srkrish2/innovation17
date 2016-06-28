@@ -1,6 +1,6 @@
 import cherrypy
 import mongodb_controller
-from constants import USERNAME_KEY, PREVIOUS_URL_KEY
+from constants import *
 
 
 def check_problem_access(problem_slug):
@@ -40,9 +40,9 @@ def convert_input_count(user_input):
 
 
 def make_links_list(slug, problem_id):
-    schemas_page_link = "/{}/schemas".format(slug)
-    inspirations_page_link = "/{}/inspirations".format(slug)
-    ideas_page_link = "/{}/ideas".format(slug)
+    schemas_page_link = SCHEMAS_LINK_FORMAT.format(slug)
+    inspirations_page_link = INSPIRATIONS_LINK_FORMAT.format(slug)
+    ideas_page_link = IDEAS_LINK_FORMAT.format(slug)
     stage = mongodb_controller.get_stage(problem_id)
     if stage == mongodb_controller.STAGE_SUGGESTION:
         return schemas_page_link, inspirations_page_link, ideas_page_link
