@@ -15,28 +15,29 @@ def check_problem_access(problem_slug):
         raise cherrypy.HTTPRedirect("/sign_in")
 
 
-def get_problem_parameters():
+def get_problem_parameters(no_count=False):
     if USERNAME_KEY not in cherrypy.session:
         raise cherrypy.HTTPError(403)
     owner_username = cherrypy.session[USERNAME_KEY]
     data = cherrypy.request.json
     title = data["title"]
     description = data["description"]
-    schema_count_goal = convert_input_count(data["schema_count_goal"])
-
-    return owner_username, title, description, schema_count_goal
+    if no_count:
+        return owner_username, title, description
+    schema_assignments_num = convert_input_count(data["schema_assignments_num"])
+    return owner_username, title, description, schema_assignments_num
 
 
 def convert_input_count(user_input):
     if not isinstance(user_input, int):
         try:
-            schema_count_goal = int(user_input)
+            count = int(user_input)
         except ValueError:
             print "Casting fail!!!"
-            schema_count_goal = -1
+            count = -1
     else:
-        schema_count_goal = user_input
-    return schema_count_goal
+        count = user_input
+    return count
 
 
 def make_links_list(slug, problem_id):

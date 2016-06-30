@@ -133,6 +133,22 @@ class RankIdeaHITCreator(HITCreator):
         return ['java', '-jar', 'PostRankIdeaHIT.jar', self.problem, self.idea, str(self.count_goal)]
 
 
+class RankSuggestionHITCreator(HITCreator):
+    def __init__(self, problem, idea, feedback, suggestion, goal):
+        self.problem = problem
+        self.idea = idea
+        self.feedback = feedback
+        self.suggestion = suggestion
+        self.count_goal = goal
+
+    def get_creator_name(self):
+        return "RankSuggestionHITCreator"
+
+    def get_popen_args_arr(self):
+        return ['java', '-jar', 'PostRankSuggestionHIT.jar', self.problem, self.idea, self.feedback, self.suggestion,
+                str(self.count_goal)]
+
+
 def get_schema_making_results(hit_id):
     p = subprocess.Popen(['java', '-jar', 'SchemaMakingResults.jar', hit_id],
                          stdout=subprocess.PIPE,

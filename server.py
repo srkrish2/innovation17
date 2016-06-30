@@ -15,11 +15,15 @@ import mturk_controller
 import mongodb_controller as mc
 import datetime
 from threading import Thread
-import updaters
+import update_managers
 import authorization
 from utility_functions import convert_input_count, get_problem_parameters
 from constants import *
 import renderers
+import time
+from multiprocessing.pool import ThreadPool
+import well_ranked_counters
+
 
 PROBLEM_ID = "problem_id"
 # import passlib.hash
@@ -31,7 +35,7 @@ class HtmlPageLoader(object):
     def _cp_dispatch(self, vpath):
         if len(vpath) == 3:
             if vpath[2] == "suggestions":
-                cherrypy.request.params['type'] = vpath.pop(0)
+                cherrypy.request.params['arg_type'] = vpath.pop(0)
                 cherrypy.request.params['slug'] = vpath.pop(0)
             else:
                 if vpath.pop(0) != "problem":
@@ -100,6 +104,7 @@ class HtmlPageLoader(object):
 
     @cherrypy.expose
     def suggestions(self, arg_type, slug):
+        print arg_type, slug
         if arg_type == "problem":
             return renderers.render_suggestions_page(slug)
         elif arg_type == "idea":
@@ -114,12 +119,12 @@ class SaveNewProblemHandler(object):
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):
-        [owner_username, title, description, schema_count_goal] = get_problem_parameters()
-        if schema_count_goal == -1:
+        [owner_username, title, description, schema_assignments_num] = get_problem_parameters()
+        if schema_assignments_num == -1:
             return {"success": False}
         problem_id = ''.join(random.sample(string.hexdigits, 8))
         time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
-        mc.save_problem(problem_id, title, description, owner_username, schema_count_goal, time_created)
+        mc.save_problem(problem_id, title, description, owner_username, schema_assignments_num, time_created)
         return {
             "success": True,
             "url": "problems"
@@ -132,29 +137,28 @@ class PostNewProblemHandler(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def POST(self):
-        [owner_username, title, description, schema_count_goal] = get_problem_parameters()
-        if schema_count_goal == -1:
+        [owner_username, title, description, schema_assignments_num] = get_problem_parameters()
+        if schema_assignments_num == -1:
             return {"success": False}
         problem_id = ''.join(random.sample(string.hexdigits, 8))
         time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
-        mc.save_problem(problem_id, title, description, owner_username, schema_count_goal, time_created)
+        mc.save_problem(problem_id, title, description, owner_username, schema_assignments_num, time_created)
         mc.set_schema_stage(problem_id)
-        thread = Thread(target=post_new_problem, args=[description, schema_count_goal, problem_id])
+        thread = Thread(target=post_new_problem, args=[description, schema_assignments_num, problem_id])
         thread.start()
-        # post_new_problem(description, schema_count_goal, problem_id)
         return {
             "success": True,
             "url": "problems"
         }
 
 
-def post_new_problem(description, schema_count_goal, problem_id):
-    schema_hit_creator = mturk_controller.SchemaHITCreator(description, schema_count_goal)
+def post_new_problem(description, schema_assignments_num, problem_id):
+    schema_hit_creator = mturk_controller.SchemaHITCreator(description, schema_assignments_num)
     hit_id = schema_hit_creator.post()
     if hit_id == "FAIL":
         print "post_new_problem: FAIL!!"
         return
-    mc.insert_new_schema_hit(problem_id, schema_count_goal, hit_id)
+    mc.insert_new_schema_hit(problem_id, schema_assignments_num, hit_id)
 
 
 class PublishProblemHandler(object):
@@ -171,29 +175,122 @@ class PublishProblemHandler(object):
         return {"success": True}
 
 
+def is_done(problem_id, type):
+    if type == "schema":
+        schema_hit_dicts = mc.get_schema_hits(problem_id)
+        for schema_hit_dict in schema_hit_dicts:
+            if schema_hit_dict[mc.COUNT] != schema_hit_dict[mc.COUNT_GOAL]:
+                return False
+            for schema_dict in mc.get_schema_dicts(problem_id):
+                rank_schema_hit_dict = mc.get_rank_schema_hit_dict(schema_dict[mc.SCHEMA_ID])
+                if rank_schema_hit_dict[mc.COUNT] != rank_schema_hit_dict[mc.COUNT_GOAL]:
+                    return False
+        return True
+    if type == "inspiration":
+        inspiration_hit_dicts = mc.get_inspiration_hits(problem_id)
+        for inspiration_hit_dict in inspiration_hit_dicts:
+            if inspiration_hit_dict[mc.COUNT] != inspiration_hit_dict[mc.COUNT_GOAL]:
+                return False
+            for inspiration_dict in mc.get_inspirations(problem_id):
+                rank_inspiration_hit_dict = mc.get_rank_inspiration_hit_dict(inspiration_dict[mc.INSPIRATION_ID])
+                if rank_inspiration_hit_dict[mc.COUNT] != rank_inspiration_hit_dict[mc.COUNT_GOAL]:
+                    return False
+        return True
+    elif type == "idea":
+        idea_hit_dicts = mc.get_idea_hits(problem_id)
+        for idea_hit_dict in idea_hit_dicts:
+            if idea_hit_dict[mc.COUNT] != idea_hit_dict[mc.COUNT_GOAL]:
+                return False
+            for idea_dict in mc.get_ideas(problem_id):
+                rank_idea_hit_dict = mc.get_rank_idea_hit_dict(idea_dict[mc.IDEA_ID])
+                if rank_idea_hit_dict[mc.COUNT] != rank_idea_hit_dict[mc.COUNT_GOAL]:
+                    return False
+        return True
+
+
+def wait_for_count(problem_id, type):
+    while True:
+        update_managers.update_hit_results_for_problem(problem_id)
+        if type == "schema":
+            if is_done(problem_id, type):
+                return True
+        if type == "inspiration":
+            if is_done(problem_id, type):
+                return True
+        if type == "idea":
+            if is_done(problem_id, type):
+                return True
+        time.sleep(PERIOD)
+
+
+def start_lazy_problem(description, how_many_to_post, problem_id):
+    post_new_problem(description, how_many_to_post, problem_id)
+
+    pool = ThreadPool(processes=1)
+    async_result = pool.apply_async(wait_for_count, (problem_id, "schema"))
+    success = async_result.get()
+    print "schema stage done!"
+
+    mc.set_inspiration_stage(problem_id)
+    post_inspiration_task(problem_id, HOW_MANY_INSPIRATIONS)
+    async_result = pool.apply_async(wait_for_count, (problem_id, "inspiration"))
+    success = async_result.get()
+    print "inspiration stage done!"
+
+    mc.set_idea_stage(problem_id)
+    post_idea_task(problem_id, HOW_MANY_IDEAS)
+    async_result = pool.apply_async(wait_for_count, (problem_id, "idea"))
+    success = async_result.get()
+    print "idea stage done!"
+
+    mc.set_suggestion_stage(problem_id)
+
+
+class PostProblemLazyHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def POST(self):
+        data = cherrypy.request.json
+        [owner_username, title, description] = get_problem_parameters(no_count=True)
+        problem_id = ''.join(random.sample(string.hexdigits, 8))
+        time_created = datetime.datetime.now().strftime(READABLE_TIME_FORMAT)
+        mc.save_problem(problem_id, title, description, owner_username, HOW_MANY_SCHEMAS, time_created, True)
+        mc.set_schema_stage(problem_id)
+
+        thread = Thread(target=start_lazy_problem, args=[description, HOW_MANY_SCHEMAS, problem_id])
+        thread.start()
+        return {
+            "success": True,
+            "url": "problems"
+        }
+
+
 def publish_problem(problem_id):
-    [title, description, schema_count_goal] = mc.get_problem_fields(problem_id)
-    schema_hit_creator = mturk_controller.SchemaHITCreator(description, schema_count_goal)
+    problem_dict = mc.get_problem_dict(problem_id)
+    description = problem_dict[mc.DESCRIPTION]
+    schema_assignments_num = problem_dict[mc.SCHEMA_ASSIGNMENTS_NUM]
+    schema_hit_creator = mturk_controller.SchemaHITCreator(description, schema_assignments_num)
     hit_id = schema_hit_creator.post()
     if hit_id == "FAIL":
         print "publish_problem: FAIL!!"
         return
     mc.set_schema_stage(problem_id)
-    mc.insert_new_schema_hit(problem_id, schema_count_goal, hit_id)
+    mc.insert_new_schema_hit(problem_id, schema_assignments_num, hit_id)
 
 
 class CountUpdatesHandler(object):
     exposed = True
 
-    # post requests go here
     @cherrypy.tools.json_out()
     def GET(self):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
         username = cherrypy.session[USERNAME_KEY]
-        thread = Thread(target=updaters.update_hit_results, args=[username])
+        thread = Thread(target=update_managers.update_hit_results, args=[username])
         thread.start()
-        return mc.get_counts_for_user(username)
+        return well_ranked_counters.get_count_dicts_for_user(username)
 
 
 class InspirationTaskHandler(object):
@@ -231,7 +328,6 @@ def post_inspiration_task(problem_id, count_goal):
         schema_id = schema[mc.SCHEMA_ID]
         mc.insert_new_inspiration_hit(problem_id, schema_id, count_goal, hit_id)
         mc.set_schema_processed_status(schema_id)
-    mc.increment_inspiration_count_goal(problem_id, count_goal)
 
 
 class IdeaTaskHandler(object):
@@ -275,7 +371,6 @@ def post_idea_task(problem_id, count_goal):
         schema_id = inspiration[mc.SCHEMA_ID]
         mc.insert_new_idea_hit(problem_id, schema_id, inspiration_id, count_goal, hit_id)
         mc.set_inspiration_processed_status(inspiration_id)
-    mc.increment_idea_count_goal(problem_id, count_goal)
 
 
 class RejectHandler(object):
@@ -334,7 +429,6 @@ def post_feedback(idea_dict, idea_id, feedbacks, count_goal):
         mc.add_feedback(feedback_id, feedback, idea_id)
         mc.insert_new_suggestion_hit(problem_id, idea_id, feedback_id, count_goal, hit_id)
     mc.idea_launched(idea_id)
-    mc.increment_suggestion_count_goal(idea_id, count_goal)
 
 
 class MoreSuggestionsHandler(object):
@@ -366,7 +460,6 @@ class MoreSuggestionsHandler(object):
         if hit_id == "FAIL":
             return {"success": False}
         mc.insert_new_suggestion_hit(problem_id, idea_id, feedback_id, count_goal, hit_id)
-        mc.increment_suggestion_count_goal(idea_id, count_goal)
 
 
 class SuggestionUpdatesHandler(object):
@@ -379,9 +472,9 @@ class SuggestionUpdatesHandler(object):
             raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
         problem_id = data[PROBLEM_ID]
-        thread = Thread(target=updaters.update_suggestions, args=[problem_id])
-        thread.start()
-        return mc.get_suggestion_counts(problem_id)
+        # thread = Thread(target=update_managers.update_suggestions, args=[problem_id])
+        # thread.start()
+        # return mc.get_suggestion_counts(problem_id)
 
 
 def relaunch_schema_task(problem_id, assignments_num):
@@ -391,7 +484,6 @@ def relaunch_schema_task(problem_id, assignments_num):
     if hit_id == "FAIL":
         return {"success": False}
     mc.insert_new_schema_hit(problem_id, assignments_num, hit_id)
-    mc.increment_schema_count_goal(problem_id, assignments_num)
     return {"success": True}
 
 
@@ -426,7 +518,6 @@ def relaunch_idea_task(inspiration_id, count):
     if hit_id == "FAIL":
         return {"success": False}
     mc.insert_new_idea_hit(problem_id, schema_id, inspiration_id, count, hit_id)
-    mc.increment_idea_count_goal(problem_id, count)
 
 
 class MoreIdeasHandler(object):
@@ -547,6 +638,9 @@ if __name__ == '__main__':
         },
         '/more_suggestions': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/post_problem_lazy': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -568,6 +662,7 @@ if __name__ == '__main__':
     webapp.get_accepted_schemas_count = AcceptedSchemasCountHandler()
     webapp.more_schemas = MoreSchemasHandler()
     webapp.more_suggestions = MoreSuggestionsHandler()
+    webapp.post_problem_lazy = PostProblemLazyHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 

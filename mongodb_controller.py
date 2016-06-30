@@ -11,12 +11,8 @@ OWNER_USERNAME = "owner_username"
 SLUG = "slug"
 PROBLEM_ID = "problem_id"
 TIME_CREATED = "time_created"
-SCHEMA_COUNT = "schema_count"
-SCHEMA_COUNT_GOAL = "schema_count_goal"
-INSPIRATION_COUNT = "inspiration_count"
-INSPIRATION_COUNT_GOAL = "inspiration_count_goal"
-IDEA_COUNT = "idea_count"
-IDEA_COUNT_GOAL = "idea_count_goal"
+SCHEMA_ASSIGNMENTS_NUM = "schema_assignments_num"
+LAZY = "lazy"
 # }
 
 # SCHEMA_HIT: {
@@ -80,6 +76,14 @@ INSPIRATION_ID = "inspiration_id"
 # INSPIRATION_ID
 # }
 
+# INSPIRATION_RANK: {
+# RANK_ID
+# RANK
+# TIME_CREATED
+# WORKER_ID
+# SCHEMA_ID
+# }
+
 # IDEA_HIT: {
 # HIT_ID
 # COUNT
@@ -98,8 +102,6 @@ IDEA_ID = "idea_id"
 # PROBLEM_ID
 # SCHEMA_ID
 # INSPIRATION_ID
-SUGGESTION_COUNT = "suggestion_count"
-SUGGESTION_COUNT_GOAL = "suggestion_count_goal"
 # STATUS
 # RANK
 # }
@@ -108,7 +110,22 @@ SUGGESTION_COUNT_GOAL = "suggestion_count_goal"
 # HIT_ID
 # COUNT
 # COUNT_GOAL
+# INSPIRATION_ID
+# }
+
+# RANK_IDEA_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
 # IDEA_ID
+# }
+
+# IDEA_RANK: {
+# RANK_ID
+# RANK
+# TIME_CREATED
+# WORKER_ID
+# SCHEMA_ID
 # }
 
 # FEEDBACK: {
@@ -131,22 +148,32 @@ SUGGESTION_ID = "suggestion_id"
 # TEXT
 # TIME_CREATED
 # WORKER_ID
+# PROBLEM_ID
+# FEEDBACK_ID
+# IDEA_ID
+# RANK
+# }
+
+# RANK_SUGGESTION_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
 # IDEA_ID
 # }
 
+# SUGGESTION_RANK: {
+# RANK_ID
+# RANK
+# TIME_CREATED
+# WORKER_ID
+# SCHEMA_ID
+# }
 
 # USER: {
 USER_USERNAME = "username"
 USER_EMAIL = "email"
 USER_PASSWORD = "password"
 # }
-
-# FOR FRONT END - MOVE TO SERVER.PY?
-EDIT_PAGE_LINK = "edit_page_link"
-VIEW_PAGE_LINK = "view_page_link"
-SCHEMAS_PAGE_LINK = "schemas_page_link"
-INSPIRATIONS_PAGE_LINK = "inspirations_page_link"
-IDEAS_PAGE_LINK = "ideas_page_link"
 
 
 # FIELD CONSTANTS
@@ -161,9 +188,10 @@ STATUS_ACCEPTED = 1
 STATUS_PROCESSED = 2
 STATUS_NEW = 1
 
+
 ######################## INSERT ONE #################################
 
-def save_problem(problem_id, title, description, owner_username, schema_count_goal, time_created):
+def save_problem(problem_id, title, description, owner_username, schema_assignments_num, time_created, lazy=False):
     problem = {
         PROBLEM_ID: problem_id,
         TITLE: title,
@@ -172,12 +200,8 @@ def save_problem(problem_id, title, description, owner_username, schema_count_go
         SLUG: slugify(title),
         TIME_CREATED: time_created,
         STAGE: STAGE_UNPUBLISHED,
-        SCHEMA_COUNT: 0,
-        SCHEMA_COUNT_GOAL: schema_count_goal,
-        INSPIRATION_COUNT: 0,
-        INSPIRATION_COUNT_GOAL: 0,
-        IDEA_COUNT: 0,
-        IDEA_COUNT_GOAL: 0
+        SCHEMA_ASSIGNMENTS_NUM: schema_assignments_num,
+        LAZY: lazy
     }
     problems_collection.insert_one(problem)
 
@@ -257,6 +281,16 @@ def insert_new_rank_idea_hit(idea_id, count_goal, hit_id):
     rank_idea_hits_collection.insert_one(new_rank_idea_hit)
 
 
+def insert_new_rank_suggestion_hit(suggestion_id, count_goal, hit_id):
+    new_rank_suggestion_hit = {
+        SUGGESTION_ID: suggestion_id,
+        COUNT: 0,
+        COUNT_GOAL: count_goal,
+        HIT_ID: hit_id
+    }
+    rank_suggestion_hits_collection.insert_one(new_rank_suggestion_hit)
+
+
 def add_schema(schema):
     schemas_collection.insert_one(schema)
 
@@ -269,8 +303,6 @@ def add_idea(idea):
     # replace title with slug
     title = idea.pop(TITLE)
     idea[SLUG] = slugify(title)
-    idea[SUGGESTION_COUNT] = 0
-    idea[SUGGESTION_COUNT_GOAL] = 0
     ideas_collection.insert_one(idea)
 
 
@@ -292,6 +324,9 @@ def insert_inspiration_rank(rank_dict):
 
 def insert_idea_rank(rank_dict):
     idea_ranks_collection.insert_one(rank_dict)
+
+def insert_suggestion_rank(rank_dict):
+    suggestion_ranks_collection.insert_one(rank_dict)
 
 
 def new_account(username, email, password):
@@ -362,46 +397,46 @@ def set_suggestion_stage(problem_id):
     problems_collection.update_one(query_filter, update)
 
 
-def set_schema_count(problem_id, count):
-    query_filter = {PROBLEM_ID: problem_id}
-    update = {'$set': {SCHEMA_COUNT: count}}
-    problems_collection.update_one(query_filter, update)
+# def set_schema_count(problem_id, count):
+#     query_filter = {PROBLEM_ID: problem_id}
+#     update = {'$set': {SCHEMA_COUNT: count}}
+#     problems_collection.update_one(query_filter, update)
+#
+#
+# def set_inspiration_count(problem_id, count):
+#     query_filter = {PROBLEM_ID: problem_id}
+#     update = {'$set': {INSPIRATION_COUNT: count}}
+#     problems_collection.update_one(query_filter, update)
+#
+#
+# def set_idea_count(problem_id, how_much):
+#     query_filter = {PROBLEM_ID: problem_id}
+#     update = {'$set': {IDEA_COUNT: how_much}}
+#     problems_collection.update_one(query_filter, update)
+#
+#
+# def set_suggestion_count(problem_id, how_much):
+#     query_filter = {PROBLEM_ID: problem_id}
+#     update = {'$set': {SUGGESTION_COUNT: how_much}}
+#     problems_collection.update_one(query_filter, update)
 
-
-def set_inspiration_count(problem_id, count):
-    query_filter = {PROBLEM_ID: problem_id}
-    update = {'$set': {INSPIRATION_COUNT: count}}
-    problems_collection.update_one(query_filter, update)
-
-
-def set_idea_count(problem_id, how_much):
-    query_filter = {PROBLEM_ID: problem_id}
-    update = {'$set': {IDEA_COUNT: how_much}}
-    problems_collection.update_one(query_filter, update)
-
-
-def set_suggestion_count(problem_id, how_much):
-    query_filter = {PROBLEM_ID: problem_id}
-    update = {'$set': {SUGGESTION_COUNT: how_much}}
-    problems_collection.update_one(query_filter, update)
-
-
-def increment_schema_count_goal(problem_id, how_much):
-    query_filter = {PROBLEM_ID: problem_id}
-    update = {'$inc': {SCHEMA_COUNT_GOAL: how_much}}
-    problems_collection.update_one(query_filter, update)
-
-
-def increment_inspiration_count_goal(problem_id, how_much):
-    query_filter = {PROBLEM_ID: problem_id}
-    update = {'$inc': {INSPIRATION_COUNT_GOAL: how_much}}
-    problems_collection.update_one(query_filter, update)
-
-
-def increment_idea_count_goal(problem_id, how_much):
-    query_filter = {PROBLEM_ID: problem_id}
-    update = {'$inc': {IDEA_COUNT_GOAL: how_much}}
-    problems_collection.update_one(query_filter, update)
+#
+# def increment_schema_assignments_num(problem_id, how_much):
+#     query_filter = {PROBLEM_ID: problem_id}
+#     update = {'$inc': {SCHEMA_COUNT_GOAL: how_much}}
+#     problems_collection.update_one(query_filter, update)
+#
+#
+# def increment_inspiration_count_goal(problem_id, how_much):
+#     query_filter = {PROBLEM_ID: problem_id}
+#     update = {'$inc': {INSPIRATION_COUNT_GOAL: how_much}}
+#     problems_collection.update_one(query_filter, update)
+#
+#
+# def increment_idea_count_goal(problem_id, how_much):
+#     query_filter = {PROBLEM_ID: problem_id}
+#     update = {'$inc': {IDEA_COUNT_GOAL: how_much}}
+#     problems_collection.update_one(query_filter, update)
 
 
 def increment_schema_hit_count(hit_id, how_much):
@@ -422,23 +457,10 @@ def increment_idea_hit_count(hit_id, count):
     idea_hits_collection.update_one(query_filter, update)
 
 
-def increment_suggestion_count_goal(idea_id, count_goal):
-    query_filter = {IDEA_ID: idea_id}
-    update = {'$inc': {SUGGESTION_COUNT_GOAL: count_goal}}
-    ideas_collection.update_one(query_filter, update)
-
-
 def increment_suggestion_hit_count(suggestion_hit_id, how_much):
     query_filter = {HIT_ID: suggestion_hit_id}
     update = {'$inc': {COUNT: how_much}}
     suggestion_hits_collection.update_one(query_filter, update)
-
-
-def increment_suggestion_count_in_idea(suggestion_hit_id, new_suggestions_count):
-    idea_id = suggestion_hits_collection.find_one({HIT_ID: suggestion_hit_id})[IDEA_ID]
-    query_filter = {IDEA_ID: idea_id}
-    update = {'$inc': {SUGGESTION_COUNT: new_suggestions_count}}
-    ideas_collection.update_one(query_filter, update)
 
 
 def increment_rank_schema_hit_count(rank_schema_hit_id, how_much):
@@ -471,10 +493,22 @@ def increment_idea_rank(idea_id, how_much):
     ideas_collection.update_one(query_filter, update)
 
 
+def increment_suggestion_rank(suggestion_id, how_much):
+    query_filter = {SUGGESTION_ID: suggestion_id}
+    update = {'$inc': {RANK: how_much}}
+    suggestions_collection.update_one(query_filter, update)
+
+
 def increment_rank_idea_hit_count(rank_idea_hit_id, how_much):
     query_filter = {HIT_ID: rank_idea_hit_id}
     update = {'$inc': {COUNT: how_much}}
     rank_idea_hits_collection.update_one(query_filter, update)
+
+
+def increment_rank_suggestion_hit_count(rank_suggestion_hit_id, how_much):
+    query_filter = {HIT_ID: rank_suggestion_hit_id}
+    update = {'$inc': {COUNT: how_much}}
+    rank_suggestion_hits_collection.update_one(query_filter, update)
 
 
 def set_schema_rejected_flag(schema_id, to_reject):
@@ -580,6 +614,10 @@ def contains_idea_rank(rank_id):
     return idea_ranks_collection.find_one({RANK_ID: rank_id}) is not None
 
 
+def contains_suggestion_rank(rank_id):
+    return suggestion_ranks_collection.find_one({RANK_ID: rank_id}) is not None
+
+
 def is_email_in_use(email):
     return users_collection.find_one({USER_EMAIL: email}) is not None
 
@@ -606,6 +644,10 @@ def get_password_for_username(username):
 
 def get_username_from_email(email):
     return users_collection.find_one({USER_EMAIL: email})[USER_USERNAME]
+
+
+def get_problem_dict(problem_id):
+    return problems_collection.find_one({PROBLEM_ID: problem_id})
 
 
 def get_idea_dict(idea_id):
@@ -641,32 +683,12 @@ def get_inspiration_summary(inspiration_id):
     return inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})[INSPIRATION_SUMMARY]
 
 
-def get_problem_fields(problem_id):
-    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
-    return problem[TITLE], problem[DESCRIPTION], problem[SCHEMA_COUNT_GOAL]
-
-
 def get_problem_description(problem_id):
     return problems_collection.find_one({PROBLEM_ID: problem_id})[DESCRIPTION]
 
 
 def get_idea_dict_for_slug(idea_slug):
     return ideas_collection.find_one({SLUG: idea_slug})
-
-
-def did_reach_schema_count_goal(problem_id):
-    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
-    return problem[SCHEMA_COUNT] == problem[SCHEMA_COUNT_GOAL]
-
-
-def did_reach_idea_count_goal(problem_id):
-    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
-    return problem[IDEA_COUNT] == problem[IDEA_COUNT_GOAL]
-
-
-def did_reach_inspiration_count_goal(problem_id):
-    problem = problems_collection.find_one({PROBLEM_ID: problem_id})
-    return problem[INSPIRATION_COUNT] == problem[INSPIRATION_COUNT_GOAL]
 
 
 def get_rank_schema_hit_dict(schema_id):
@@ -680,32 +702,15 @@ def get_rank_inspiration_hit_dict(inspiration_id):
 def get_rank_idea_hit_dict(idea_id):
     return rank_idea_hits_collection.find_one({IDEA_ID: idea_id})
 
+
+def get_rank_suggestion_hit_dict(suggestion_id):
+    return rank_idea_hits_collection.find_one({SUGGESTION_ID: suggestion_id})
+
 ######################### FIND ALL ###############################
 
 
 def get_problems_by_user(username):
-    result = []
-    for problem in problems_collection.find({OWNER_USERNAME: username}):
-        for_result = {
-            PROBLEM_ID: problem[PROBLEM_ID],
-            TITLE: problem[TITLE],
-            DESCRIPTION: problem[DESCRIPTION],
-            STAGE: problem[STAGE],
-            TIME_CREATED: problem[TIME_CREATED],
-            EDIT_PAGE_LINK: EDIT_LINK_FORMAT.format(problem[SLUG]),
-            SCHEMAS_PAGE_LINK: SCHEMAS_LINK_FORMAT.format(problem[SLUG]),
-            IDEAS_PAGE_LINK: IDEAS_LINK_FORMAT.format(problem[SLUG]),
-            INSPIRATIONS_PAGE_LINK: INSPIRATIONS_LINK_FORMAT.format(problem[SLUG]),
-            VIEW_PAGE_LINK: VIEW_LINK_FORMAT.format(problem[SLUG]),
-            SCHEMA_COUNT: problem[SCHEMA_COUNT],
-            SCHEMA_COUNT_GOAL: problem[SCHEMA_COUNT_GOAL],
-            INSPIRATION_COUNT: problem[INSPIRATION_COUNT],
-            INSPIRATION_COUNT_GOAL: problem[INSPIRATION_COUNT_GOAL],
-            IDEA_COUNT: problem[IDEA_COUNT],
-            IDEA_COUNT_GOAL: problem[IDEA_COUNT_GOAL]
-        }
-        result.append(for_result)
-    return result
+    return problems_collection.find({OWNER_USERNAME: username})
 
 
 def get_schemas_for_inspiration_task(problem_id):
@@ -747,19 +752,6 @@ def get_users_problem_ids(username):
     return hit_ids
 
 
-def get_counts_for_user(username):
-    result = []
-    for problem in problems_collection.find({OWNER_USERNAME: username}):
-        for_result = {
-            PROBLEM_ID: problem[PROBLEM_ID],
-            SCHEMA_COUNT: problem[SCHEMA_COUNT],
-            INSPIRATION_COUNT: problem[INSPIRATION_COUNT],
-            IDEA_COUNT: problem[IDEA_COUNT]
-        }
-        result.append(for_result)
-    return result
-
-
 def delete_problem(problem_id):
     problems_collection.remove({PROBLEM_ID: problem_id})
 
@@ -769,7 +761,7 @@ def edit_problem(problem_dict):
     query_filter = {PROBLEM_ID: problem_id}
     new_fields = {
         DESCRIPTION: problem_dict[DESCRIPTION],
-        SCHEMA_COUNT_GOAL: problem_dict[SCHEMA_COUNT_GOAL]
+        SCHEMA_ASSIGNMENTS_NUM: problem_dict[SCHEMA_ASSIGNMENTS_NUM]
     }
     problem = problems_collection.find_one({PROBLEM_ID: problem_id})
     if problem_dict[TITLE] != problem[TITLE]:
@@ -783,24 +775,12 @@ def get_ideas(problem_id):
     return ideas_collection.find({PROBLEM_ID: problem_id})
 
 
+def get_suggestions(problem_id):
+    return suggestions_collection.find({PROBLEM_ID: problem_id})
+
+
 def get_inspirations(problem_id):
     return inspirations_collection.find({PROBLEM_ID: problem_id})
-
-
-# def get_suggestions(problem_id):
-#     return suggestions_collection.find({PROBLEM_ID: problem_id})
-
-
-def get_suggestion_counts(problem_id):
-    ideas = ideas_collection.find({PROBLEM_ID: problem_id})
-    result = []
-    for idea in ideas:
-        for_result = {
-            IDEA_ID: idea[IDEA_ID],
-            SUGGESTION_COUNT: idea[SUGGESTION_COUNT]
-        }
-        result.append(for_result)
-    return result
 
 
 def get_feedback_dicts(idea_id):
@@ -882,3 +862,5 @@ idea_ranks_collection = db.idea_ranks
 feedbacks_collection = db.feedbacks
 suggestion_hits_collection = db.suggestion_hits
 suggestions_collection = db.suggestions
+rank_suggestion_hits_collection = db.rank_suggestion_hits
+suggestion_ranks_collection = db.suggestion_ranks

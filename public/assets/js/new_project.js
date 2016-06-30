@@ -78,7 +78,7 @@ $(document).on('click','.ui.save, .ui.submit',function(e){
             "problem_id": id,
             "title": title,
             "description": description,
-            "schema_count_goal": schemagoal
+            "schema_assignments_num": schemagoal
         };
         var URL_link = null;
         $(e.currentTarget).prop('disabled',true);
@@ -114,5 +114,32 @@ $(document).on('click','.ui.save, .ui.submit',function(e){
             }
         });
     }
-    
 });
+
+
+$(document).on('click','.ui.lazy',function(e){
+    var title = $(SELECTOR).form("get value", "title");
+    var description = $(SELECTOR).form("get value", "description");
+    var data = {
+        "title": title,
+        "description": description,
+    };
+    $.ajax({
+        type : "POST",
+        url: "post_problem_lazy",
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        success : function(data) {
+            var success = data["success"]
+            if (success) {
+                window.location.replace('/'+data['url']);
+            } else {
+                console.log("UNEXPECTED ERROR")
+            }
+            $(e.currentTarget).prop('disabled',false);
+        },
+        error : function(e) {
+            console.log("ERROR: ", e);
+        }
+    });
+})

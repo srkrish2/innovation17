@@ -23,11 +23,8 @@ array of maps (dictionaries). each map has the following format:
   "time_created": string,
   "stage": string,
   "schema_count": int,
-  "schema_count_goal": int,
   "inspiration_count": int,
-  "inspiration_count_goal": int,
   "idea_count": int,
-  "idea_count_goal": int,
   "suggestion_count": int
   
   //// if stage=unpublished ////
@@ -53,7 +50,7 @@ array of maps (dictionaries). each map has the following format:
 ### /{{problem_slug}}/edit page parser input
 ```
 "problem_id": string,
-"schema_count_goal": int,
+"schema_assignments_num": int,
 "title": string,
 "description": string
 }
@@ -81,7 +78,7 @@ inspirations = array of the format:
 	"source_link" : string,
 	"inspiration_id" : string,
 	"schema_id" : string,
-  "schema_text": string,
+    "schema_text": string,
 	"time_created" : string,
 	"summary" : string,
 	"image_link" : string,
@@ -107,20 +104,19 @@ ideas = array of the format:
 	"slug" : string,
 	"schema_id" : string,
 	"worker_id" : string,
-	"suggestion_count_goal" : int,
 	"problem_id" : string,
 	"suggestions_page_link": string
 }
 also problem_id, problem_stage, schemas_page_link, inspirations_page_link,ideas_page_link
 ```
-/problem/problem-slug/suggestions
+
 ### /idea/{{idea_slug}}/suggestions page parser input
 ```
-array of maps: //array of feedbacks, each associating with an array of suggestions
+array of feedbacks
 {
   "feedback_id":string,
   "feedback_text" : string,
-  "suggestions" : [{ //array of suggestons for each feedback
+  "suggestions" : [{ //array of suggestions
       "time_created" : string,
       "suggestion_id" : string,
       "worker_id" : string,
@@ -128,6 +124,26 @@ array of maps: //array of feedbacks, each associating with an array of suggestio
   }]
 }
 also idea_id, idea_text, problem_id
+```
+
+### /problem/{{problem_slug}}/suggestions page parser input
+```
+array of ideas:
+{
+    "idea_id" : string
+    "text" : string
+    "feedbacks": [{ //array of feedbacks:
+        "feedback_id":string,
+        "feedback_text" : string,
+        "suggestions" : [{ //array of suggestions
+            "time_created" : string,
+            "suggestion_id" : string,
+            "worker_id" : string,
+            "text": string
+        }]
+    }]
+}
+also problem_id
 ```
 
 
@@ -154,7 +170,7 @@ input
 {
   "title": string,
   "description": string,
-  "schema_count_goal": int
+  "schema_assignments_num": int
 }
 ```
 output
@@ -238,7 +254,7 @@ input
 ```
 {
   "problem_id": string,
-  "schema_count_goal": int,
+  "schema_assignments_num": int,
   "title": string,
   "description": string
 }

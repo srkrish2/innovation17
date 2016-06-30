@@ -3,6 +3,7 @@ from constants import *
 import mongodb_controller as mc
 from jinja2 import Environment, PackageLoader
 from utility_functions import check_problem_access, make_links_list
+import well_ranked_counters
 env = Environment(loader=PackageLoader('renderers', '/templates'))
 
 
@@ -18,7 +19,28 @@ def render_problems_page():
     if USERNAME_KEY not in cherrypy.session:
         cherrypy.session[PREVIOUS_URL_KEY] = "problems"
         raise cherrypy.HTTPRedirect("sign_in")
-    problems = mc.get_problems_by_user(cherrypy.session[USERNAME_KEY])
+    db_problems = mc.get_problems_by_user(cherrypy.session[USERNAME_KEY])
+    problems = []
+    for problem in db_problems:
+        # add counts
+        counter = well_ranked_counters.WellRankedSchemaCounter()
+        problem[SCHEMA_COUNT] = counter.get_count(problem[mc.PROBLEM_ID])
+        counter = well_ranked_counters.WellRankedInspirationCounter()
+        problem[INSPIRATION_COUNT] = counter.get_count(problem[mc.PROBLEM_ID])
+        counter = well_ranked_counters.WellRankedIdeaCounter()
+        problem[IDEA_COUNT] = counter.get_count(problem[mc.PROBLEM_ID])
+        counter = well_ranked_counters.WellRankedSuggestionCounter()
+        problem[SUGGESTION_COUNT] = counter.get_count(problem[mc.PROBLEM_ID])
+
+        # add links
+        problem[EDIT_PAGE_LINK] = EDIT_LINK_FORMAT.format(problem[mc.SLUG])
+        problem[SCHEMAS_PAGE_LINK] = SCHEMAS_LINK_FORMAT.format(problem[mc.SLUG])
+        problem[IDEAS_PAGE_LINK] = IDEAS_LINK_FORMAT.format(problem[mc.SLUG])
+        problem[INSPIRATIONS_PAGE_LINK] = INSPIRATIONS_LINK_FORMAT.format(problem[mc.SLUG])
+        problem[SUGGESTIONS_PAGE_LINK] = SUGGESTIONS_LINK_FORMAT.format(problem[mc.SLUG])
+        problem[VIEW_PAGE_LINK] = VIEW_LINK_FORMAT.format(problem[mc.SLUG])
+
+        problems.append(problem)
     template = env.get_template('problems.html')
     return template.render(problems=problems)
 
@@ -80,41 +102,61 @@ def render_ideas_page(problem_slug):
 def render_edit_page(problem_slug):
     if check_problem_access(problem_slug) is True:
         problem_id = mc.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-        [title, description, count_goal] = mc.get_problem_fields(problem_id)
+        problem_dict = mc.get_problem_dict(problem_id)
         template = env.get_template('new_problem.html')
-        return template.render(count_goal=count_goal, problem_id=problem_id, title=title,
-                               operation="edit", description=description)
+        return template.render(count_goal=problem_dict[mc.SCHEMA_ASSIGNMENTS_NUM], problem_id=problem_id,
+                               title=problem_dict[mc.TITLE], operation="edit", description=problem_dict[mc.DESCRIPTION])
 
 
 def render_view_page(problem_slug):
     if check_problem_access(problem_slug) is True:
         problem_id = mc.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-        [title, description, count_goal] = mc.get_problem_fields(problem_id)
+        problem_dict = mc.get_problem_dict(problem_id)
         template = env.get_template('new_problem.html')
-        return template.render(count_goal=count_goal, problem_id=problem_id, title=title,
-                               operation="view", description=description)
+        return template.render(count_goal=problem_dict[mc.SCHEMA_ASSIGNMENTS_NUM], problem_id=problem_id, operation="view",
+                               title=problem_dict[mc.TITLE], description=problem_dict[mc.DESCRIPTION])
 
 
 def render_suggestions_page(problem_slug):
-    return "implemtn ne"
+    if USERNAME_KEY not in cherrypy.session:
+        raise cherrypy.HTTPRedirect("sign_in")
+    ideas = []
+    problem_id = mc.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
+    for idea_dict in mc.get_ideas(problem_id):
+        idea_id = idea_dict[mc.IDEA_ID]
+        idea = {
+            mc.IDEA_ID: idea_id,
+            mc.TEXT: idea_dict[mc.TEXT],
+            FEEDBACKS_FIELD: get_feedbacks_with_suggestions(idea_id)
+        }
+        ideas.append(idea)
+    template = env.get_template('suggestions.html')
+    return template.render(ideas=ideas, problem_id=problem_id)
 
 
 def render_suggestions_page_for_idea(idea_slug):
+    if USERNAME_KEY not in cherrypy.session:
+        raise cherrypy.HTTPRedirect("sign_in")
     idea_dict = mc.get_idea_dict_for_slug(idea_slug)
     idea_id = idea_dict[mc.IDEA_ID]
+    feedbacks_with_suggestions = get_feedbacks_with_suggestions(idea_id)
+    idea_text = idea_dict[mc.TEXT]
+    problem_id = idea_dict[mc.PROBLEM_ID]
+    template = env.get_template('suggestions_for_idea.html')
+    return template.render(feedbacks=feedbacks_with_suggestions, idea_id=idea_id, idea_text=idea_text,
+                           problem_id=problem_id)
+
+
+def get_feedbacks_with_suggestions(idea_id):
     feedbacks_with_suggestions = []
     for feedback_dict in mc.get_feedback_dicts(idea_id):
         feedback_id = feedback_dict[mc.FEEDBACK_ID]
         suggestions = []
         for suggestion in mc.get_suggestion_dicts(feedback_id):
             suggestions.append(suggestion)
-        feedback_dict["suggestions"] = suggestions
+        feedback_dict[SUGGESTIONS_FIELD] = suggestions
         feedbacks_with_suggestions.append(feedback_dict)
-    idea_text = idea_dict[mc.TEXT]
-    problem_id = idea_dict[mc.PROBLEM_ID]
-    template = env.get_template('suggestions.html')
-    return template.render(feedbacks=feedbacks_with_suggestions, idea_id=idea_id, idea_text=idea_text,
-                           problem_id=problem_id)
+    return feedbacks_with_suggestions
 
 
 def render_new_problem():
