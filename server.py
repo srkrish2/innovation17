@@ -179,31 +179,31 @@ def is_done(problem_id, type):
     if type == "schema":
         schema_hit_dicts = mc.get_schema_hits(problem_id)
         for schema_hit_dict in schema_hit_dicts:
-            if schema_hit_dict[mc.COUNT] != schema_hit_dict[mc.COUNT_GOAL]:
+            if schema_hit_dict[COUNT] != schema_hit_dict[COUNT_GOAL]:
                 return False
             for schema_dict in mc.get_schema_dicts(problem_id):
-                rank_schema_hit_dict = mc.get_rank_schema_hit_dict(schema_dict[mc.SCHEMA_ID])
-                if rank_schema_hit_dict[mc.COUNT] != rank_schema_hit_dict[mc.COUNT_GOAL]:
+                rank_schema_hit_dict = mc.get_rank_schema_hit_dict(schema_dict[SCHEMA_ID])
+                if rank_schema_hit_dict[COUNT] != rank_schema_hit_dict[COUNT_GOAL]:
                     return False
         return True
     if type == "inspiration":
         inspiration_hit_dicts = mc.get_inspiration_hits(problem_id)
         for inspiration_hit_dict in inspiration_hit_dicts:
-            if inspiration_hit_dict[mc.COUNT] != inspiration_hit_dict[mc.COUNT_GOAL]:
+            if inspiration_hit_dict[COUNT] != inspiration_hit_dict[COUNT_GOAL]:
                 return False
             for inspiration_dict in mc.get_inspirations(problem_id):
-                rank_inspiration_hit_dict = mc.get_rank_inspiration_hit_dict(inspiration_dict[mc.INSPIRATION_ID])
-                if rank_inspiration_hit_dict[mc.COUNT] != rank_inspiration_hit_dict[mc.COUNT_GOAL]:
+                rank_inspiration_hit_dict = mc.get_rank_inspiration_hit_dict(inspiration_dict[INSPIRATION_ID])
+                if rank_inspiration_hit_dict[COUNT] != rank_inspiration_hit_dict[COUNT_GOAL]:
                     return False
         return True
     elif type == "idea":
         idea_hit_dicts = mc.get_idea_hits(problem_id)
         for idea_hit_dict in idea_hit_dicts:
-            if idea_hit_dict[mc.COUNT] != idea_hit_dict[mc.COUNT_GOAL]:
+            if idea_hit_dict[COUNT] != idea_hit_dict[COUNT_GOAL]:
                 return False
             for idea_dict in mc.get_ideas(problem_id):
-                rank_idea_hit_dict = mc.get_rank_idea_hit_dict(idea_dict[mc.IDEA_ID])
-                if rank_idea_hit_dict[mc.COUNT] != rank_idea_hit_dict[mc.COUNT_GOAL]:
+                rank_idea_hit_dict = mc.get_rank_idea_hit_dict(idea_dict[IDEA_ID])
+                if rank_idea_hit_dict[COUNT] != rank_idea_hit_dict[COUNT_GOAL]:
                     return False
         return True
 
@@ -269,8 +269,8 @@ class PostProblemLazyHandler(object):
 
 def publish_problem(problem_id):
     problem_dict = mc.get_problem_dict(problem_id)
-    description = problem_dict[mc.DESCRIPTION]
-    schema_assignments_num = problem_dict[mc.SCHEMA_ASSIGNMENTS_NUM]
+    description = problem_dict[DESCRIPTION]
+    schema_assignments_num = problem_dict[SCHEMA_ASSIGNMENTS_NUM]
     schema_hit_creator = mturk_controller.SchemaHITCreator(description, schema_assignments_num)
     hit_id = schema_hit_creator.post()
     if hit_id == "FAIL":
@@ -320,12 +320,12 @@ class InspirationTaskHandler(object):
 def post_inspiration_task(problem_id, count_goal):
     for schema in mc.get_schemas_for_inspiration_task(problem_id):
         # submitted_schema_count += 1
-        inspiration_hit_creator = mturk_controller.InspirationHITCreator(schema[mc.TEXT], count_goal)
+        inspiration_hit_creator = mturk_controller.InspirationHITCreator(schema[TEXT], count_goal)
         hit_id = inspiration_hit_creator.post()
         if hit_id == "FAIL":
             print "submitting one of the schemas for create_inspiration_hit FAILED!!"
             continue
-        schema_id = schema[mc.SCHEMA_ID]
+        schema_id = schema[SCHEMA_ID]
         mc.insert_new_inspiration_hit(problem_id, schema_id, count_goal, hit_id)
         mc.set_schema_processed_status(schema_id)
 
@@ -357,9 +357,9 @@ class IdeaTaskHandler(object):
 def post_idea_task(problem_id, count_goal):
     for inspiration in mc.get_accepted_inspirations(problem_id):
         problem_description = mc.get_problem_description(inspiration[PROBLEM_ID])
-        source_link = inspiration[mc.INSPIRATION_LINK]
-        image_link = inspiration[mc.INSPIRATION_ADDITIONAL]
-        explanation = inspiration[mc.INSPIRATION_REASON]
+        source_link = inspiration[INSPIRATION_LINK]
+        image_link = inspiration[INSPIRATION_ADDITIONAL]
+        explanation = inspiration[INSPIRATION_REASON]
         idea_hit_creator =\
             mturk_controller.IdeaHITCreator(problem_description, source_link, image_link, explanation, count_goal)
         hit_id = idea_hit_creator.post()
@@ -367,8 +367,8 @@ def post_idea_task(problem_id, count_goal):
         if hit_id == "FAIL":
             print "submitting one of the inspirations create_idea_hit FAILED!!"
             continue
-        inspiration_id = inspiration[mc.INSPIRATION_ID]
-        schema_id = inspiration[mc.SCHEMA_ID]
+        inspiration_id = inspiration[INSPIRATION_ID]
+        schema_id = inspiration[SCHEMA_ID]
         mc.insert_new_idea_hit(problem_id, schema_id, inspiration_id, count_goal, hit_id)
         mc.set_inspiration_processed_status(inspiration_id)
 
@@ -412,13 +412,13 @@ class FeedbackHandler(object):
         thread.start()
         # post_feedback(idea_dict, idea_id, feedbacks, count_goal)
         return {"success": True,
-                SUGGESTIONS_PAGE_LINK: "/{}/suggestions".format(idea_dict[mc.SLUG])}
+                SUGGESTIONS_PAGE_LINK: "/{}/suggestions".format(idea_dict[SLUG])}
 
 
 def post_feedback(idea_dict, idea_id, feedbacks, count_goal):
     problem_id = idea_dict[PROBLEM_ID]
     problem_text = mc.get_problem_description(problem_id)
-    idea_text = idea_dict[mc.TEXT]
+    idea_text = idea_dict[TEXT]
     for feedback in feedbacks:
         suggestion_hit_creator = mturk_controller.SuggestionHITCreator(problem_text, idea_text, feedback, count_goal)
         hit_id = suggestion_hit_creator.post()
@@ -448,12 +448,12 @@ class MoreSuggestionsHandler(object):
             return {"success": False}
 
         feedback_dict = mc.get_feedback_dict(feedback_id)
-        idea_id = feedback_dict[mc.IDEA_ID]
+        idea_id = feedback_dict[IDEA_ID]
         idea_dict = mc.get_idea_dict(idea_id)
         problem_id = idea_dict[PROBLEM_ID]
         problem_text = mc.get_problem_description(problem_id)
-        idea_text = idea_dict[mc.TEXT]
-        feedback_text = feedback_dict[mc.TEXT]
+        idea_text = idea_dict[TEXT]
+        feedback_text = feedback_dict[TEXT]
         suggestion_hit_creator =\
             mturk_controller.SuggestionHITCreator(problem_text, idea_text, feedback_text, count_goal)
         hit_id = suggestion_hit_creator.post()
@@ -505,16 +505,16 @@ class MoreSchemasHandler(object):
 
 def relaunch_idea_task(inspiration_id, count):
     inspiration = mc.get_inspiration_dict(inspiration_id)
-    inspiration_id = inspiration[mc.INSPIRATION_ID]
-    problem_id = inspiration_id[mc.PROBLEM_ID]
+    inspiration_id = inspiration[INSPIRATION_ID]
+    problem_id = inspiration_id[PROBLEM_ID]
     problem_description = mc.get_problem_description(problem_id)
-    source_link = inspiration[mc.INSPIRATION_LINK]
-    image_link = inspiration[mc.INSPIRATION_ADDITIONAL]
-    explanation = inspiration[mc.INSPIRATION_REASON]
+    source_link = inspiration[INSPIRATION_LINK]
+    image_link = inspiration[INSPIRATION_ADDITIONAL]
+    explanation = inspiration[INSPIRATION_REASON]
     idea_hit_creator =\
         mturk_controller.IdeaHITCreator(problem_description, source_link, image_link, explanation, count)
     hit_id = idea_hit_creator.post()
-    schema_id = inspiration[mc.SCHEMA_ID]
+    schema_id = inspiration[SCHEMA_ID]
     if hit_id == "FAIL":
         return {"success": False}
     mc.insert_new_idea_hit(problem_id, schema_id, inspiration_id, count, hit_id)

@@ -30,3 +30,193 @@ SUGGESTIONS_PAGE_LINK = "suggestions_page_link"
 
 FEEDBACKS_FIELD = "feedbacks"
 SUGGESTIONS_FIELD = "suggestions"
+
+###################################################################
+############################ DATABASE #############################
+###################################################################
+
+
+# PROBLEM: {
+TITLE = "title"
+DESCRIPTION = "description"
+STAGE = "stage"
+OWNER_USERNAME = "owner_username"
+SLUG = "slug"
+PROBLEM_ID = "problem_id"
+TIME_CREATED = "time_created"
+SCHEMA_ASSIGNMENTS_NUM = "schema_assignments_num"
+LAZY = "lazy"
+# }
+
+# SCHEMA_HIT: {
+HIT_ID = "hit_id"
+COUNT = "count"
+COUNT_GOAL = "count_goal"
+# PROBLEM_ID
+# }
+
+# SCHEMA: {
+TEXT = "text"
+SCHEMA_ID = "schema_id"
+WORKER_ID = "worker_id"
+STATUS = "status"
+# TIME_CREATED
+# PROBLEM_ID
+RANK = "rank"
+# }
+
+# RANK_SCHEMA_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
+# SCHEMA_ID
+# }
+
+# SCHEMA_RANK: {
+RANK_ID = "rank_id"
+# RANK
+# TIME_CREATED
+# WORKER_ID
+# SCHEMA_ID
+# }
+
+# INSPIRATION_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
+# PROBLEM_ID
+# SCHEMA_ID
+# }
+
+# INSPIRATION: {
+INSPIRATION_LINK = "source_link"
+INSPIRATION_ADDITIONAL = "image_link"
+INSPIRATION_SUMMARY = "summary"
+INSPIRATION_REASON = "reason"
+INSPIRATION_ID = "inspiration_id"
+# SCHEMA_ID
+# TIME_CREATED
+# WORKER_ID
+# STATUS
+# PROBLEM_ID
+# RANK
+# }
+
+# RANK_INSPIRATION_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
+# INSPIRATION_ID
+# }
+
+# INSPIRATION_RANK: {
+# RANK_ID
+# RANK
+# TIME_CREATED
+# WORKER_ID
+# SCHEMA_ID
+# }
+
+# IDEA_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
+# PROBLEM_ID
+# SCHEMA_ID
+# INSPIRATION_ID
+# }
+
+# IDEA: {
+# TEXT
+IDEA_ID = "idea_id"
+# TIME_CREATED
+# SLUG
+# WORKER_ID
+# PROBLEM_ID
+# SCHEMA_ID
+# INSPIRATION_ID
+# STATUS
+# RANK
+# }
+
+# RANK_IDEA_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
+# INSPIRATION_ID
+# }
+
+# RANK_IDEA_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
+# IDEA_ID
+# }
+
+# IDEA_RANK: {
+# RANK_ID
+# RANK
+# TIME_CREATED
+# WORKER_ID
+# SCHEMA_ID
+# }
+
+# FEEDBACK: {
+# TEXT
+FEEDBACK_ID = "feedback_id"
+# IDEA_ID
+# }
+
+# SUGGESTION_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
+# FEEDBACK_ID
+# PROBLEM_ID
+# IDEA_ID
+# }
+
+# SUGGESTION: {
+SUGGESTION_ID = "suggestion_id"
+# TEXT
+# TIME_CREATED
+# WORKER_ID
+# PROBLEM_ID
+# FEEDBACK_ID
+# IDEA_ID
+# RANK
+# }
+
+# RANK_SUGGESTION_HIT: {
+# HIT_ID
+# COUNT
+# COUNT_GOAL
+# IDEA_ID
+# }
+
+# SUGGESTION_RANK: {
+# RANK_ID
+# RANK
+# TIME_CREATED
+# WORKER_ID
+# SCHEMA_ID
+# }
+
+# USER: {
+USER_USERNAME = "username"
+USER_EMAIL = "email"
+USER_PASSWORD = "password"
+# }
+
+
+# FIELD CONSTANTS
+STAGE_UNPUBLISHED = "unpublished"
+STAGE_SCHEMA = "schema"
+STAGE_INSPIRATION = "inspiration"
+STAGE_IDEA = "idea"
+STAGE_SUGGESTION = "suggestion"
+
+STATUS_REJECTED = 0
+STATUS_ACCEPTED = 1
+STATUS_PROCESSED = 2
+STATUS_NEW = 1

@@ -1,7 +1,7 @@
 import subprocess
-import mongodb_controller
 import abc
 import os
+from constants import *
 
 MTURK_JARS_PATH = os.getcwd()+"/mturk_jars/"
 
@@ -186,10 +186,10 @@ def get_schema_making_results(hit_id):
             answer_text = answer_text.rstrip()
 
             schema = {
-                mongodb_controller.TEXT: answer_text,
-                mongodb_controller.TIME_CREATED: epoch_time_ms_string,
-                mongodb_controller.WORKER_ID: worker_id,
-                mongodb_controller.SCHEMA_ID: assignment_id
+                TEXT: answer_text,
+                TIME_CREATED: epoch_time_ms_string,
+                WORKER_ID: worker_id,
+                SCHEMA_ID: assignment_id
             }
             schemas.append(schema)
 
@@ -237,13 +237,13 @@ def get_inspiration_hit_results(hit_id):
             answers.append(answer_text)
 
         inspiration = {
-            mongodb_controller.INSPIRATION_LINK: answers[0],
-            mongodb_controller.INSPIRATION_ADDITIONAL: answers[1],
-            mongodb_controller.INSPIRATION_SUMMARY: answers[2],
-            mongodb_controller.INSPIRATION_REASON: answers[3],
-            mongodb_controller.TIME_CREATED: epoch_time_ms_string,
-            mongodb_controller.WORKER_ID: worker_id,
-            mongodb_controller.INSPIRATION_ID: assignment_id
+            INSPIRATION_LINK: answers[0],
+            INSPIRATION_ADDITIONAL: answers[1],
+            INSPIRATION_SUMMARY: answers[2],
+            INSPIRATION_REASON: answers[3],
+            TIME_CREATED: epoch_time_ms_string,
+            WORKER_ID: worker_id,
+            INSPIRATION_ID: assignment_id
         }
         inspirations.append(inspiration)
     return inspirations
@@ -289,11 +289,11 @@ def get_idea_hit_results(hit_id):
             answer_text = answer_text.rstrip()
             answers.append(answer_text)
         idea = {
-            mongodb_controller.TEXT: answers[0],
-            mongodb_controller.TITLE: answers[1],
-            mongodb_controller.TIME_CREATED: epoch_time_ms_string,
-            mongodb_controller.WORKER_ID: worker_id,
-            mongodb_controller.IDEA_ID: assignment_id
+            TEXT: answers[0],
+            TITLE: answers[1],
+            TIME_CREATED: epoch_time_ms_string,
+            WORKER_ID: worker_id,
+            IDEA_ID: assignment_id
         }
         ideas.append(idea)
     return ideas
@@ -334,10 +334,10 @@ def get_suggestion_hit_results(hit_id):
         answer_text = answer_text.rstrip()
 
         suggestion = {
-            mongodb_controller.TEXT: answer_text,
-            mongodb_controller.TIME_CREATED: epoch_time_ms_string,
-            mongodb_controller.WORKER_ID: worker_id,
-            mongodb_controller.SUGGESTION_ID: assignment_id
+            TEXT: answer_text,
+            TIME_CREATED: epoch_time_ms_string,
+            WORKER_ID: worker_id,
+            SUGGESTION_ID: assignment_id
         }
         suggestions.append(suggestion)
     return suggestions
@@ -372,10 +372,10 @@ def get_ranking_results(hit_id):
         epoch_time_ms_string = jar_output_file.readline().rstrip()
         rank = int(jar_output_file.readline().rstrip())
         rank_dict = {
-            mongodb_controller.RANK: rank,
-            mongodb_controller.TIME_CREATED: epoch_time_ms_string,
-            mongodb_controller.WORKER_ID: worker_id,
-            mongodb_controller.RANK_ID: assignment_id
+            RANK: rank,
+            TIME_CREATED: epoch_time_ms_string,
+            WORKER_ID: worker_id,
+            RANK_ID: assignment_id
         }
         ranks.append(rank_dict)
     return ranks

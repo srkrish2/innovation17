@@ -48,14 +48,14 @@ class Updater(object):
 
     def update(self, problem_id):
         for hit_dict in self.get_hit_dicts(problem_id):
-            if hit_dict[mc.COUNT] < hit_dict[mc.COUNT_GOAL]:
+            if hit_dict[COUNT] < hit_dict[COUNT_GOAL]:
                 hit_object = self.get_hit_object()
                 hit_object.pull_results(hit_dict)
         for item_dict in self.get_item_dicts(problem_id):
             item_id = self.get_item_id(item_dict)
             rank_item_hit_dict = self.get_rank_item_hit_dict(item_id)
-            count = rank_item_hit_dict[mc.COUNT]
-            count_goal = rank_item_hit_dict[mc.COUNT_GOAL]
+            count = rank_item_hit_dict[COUNT]
+            count_goal = rank_item_hit_dict[COUNT_GOAL]
             if count < count_goal:
                 hit_object = self.get_rank_item_hit_object()
                 hit_object.pull_results(rank_item_hit_dict)
@@ -145,7 +145,7 @@ class SuggestionUpdater(Updater):
 
 def update_suggestions(problem_id):
     for suggestion_hit_dict in mc.get_suggestion_hits(problem_id):
-        if suggestion_hit_dict[mc.COUNT_GOAL] == suggestion_hit_dict[mc.COUNT]:
+        if suggestion_hit_dict[COUNT_GOAL] == suggestion_hit_dict[COUNT]:
             continue
         hit_object = hit_result_pullers.SuggestionHIT()
         hit_object.pull_results(suggestion_hit_dict)
