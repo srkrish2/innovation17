@@ -20,14 +20,9 @@ import authorization
 from utility_functions import convert_input_count, get_problem_parameters
 from constants import *
 import renderers
-import time
 from multiprocessing.pool import ThreadPool
 import well_ranked_counters
-
-
-PROBLEM_ID = "problem_id"
-# import passlib.hash
-# sha256_crypt = passlib.hash.sha256_crypt
+import waiters
 
 
 class HtmlPageLoader(object):
@@ -104,7 +99,6 @@ class HtmlPageLoader(object):
 
     @cherrypy.expose
     def suggestions(self, arg_type, slug):
-        print arg_type, slug
         if arg_type == "problem":
             return renderers.render_suggestions_page(slug)
         elif arg_type == "idea":
@@ -171,76 +165,30 @@ class PublishProblemHandler(object):
         problem_id = data[PROBLEM_ID]
         thread = Thread(target=publish_problem, args=[problem_id])
         thread.start()
-        # publish_problem(problem_id)
         return {"success": True}
-
-
-def is_done(problem_id, type):
-    if type == "schema":
-        schema_hit_dicts = mc.get_schema_hits(problem_id)
-        for schema_hit_dict in schema_hit_dicts:
-            if schema_hit_dict[COUNT] != schema_hit_dict[COUNT_GOAL]:
-                return False
-            for schema_dict in mc.get_schema_dicts(problem_id):
-                rank_schema_hit_dict = mc.get_rank_schema_hit_dict(schema_dict[SCHEMA_ID])
-                if rank_schema_hit_dict[COUNT] != rank_schema_hit_dict[COUNT_GOAL]:
-                    return False
-        return True
-    if type == "inspiration":
-        inspiration_hit_dicts = mc.get_inspiration_hits(problem_id)
-        for inspiration_hit_dict in inspiration_hit_dicts:
-            if inspiration_hit_dict[COUNT] != inspiration_hit_dict[COUNT_GOAL]:
-                return False
-            for inspiration_dict in mc.get_inspirations(problem_id):
-                rank_inspiration_hit_dict = mc.get_rank_inspiration_hit_dict(inspiration_dict[INSPIRATION_ID])
-                if rank_inspiration_hit_dict[COUNT] != rank_inspiration_hit_dict[COUNT_GOAL]:
-                    return False
-        return True
-    elif type == "idea":
-        idea_hit_dicts = mc.get_idea_hits(problem_id)
-        for idea_hit_dict in idea_hit_dicts:
-            if idea_hit_dict[COUNT] != idea_hit_dict[COUNT_GOAL]:
-                return False
-            for idea_dict in mc.get_ideas(problem_id):
-                rank_idea_hit_dict = mc.get_rank_idea_hit_dict(idea_dict[IDEA_ID])
-                if rank_idea_hit_dict[COUNT] != rank_idea_hit_dict[COUNT_GOAL]:
-                    return False
-        return True
-
-
-def wait_for_count(problem_id, type):
-    while True:
-        update_managers.update_hit_results_for_problem(problem_id)
-        if type == "schema":
-            if is_done(problem_id, type):
-                return True
-        if type == "inspiration":
-            if is_done(problem_id, type):
-                return True
-        if type == "idea":
-            if is_done(problem_id, type):
-                return True
-        time.sleep(PERIOD)
 
 
 def start_lazy_problem(description, how_many_to_post, problem_id):
     post_new_problem(description, how_many_to_post, problem_id)
 
     pool = ThreadPool(processes=1)
-    async_result = pool.apply_async(wait_for_count, (problem_id, "schema"))
-    success = async_result.get()
+
+    schema_stage_waiter = waiters.SchemaStageWaiter(pool, problem_id)
+    done = schema_stage_waiter.wait_until_done()
     print "schema stage done!"
 
     mc.set_inspiration_stage(problem_id)
     post_inspiration_task(problem_id, HOW_MANY_INSPIRATIONS)
-    async_result = pool.apply_async(wait_for_count, (problem_id, "inspiration"))
-    success = async_result.get()
+
+    inspiration_stage_waiter = waiters.InspirationStageWaiter(pool, problem_id)
+    done = inspiration_stage_waiter.wait_until_done()
     print "inspiration stage done!"
 
     mc.set_idea_stage(problem_id)
     post_idea_task(problem_id, HOW_MANY_IDEAS)
-    async_result = pool.apply_async(wait_for_count, (problem_id, "idea"))
-    success = async_result.get()
+
+    idea_stage_waiter = waiters.IdeaStageWaiter(pool, problem_id)
+    done = idea_stage_waiter.wait_until_done()
     print "idea stage done!"
 
     mc.set_suggestion_stage(problem_id)
@@ -410,9 +358,8 @@ class FeedbackHandler(object):
         mc.set_suggestion_stage(idea_dict[PROBLEM_ID])
         thread = Thread(target=post_feedback, args=[idea_dict, idea_id, feedbacks, count_goal])
         thread.start()
-        # post_feedback(idea_dict, idea_id, feedbacks, count_goal)
         return {"success": True,
-                SUGGESTIONS_PAGE_LINK: "/{}/suggestions".format(idea_dict[SLUG])}
+                SUGGESTIONS_PAGE_LINK: SUGGESTIONS_FOR_IDEA_LINK_FORMAT.format(idea_dict[SLUG])}
 
 
 def post_feedback(idea_dict, idea_id, feedbacks, count_goal):
@@ -472,9 +419,10 @@ class SuggestionUpdatesHandler(object):
             raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
         problem_id = data[PROBLEM_ID]
-        # thread = Thread(target=update_managers.update_suggestions, args=[problem_id])
-        # thread.start()
-        # return mc.get_suggestion_counts(problem_id)
+        thread = Thread(target=update_managers.update_hit_results_for_problem, args=[problem_id])
+        thread.start()
+        arr = well_ranked_counters.get_suggestion_counts_for_each_idea(problem_id)
+        return {IDEAS_FIELD: arr}
 
 
 def relaunch_schema_task(problem_id, assignments_num):

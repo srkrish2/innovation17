@@ -21,6 +21,19 @@ def get_count_dicts_for_user(username):
     return result
 
 
+def get_suggestion_counts_for_each_idea(problem_id):
+    result = []
+    for idea_dict in mc.get_ideas(problem_id):
+        idea_id = idea_dict[IDEA_ID]
+        counter = WellRankedIdeasSuggestionCounter()
+        for_result = {
+            IDEA_ID: idea_id,
+            SUGGESTION_COUNT: counter.get_count(idea_id)
+        }
+        result.append(for_result)
+    return result
+
+
 class WellRankedCounter(object):
     __metaclass__ = abc.ABCMeta
 
@@ -53,4 +66,9 @@ class WellRankedIdeaCounter(WellRankedCounter):
 
 class WellRankedSuggestionCounter(WellRankedCounter):
     def get_dicts(self, problem_id):
-        return mc.get_suggestion_dicts(problem_id)
+        return mc.get_suggestions_for_problem(problem_id)
+
+
+class WellRankedIdeasSuggestionCounter(WellRankedCounter):
+    def get_dicts(self, idea_id):
+        return mc.get_suggestions_for_idea(idea_id)

@@ -153,6 +153,7 @@ class RankSuggestionHITCreator(HITCreator):
 
 def get_schema_making_results(hit_id):
     p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'SchemaMakingResults.jar', hit_id],
+                         cwd=MTURK_JARS_PATH,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
@@ -166,11 +167,15 @@ def get_schema_making_results(hit_id):
     # "--[END]--"
 
     jar_output_file = p.stdout
-    if jar_output_file.readline().rstrip() == "FAIL":
+    first_line = jar_output_file.readline().rstrip()
+    if first_line == "FAIL":
         print "SchemaMakingResults: FAIL"
         print jar_output_file.readline().rstrip()
         return "FAIL"
-
+    if first_line != "SUCCESS":
+        print "UNEXPECTED! neither fail/success: {}".format(first_line)
+        print jar_output_file.readline().rstrip()
+        return []
     schemas = []
     header = jar_output_file.readline().rstrip()
     while True:
@@ -201,6 +206,7 @@ def get_schema_making_results(hit_id):
 
 def get_inspiration_hit_results(hit_id):
     p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'InspirationHITResults.jar', hit_id],
+                         cwd=MTURK_JARS_PATH,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
@@ -251,6 +257,7 @@ def get_inspiration_hit_results(hit_id):
 
 def get_idea_hit_results(hit_id):
     p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'IdeaHITResults.jar', hit_id],
+                         cwd=MTURK_JARS_PATH,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
@@ -301,6 +308,7 @@ def get_idea_hit_results(hit_id):
 
 def get_suggestion_hit_results(hit_id):
     p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'SuggestionHITResults.jar', hit_id],
+                         cwd=MTURK_JARS_PATH,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
@@ -345,6 +353,7 @@ def get_suggestion_hit_results(hit_id):
 
 def get_ranking_results(hit_id):
     p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'RankSchemaHITResults.jar', hit_id],
+                         cwd=MTURK_JARS_PATH,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:

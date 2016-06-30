@@ -15,6 +15,7 @@ IDEAS_LINK_FORMAT = "/problem/{}/ideas"
 INSPIRATIONS_LINK_FORMAT = "/problem/{}/inspirations"
 VIEW_LINK_FORMAT = "/problem/{}/view"
 SUGGESTIONS_LINK_FORMAT = "/problem/{}/suggestions"
+SUGGESTIONS_FOR_IDEA_LINK_FORMAT = "/idea/{}/suggestions"
 
 SCHEMA_COUNT = "schema_count"
 INSPIRATION_COUNT = "inspiration_count"
@@ -30,6 +31,11 @@ SUGGESTIONS_PAGE_LINK = "suggestions_page_link"
 
 FEEDBACKS_FIELD = "feedbacks"
 SUGGESTIONS_FIELD = "suggestions"
+IDEAS_FIELD = "ideas"
+
+PROBLEM_TEXT_FIELD = "problem_text"
+SCHEMA_TEXT_FIELD = "schema_text"
+INSPIRATION_TEXT_FIELD = "inspiration_text"
 
 ###################################################################
 ############################ DATABASE #############################

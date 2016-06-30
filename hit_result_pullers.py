@@ -69,6 +69,8 @@ class HITObject:
                 continue
             self.add_readable_time(mturk_dict)
             self.add_useful_fields(mturk_dict, hit_dict)
+            if self.needs_to_post_rank():
+                mturk_dict[RANK] = 0
             self.add_mturk_dict_to_db(mturk_dict)
             new_dicts_count += 1
             if self.needs_to_post_rank():
@@ -98,7 +100,6 @@ class SchemaHIT(HITObject):
         # add problem_id, status, and rank
         schema_dict[mc.STATUS] = mc.STATUS_ACCEPTED
         schema_dict[mc.PROBLEM_ID] = schema_hit_dict[mc.PROBLEM_ID]
-        schema_dict[mc.RANK] = 0
 
     def add_mturk_dict_to_db(self, schema_dict):
         mc.add_schema(schema_dict)
@@ -170,7 +171,6 @@ class InspirationHIT(HITObject):
         inspiration_dict[mc.PROBLEM_ID] = inspiration_hit_dict[mc.PROBLEM_ID]
         inspiration_dict[mc.SCHEMA_ID] = inspiration_hit_dict[mc.SCHEMA_ID]
         inspiration_dict[mc.STATUS] = mc.STATUS_ACCEPTED
-        inspiration_dict[mc.RANK] = 0
 
     def add_mturk_dict_to_db(self, inspiration_dict):
         mc.add_inspiration(inspiration_dict)
@@ -249,7 +249,6 @@ class IdeaHIT(HITObject):
         idea_dict[mc.SCHEMA_ID] = hit_dict[mc.SCHEMA_ID]
         idea_dict[mc.INSPIRATION_ID] = hit_dict[mc.INSPIRATION_ID]
         idea_dict[mc.STATUS] = mc.STATUS_NEW
-        idea_dict[mc.RANK] = 0
 
     def add_mturk_dict_to_db(self, idea_dict):
         mc.add_idea(idea_dict)
@@ -340,7 +339,7 @@ class SuggestionHIT(HITObject):
 
     def save_rank_hit(self, rank_item_hit_id, mturk_dict):
         suggestion_id = mturk_dict[mc.SUGGESTION_ID]
-        mc.insert_new_rank_idea_hit(suggestion_id, HOW_MANY_RANKS, rank_item_hit_id)
+        mc.insert_new_rank_suggestion_hit(suggestion_id, HOW_MANY_RANKS, rank_item_hit_id)
 
     def increment_item_rank(self, mturk_dict):
         return

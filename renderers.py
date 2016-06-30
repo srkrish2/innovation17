@@ -66,8 +66,8 @@ def render_inspirations_page(problem_slug):
         for inspiration in inspirations:
             problem_text = mc.get_problem_description(problem_id)
             schema_text = mc.get_schema_text(inspiration[mc.SCHEMA_ID])
-            inspiration["problem_text"] = problem_text
-            inspiration["schema_text"] = schema_text
+            inspiration[PROBLEM_TEXT_FIELD] = problem_text
+            inspiration[SCHEMA_TEXT_FIELD] = schema_text
             inspiration_dicts_list.append(inspiration)
         [schemas_page_link, inspirations_page_link, ideas_page_link] = make_links_list(problem_slug, problem_id)
         return template.render(inspirations=inspiration_dicts_list, problem_id=problem_id,
@@ -87,10 +87,10 @@ def render_ideas_page(problem_slug):
             inspiration_id = idea[mc.INSPIRATION_ID]
             schema_text = mc.get_schema_text_from_inspiration(inspiration_id)
             inspiration_summary = mc.get_inspiration_summary(inspiration_id)
-            idea["problem_text"] = problem_text
-            idea["schema_text"] = schema_text
-            idea["inspiration_text"] = inspiration_summary
-            idea[SUGGESTIONS_PAGE_LINK] = "/{}/suggestions".format(idea[mc.SLUG])
+            idea[PROBLEM_TEXT_FIELD] = problem_text
+            idea[SCHEMA_TEXT_FIELD] = schema_text
+            idea[INSPIRATION_TEXT_FIELD] = inspiration_summary
+            idea[SUGGESTIONS_PAGE_LINK] = SUGGESTIONS_FOR_IDEA_LINK_FORMAT.format(idea[mc.SLUG])
             ideas_dicts_list.append(idea)
         [schemas_page_link, inspirations_page_link, ideas_page_link] = make_links_list(problem_slug, problem_id)
         return template.render(ideas=ideas_dicts_list, problem_id=problem_id,
@@ -118,20 +118,19 @@ def render_view_page(problem_slug):
 
 
 def render_suggestions_page(problem_slug):
-    if USERNAME_KEY not in cherrypy.session:
-        raise cherrypy.HTTPRedirect("sign_in")
-    ideas = []
-    problem_id = mc.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-    for idea_dict in mc.get_ideas(problem_id):
-        idea_id = idea_dict[mc.IDEA_ID]
-        idea = {
-            mc.IDEA_ID: idea_id,
-            mc.TEXT: idea_dict[mc.TEXT],
-            FEEDBACKS_FIELD: get_feedbacks_with_suggestions(idea_id)
-        }
-        ideas.append(idea)
-    template = env.get_template('suggestions.html')
-    return template.render(ideas=ideas, problem_id=problem_id)
+    if check_problem_access(problem_slug) is True:
+        ideas = []
+        problem_id = mc.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
+        for idea_dict in mc.get_ideas(problem_id):
+            idea_id = idea_dict[mc.IDEA_ID]
+            idea = {
+                mc.IDEA_ID: idea_id,
+                mc.TEXT: idea_dict[mc.TEXT],
+                FEEDBACKS_FIELD: get_feedbacks_with_suggestions(idea_id)
+            }
+            ideas.append(idea)
+        template = env.get_template('suggestions.html')
+        return template.render(ideas=ideas, problem_id=problem_id)
 
 
 def render_suggestions_page_for_idea(idea_slug):
@@ -152,7 +151,7 @@ def get_feedbacks_with_suggestions(idea_id):
     for feedback_dict in mc.get_feedback_dicts(idea_id):
         feedback_id = feedback_dict[mc.FEEDBACK_ID]
         suggestions = []
-        for suggestion in mc.get_suggestion_dicts(feedback_id):
+        for suggestion in mc.get_suggestions_for_feedback(feedback_id):
             suggestions.append(suggestion)
         feedback_dict[SUGGESTIONS_FIELD] = suggestions
         feedbacks_with_suggestions.append(feedback_dict)
@@ -175,8 +174,8 @@ def render_profile():
 
 
 def error_page_404(status, message, traceback, version):
-    # if message is not None:
-    #     return "404 Page not found! Message: {}".format(message)
+    if message is not None:
+        return "404 Page not found! Message: {}".format(message)
     return "404 Page not found!"
 
 

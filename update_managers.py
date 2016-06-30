@@ -11,11 +11,14 @@ def update_hit_results_for_problem(problem_id):
     inspiration_updater.update(problem_id)
     idea_updater = IdeaUpdater()
     idea_updater.update(problem_id)
+    suggestion_updater = SuggestionUpdater()
+    suggestion_updater.update(problem_id)
 
 
 def update_hit_results(username):
     for problem_id in mc.get_users_problem_ids(username):
-        if not mc.get_problem_dict(problem_id)[mc.LAZY]:
+        problem_dict = mc.get_problem_dict(problem_id)
+        if not problem_dict[mc.LAZY] or problem_dict[STAGE] == STAGE_SUGGESTION:
             update_hit_results_for_problem(problem_id)
 
 
@@ -132,20 +135,10 @@ class SuggestionUpdater(Updater):
         return mc.get_suggestions(problem_id)
 
     def get_item_id(self, item_dict):
-        return item_dict[mc.IDEA_ID]
+        return item_dict[mc.SUGGESTION_ID]
 
     def get_rank_item_hit_dict(self, item_id):
         return mc.get_rank_suggestion_hit_dict(item_id)
 
     def get_rank_item_hit_object(self):
         return hit_result_pullers.RankSuggestionHIT()
-
-
-###############################################################################
-
-def update_suggestions(problem_id):
-    for suggestion_hit_dict in mc.get_suggestion_hits(problem_id):
-        if suggestion_hit_dict[COUNT_GOAL] == suggestion_hit_dict[COUNT]:
-            continue
-        hit_object = hit_result_pullers.SuggestionHIT()
-        hit_object.pull_results(suggestion_hit_dict)

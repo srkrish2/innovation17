@@ -518,7 +518,7 @@ def get_rank_idea_hit_dict(idea_id):
 
 
 def get_rank_suggestion_hit_dict(suggestion_id):
-    return rank_idea_hits_collection.find_one({SUGGESTION_ID: suggestion_id})
+    return rank_suggestion_hits_collection.find_one({SUGGESTION_ID: suggestion_id})
 
 ######################### FIND ALL ###############################
 
@@ -608,8 +608,16 @@ def get_accepted_schemas_count(problem_id):
     })
 
 
-def get_suggestion_dicts(feedback_id):
+def get_suggestions_for_feedback(feedback_id):
     return suggestions_collection.find({FEEDBACK_ID: feedback_id})
+
+
+def get_suggestions_for_problem(problem_id):
+    return suggestions_collection.find({PROBLEM_ID: problem_id})
+
+
+def get_suggestions_for_idea(idea_id):
+    return suggestions_collection.find({IDEA_ID: idea_id})
 
 
 def get_schema_dicts(problem_id):

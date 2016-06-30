@@ -67,6 +67,7 @@
 			}),
 			url: '/suggestion_updates',
 			success:function(sdata){
+			    sdata = sdata["ideas"]
 				for (var i= 0;i<sdata.length; i++){
 					if($('tr.'+sdata[i]['idea_id']+' .suggestion-list').length)$('tr.'+sdata[i]['idea_id']+' .suggestion-list')[0].innerHTML="<i class='doctor icon'></i> "+sdata[i]['suggestion_count'];
 				}

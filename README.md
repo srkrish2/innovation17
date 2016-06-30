@@ -5,7 +5,6 @@ Dependencies:
 - [MongoDB](http://www.mongodb.org/display/DOCS/Getting+Started)
 - [PyMongo](http://api.mongodb.com/python/current/installation.html)
 - [Jinja2](http://jinja.pocoo.org/docs/dev/intro/#installation)
-- [PassLib](https://pythonhosted.org/passlib/install.html#installation-instructions)
 
 ## Running the server
 1. In one terminal, type `mongod` to start the database
@@ -112,7 +111,7 @@ also problem_id, problem_stage, schemas_page_link, inspirations_page_link,ideas_
 
 ### /idea/{{idea_slug}}/suggestions page parser input
 ```
-array of feedbacks
+feedbacks = 
 {
   "feedback_id":string,
   "feedback_text" : string,
@@ -232,12 +231,13 @@ output
 ### /get_count_updates GET request
 output
 ```
-array of maps. each map has the following format:
+"ideas" : array of maps:
 {
   "problem_id": string,
   "schema_count": int,
   "inspiration_count": int,
-  "idea_count": int
+  "idea_count": int,
+  "suggestion_count": int
 }
 ```
 
