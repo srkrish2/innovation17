@@ -1,7 +1,9 @@
 import subprocess
-import mongodb_controller
 import abc
+import os
+from constants import *
 
+MTURK_JARS_PATH = os.getcwd()+"/mturk_jars/"
 
 class HITCreator:
     __metaclass__ = abc.ABCMeta
@@ -16,7 +18,7 @@ class HITCreator:
 
     def post(self):
         args_arr = self.get_popen_args_arr()
-        p = subprocess.Popen(args_arr, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen(args_arr, cwd=MTURK_JARS_PATH, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         # output format:
         #  * "SUCCESS"
@@ -46,7 +48,7 @@ class SchemaHITCreator(HITCreator):
         return "SchemaHITCreator"
 
     def get_popen_args_arr(self):
-        return ['java', '-jar', 'SchemaMaking.jar', self.problem, str(self.count_goal)]
+        return ['java', '-jar', MTURK_JARS_PATH+'SchemaMaking.jar', self.problem, str(self.count_goal)]
 
 
 class InspirationHITCreator(HITCreator):
@@ -58,7 +60,7 @@ class InspirationHITCreator(HITCreator):
         return "InspirationHITCreator"
 
     def get_popen_args_arr(self):
-        return ['java', '-jar', 'PostInspirationHIT.jar', self.schema, str(self.count_goal)]
+        return ['java', '-jar', MTURK_JARS_PATH+'PostInspirationHIT.jar', self.schema, str(self.count_goal)]
 
 
 class IdeaHITCreator(HITCreator):
@@ -73,7 +75,7 @@ class IdeaHITCreator(HITCreator):
         return "IdeaHITCreator"
 
     def get_popen_args_arr(self):
-        return ['java', '-jar', 'PostIdeaHIT.jar', self.problem, self.source_link, self.image_link, self.explanation,
+        return ['java', '-jar', MTURK_JARS_PATH+'PostIdeaHIT.jar', self.problem, self.source_link, self.image_link, self.explanation,
                 str(self.count_goal)]
 
 
@@ -88,7 +90,7 @@ class SuggestionHITCreator(HITCreator):
         return "SuggestionHITCreator"
 
     def get_popen_args_arr(self):
-        return ['java', '-jar', 'PostSuggestionHIT.jar', self.problem, self.idea, self.feedback, str(self.count_goal)]
+        return ['java', '-jar', MTURK_JARS_PATH+'PostSuggestionHIT.jar', self.problem, self.idea, self.feedback, str(self.count_goal)]
 
 
 class RankSchemaHITCreator(HITCreator):
@@ -100,7 +102,7 @@ class RankSchemaHITCreator(HITCreator):
         return "RankSchemaHITCreator"
 
     def get_popen_args_arr(self):
-        return ['java', '-jar', 'PostRankSchemaHIT.jar', self.schema, str(self.count_goal)]
+        return ['java', '-jar', MTURK_JARS_PATH+'PostRankSchemaHIT.jar', self.schema, str(self.count_goal)]
 
 
 class RankInspirationHITCreator(HITCreator):
@@ -116,7 +118,7 @@ class RankInspirationHITCreator(HITCreator):
         return "RankInspirationHITCreator"
 
     def get_popen_args_arr(self):
-        return ['java', '-jar', 'PostRankInspirationHIT.jar', self.problem, self.schema, self.i_link,
+        return ['java', '-jar', MTURK_JARS_PATH+'PostRankInspirationHIT.jar', self.problem, self.schema, self.i_link,
                 self.i_additional, self.i_reason, str(self.count_goal)]
 
 
@@ -130,11 +132,28 @@ class RankIdeaHITCreator(HITCreator):
         return "RankIdeaHITCreator"
 
     def get_popen_args_arr(self):
-        return ['java', '-jar', 'PostRankIdeaHIT.jar', self.problem, self.idea, str(self.count_goal)]
+        return ['java', '-jar', MTURK_JARS_PATH+'PostRankIdeaHIT.jar', self.problem, self.idea, str(self.count_goal)]
+
+
+class RankSuggestionHITCreator(HITCreator):
+    def __init__(self, problem, idea, feedback, suggestion, goal):
+        self.problem = problem
+        self.idea = idea
+        self.feedback = feedback
+        self.suggestion = suggestion
+        self.count_goal = goal
+
+    def get_creator_name(self):
+        return "RankSuggestionHITCreator"
+
+    def get_popen_args_arr(self):
+        return ['java', '-jar', MTURK_JARS_PATH+'PostRankSuggestionHIT.jar', self.problem, self.idea, self.feedback, self.suggestion,
+                str(self.count_goal)]
 
 
 def get_schema_making_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', 'SchemaMakingResults.jar', hit_id],
+    p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'SchemaMakingResults.jar', hit_id],
+                         cwd=MTURK_JARS_PATH,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
@@ -148,11 +167,15 @@ def get_schema_making_results(hit_id):
     # "--[END]--"
 
     jar_output_file = p.stdout
-    if jar_output_file.readline().rstrip() == "FAIL":
-        print "SchemaMakingResults.jar: FAIL"
+    first_line = jar_output_file.readline().rstrip()
+    if first_line == "FAIL":
+        print "SchemaMakingResults: FAIL"
         print jar_output_file.readline().rstrip()
         return "FAIL"
-
+    if first_line != "SUCCESS":
+        print "UNEXPECTED! neither fail/success: {}".format(first_line)
+        print jar_output_file.readline().rstrip()
+        return []
     schemas = []
     header = jar_output_file.readline().rstrip()
     while True:
@@ -168,10 +191,10 @@ def get_schema_making_results(hit_id):
             answer_text = answer_text.rstrip()
 
             schema = {
-                mongodb_controller.TEXT: answer_text,
-                mongodb_controller.TIME_CREATED: epoch_time_ms_string,
-                mongodb_controller.WORKER_ID: worker_id,
-                mongodb_controller.SCHEMA_ID: assignment_id
+                TEXT: answer_text,
+                TIME_CREATED: epoch_time_ms_string,
+                WORKER_ID: worker_id,
+                SCHEMA_ID: assignment_id
             }
             schemas.append(schema)
 
@@ -182,7 +205,8 @@ def get_schema_making_results(hit_id):
 
 
 def get_inspiration_hit_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', 'InspirationHITResults.jar', hit_id],
+    p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'InspirationHITResults.jar', hit_id],
+                         cwd=MTURK_JARS_PATH,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
@@ -197,7 +221,7 @@ def get_inspiration_hit_results(hit_id):
 
     jar_output_file = p.stdout
     if jar_output_file.readline().rstrip() == "FAIL":
-        print "InspirationHITResults.jar: FAIL"
+        print "InspirationHITResults: FAIL"
         print jar_output_file.readline().rstrip()
         return "FAIL"
 
@@ -219,20 +243,21 @@ def get_inspiration_hit_results(hit_id):
             answers.append(answer_text)
 
         inspiration = {
-            mongodb_controller.INSPIRATION_LINK: answers[0],
-            mongodb_controller.INSPIRATION_ADDITIONAL: answers[1],
-            mongodb_controller.INSPIRATION_SUMMARY: answers[2],
-            mongodb_controller.INSPIRATION_REASON: answers[3],
-            mongodb_controller.TIME_CREATED: epoch_time_ms_string,
-            mongodb_controller.WORKER_ID: worker_id,
-            mongodb_controller.INSPIRATION_ID: assignment_id
+            INSPIRATION_LINK: answers[0],
+            INSPIRATION_ADDITIONAL: answers[1],
+            INSPIRATION_SUMMARY: answers[2],
+            INSPIRATION_REASON: answers[3],
+            TIME_CREATED: epoch_time_ms_string,
+            WORKER_ID: worker_id,
+            INSPIRATION_ID: assignment_id
         }
         inspirations.append(inspiration)
     return inspirations
 
 
 def get_idea_hit_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', 'IdeaHITResults.jar', hit_id],
+    p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'IdeaHITResults.jar', hit_id],
+                         cwd=MTURK_JARS_PATH,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
@@ -248,7 +273,7 @@ def get_idea_hit_results(hit_id):
     jar_output_file = p.stdout
     first_line = jar_output_file.readline().rstrip()
     if first_line == "FAIL":
-        print "IdeaHITResults.jar: FAIL"
+        print "IdeaHITResults: FAIL"
         print jar_output_file.readline().rstrip()
         return "FAIL"
     if first_line != "SUCCESS":
@@ -271,18 +296,19 @@ def get_idea_hit_results(hit_id):
             answer_text = answer_text.rstrip()
             answers.append(answer_text)
         idea = {
-            mongodb_controller.TEXT: answers[0],
-            mongodb_controller.TITLE: answers[1],
-            mongodb_controller.TIME_CREATED: epoch_time_ms_string,
-            mongodb_controller.WORKER_ID: worker_id,
-            mongodb_controller.IDEA_ID: assignment_id
+            TEXT: answers[0],
+            TITLE: answers[1],
+            TIME_CREATED: epoch_time_ms_string,
+            WORKER_ID: worker_id,
+            IDEA_ID: assignment_id
         }
         ideas.append(idea)
     return ideas
 
 
 def get_suggestion_hit_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', 'SuggestionHITResults.jar', hit_id],
+    p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'SuggestionHITResults.jar', hit_id],
+                         cwd=MTURK_JARS_PATH,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
@@ -297,7 +323,7 @@ def get_suggestion_hit_results(hit_id):
 
     jar_output_file = p.stdout
     if jar_output_file.readline().rstrip() == "FAIL":
-        print "SuggestionHITResults.jar: FAIL"
+        print "SuggestionHITResults: FAIL"
         print jar_output_file.readline().rstrip()
         return "FAIL"
 
@@ -316,17 +342,18 @@ def get_suggestion_hit_results(hit_id):
         answer_text = answer_text.rstrip()
 
         suggestion = {
-            mongodb_controller.TEXT: answer_text,
-            mongodb_controller.TIME_CREATED: epoch_time_ms_string,
-            mongodb_controller.WORKER_ID: worker_id,
-            mongodb_controller.SUGGESTION_ID: assignment_id
+            TEXT: answer_text,
+            TIME_CREATED: epoch_time_ms_string,
+            WORKER_ID: worker_id,
+            SUGGESTION_ID: assignment_id
         }
         suggestions.append(suggestion)
     return suggestions
 
 
 def get_ranking_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', 'RankSchemaHITResults.jar', hit_id],
+    p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'RankSchemaHITResults.jar', hit_id],
+                         cwd=MTURK_JARS_PATH,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
     # output format:
@@ -340,7 +367,7 @@ def get_ranking_results(hit_id):
     jar_output_file = p.stdout
     first_line = jar_output_file.readline().rstrip()
     if first_line == "FAIL":
-        print "RankSchemaHITResults.jar: FAIL"
+        print "RankSchemaHITResults: FAIL"
         print jar_output_file.readline().rstrip()
         return "FAIL"
     if first_line != "SUCCESS":
@@ -354,10 +381,10 @@ def get_ranking_results(hit_id):
         epoch_time_ms_string = jar_output_file.readline().rstrip()
         rank = int(jar_output_file.readline().rstrip())
         rank_dict = {
-            mongodb_controller.RANK: rank,
-            mongodb_controller.TIME_CREATED: epoch_time_ms_string,
-            mongodb_controller.WORKER_ID: worker_id,
-            mongodb_controller.RANK_ID: assignment_id
+            RANK: rank,
+            TIME_CREATED: epoch_time_ms_string,
+            WORKER_ID: worker_id,
+            RANK_ID: assignment_id
         }
         ranks.append(rank_dict)
     return ranks
