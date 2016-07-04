@@ -5,6 +5,7 @@ from constants import *
 
 MTURK_JARS_PATH = os.getcwd()+"/mturk_jars/"
 
+
 class HITCreator:
     __metaclass__ = abc.ABCMeta
 
@@ -151,38 +152,183 @@ class RankSuggestionHITCreator(HITCreator):
                 str(self.count_goal)]
 
 
-def get_schema_making_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'SchemaMakingResults.jar', hit_id],
-                         cwd=MTURK_JARS_PATH,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # output format:
-    # "SUCCESS"
-    # "--[ANSWER START]--"
-    #  assignment_id
-    #  worker_id
-    #  epoch_time_ms
-    #  answer
-    # "--[ANSWER END]--"
-    # "--[END]--"
+class ResultPuller(object):
+    __metaclass__ = abc.ABCMeta
 
-    jar_output_file = p.stdout
-    first_line = jar_output_file.readline().rstrip()
-    if first_line == "FAIL":
-        print "SchemaMakingResults: FAIL"
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-    if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success: {}".format(first_line)
-        print jar_output_file.readline().rstrip()
-        return []
-    schemas = []
-    header = jar_output_file.readline().rstrip()
-    while True:
-        if header == "--[ANSWER START]--":
+    @abc.abstractmethod
+    def get_jar_filename(self):
+        return ""
+
+    @abc.abstractmethod
+    def get_data(self, jar_output_file):
+        return
+
+    def get_results(self, hit_id):
+        p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+self.get_jar_filename(), hit_id],
+                             cwd=MTURK_JARS_PATH,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+        jar_output_file = p.stdout
+        first_line = jar_output_file.readline().rstrip()
+        if first_line == "FAIL":
+            print "SchemaMakingResults: FAIL"
+            print jar_output_file.readline().rstrip()
+            return "FAIL"
+        if first_line != "SUCCESS":
+            print "UNEXPECTED! neither fail/success: {}".format(first_line)
+            print jar_output_file.readline().rstrip()
+            return []
+        return self.get_data(jar_output_file)
+
+
+class GeneratedSchemas(ResultPuller):
+    def get_jar_filename(self):
+        return "SchemaMakingResults.jar"
+
+    def get_data(self, jar_output_file):
+        # output format:
+        # "SUCCESS"
+        # "--[ANSWER START]--"
+        #  assignment_id
+        #  worker_id
+        #  epoch_time_ms
+        #  answer
+        # "--[ANSWER END]--"
+        # "--[END]--"
+        schemas = []
+        header = jar_output_file.readline().rstrip()
+        while True:
+            if header == "--[ANSWER START]--":
+                assignment_id = jar_output_file.readline().rstrip()
+                worker_id = jar_output_file.readline().rstrip()
+                epoch_time_ms_string = jar_output_file.readline().rstrip()
+                answer_text = ""
+                line = jar_output_file.readline().rstrip()
+                while line != "--[ANSWER END]--":
+                    answer_text += line + '\n'
+                    line = jar_output_file.readline().rstrip()
+                answer_text = answer_text.rstrip()
+
+                schema = {
+                    TEXT: answer_text,
+                    TIME_CREATED: epoch_time_ms_string,
+                    WORKER_ID: worker_id,
+                    SCHEMA_ID: assignment_id
+                }
+                schemas.append(schema)
+
+                header = jar_output_file.readline().rstrip()
+            else:
+                break
+        return schemas
+
+
+class GeneratedInspirations(ResultPuller):
+    def get_jar_filename(self):
+        return "InspirationHITResults.jar"
+
+    def get_data(self, jar_output_file):
+        # output format:
+        # "SUCCESS"
+        # assignments_count
+        #  assignmentId
+        #  worker_id
+        #  epoch_time_ms
+        #     # "--[ANSWER START]--"
+        #     #  answer
+        #     # "--[ANSWER END]--"
+        inspirations = []
+        assignment_count = int(jar_output_file.readline().rstrip())
+        for i in xrange(assignment_count):
             assignment_id = jar_output_file.readline().rstrip()
             worker_id = jar_output_file.readline().rstrip()
             epoch_time_ms_string = jar_output_file.readline().rstrip()
+            answers = []
+            for j in xrange(4):
+                jar_output_file.readline()
+                answer_text = ""
+                line = jar_output_file.readline().rstrip()
+                while line != "--[ANSWER END]--":
+                    answer_text += line + '\n'
+                    line = jar_output_file.readline().rstrip()
+                answer_text = answer_text.rstrip()
+                answers.append(answer_text)
+
+            inspiration = {
+                INSPIRATION_LINK: answers[0],
+                INSPIRATION_ADDITIONAL: answers[1],
+                INSPIRATION_SUMMARY: answers[2],
+                INSPIRATION_REASON: answers[3],
+                TIME_CREATED: epoch_time_ms_string,
+                WORKER_ID: worker_id,
+                INSPIRATION_ID: assignment_id
+            }
+            inspirations.append(inspiration)
+        return inspirations
+
+
+class GeneratedIdeas(ResultPuller):
+    def get_jar_filename(self):
+        return "IdeaHITResults.jar"
+
+    def get_data(self, jar_output_file):
+        # output format:
+        # "SUCCESS"
+        #  assignments_count
+        #  assignmentId
+        #  worker_id
+        #  epoch_time_ms
+        # "--[ANSWER START]--"
+        #  answer
+        # "--[ANSWER END]--"
+        ideas = []
+        assignment_count = int(jar_output_file.readline().rstrip())
+        for i in xrange(assignment_count):
+            assignment_id = jar_output_file.readline().rstrip()
+            worker_id = jar_output_file.readline().rstrip()
+            epoch_time_ms_string = jar_output_file.readline().rstrip()
+            answers = []
+            for j in xrange(2):
+                answer_text = ""
+                jar_output_file.readline()
+                line = jar_output_file.readline().rstrip()
+                while line != "--[ANSWER END]--":
+                    answer_text += line + '\n'
+                    line = jar_output_file.readline().rstrip()
+                answer_text = answer_text.rstrip()
+                answers.append(answer_text)
+            idea = {
+                TEXT: answers[0],
+                TITLE: answers[1],
+                TIME_CREATED: epoch_time_ms_string,
+                WORKER_ID: worker_id,
+                IDEA_ID: assignment_id
+            }
+            ideas.append(idea)
+        return ideas
+
+
+class GeneratedSuggestions(ResultPuller):
+    def get_jar_filename(self):
+        return "SuggestionHITResults.jar"
+
+    def get_data(self, jar_output_file):
+        # output format:
+        # "SUCCESS"
+        #  assignments_count
+        #  assignmentId
+        #  worker_id
+        #  epoch_time_ms
+        # "--[ANSWER START]--"
+        #  answer
+        # "--[ANSWER END]--"
+        suggestions = []
+        assignment_count = int(jar_output_file.readline().rstrip())
+        for i in xrange(assignment_count):
+            assignment_id = jar_output_file.readline().rstrip()
+            worker_id = jar_output_file.readline().rstrip()
+            epoch_time_ms_string = jar_output_file.readline().rstrip()
+            jar_output_file.readline()
             answer_text = ""
             line = jar_output_file.readline().rstrip()
             while line != "--[ANSWER END]--":
@@ -190,201 +336,40 @@ def get_schema_making_results(hit_id):
                 line = jar_output_file.readline().rstrip()
             answer_text = answer_text.rstrip()
 
-            schema = {
+            suggestion = {
                 TEXT: answer_text,
                 TIME_CREATED: epoch_time_ms_string,
                 WORKER_ID: worker_id,
-                SCHEMA_ID: assignment_id
+                SUGGESTION_ID: assignment_id
             }
-            schemas.append(schema)
-
-            header = jar_output_file.readline().rstrip()
-        else:
-            break
-    return schemas
+            suggestions.append(suggestion)
+        return suggestions
 
 
-def get_inspiration_hit_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'InspirationHITResults.jar', hit_id],
-                         cwd=MTURK_JARS_PATH,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # output format:
-    # "SUCCESS"
-    # assignments_count
-    #  assignmentId
-    #  worker_id
-    #  epoch_time_ms
-    #     # "--[ANSWER START]--"
-    #     #  answer
-    #     # "--[ANSWER END]--"
+class GeneratedRanks(ResultPuller):
+    def get_jar_filename(self):
+        return "RankSchemaHITResults.jar"
 
-    jar_output_file = p.stdout
-    if jar_output_file.readline().rstrip() == "FAIL":
-        print "InspirationHITResults: FAIL"
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-
-    inspirations = []
-    assignment_count = int(jar_output_file.readline().rstrip())
-    for i in xrange(assignment_count):
-        assignment_id = jar_output_file.readline().rstrip()
-        worker_id = jar_output_file.readline().rstrip()
-        epoch_time_ms_string = jar_output_file.readline().rstrip()
-        answers = []
-        for j in xrange(4):
-            jar_output_file.readline()
-            answer_text = ""
-            line = jar_output_file.readline().rstrip()
-            while line != "--[ANSWER END]--":
-                answer_text += line + '\n'
-                line = jar_output_file.readline().rstrip()
-            answer_text = answer_text.rstrip()
-            answers.append(answer_text)
-
-        inspiration = {
-            INSPIRATION_LINK: answers[0],
-            INSPIRATION_ADDITIONAL: answers[1],
-            INSPIRATION_SUMMARY: answers[2],
-            INSPIRATION_REASON: answers[3],
-            TIME_CREATED: epoch_time_ms_string,
-            WORKER_ID: worker_id,
-            INSPIRATION_ID: assignment_id
-        }
-        inspirations.append(inspiration)
-    return inspirations
-
-
-def get_idea_hit_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'IdeaHITResults.jar', hit_id],
-                         cwd=MTURK_JARS_PATH,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # output format:
-    # "SUCCESS"
-    #  assignments_count
-    #  assignmentId
-    #  worker_id
-    #  epoch_time_ms
-    # "--[ANSWER START]--"
-    #  answer
-    # "--[ANSWER END]--"
-
-    jar_output_file = p.stdout
-    first_line = jar_output_file.readline().rstrip()
-    if first_line == "FAIL":
-        print "IdeaHITResults: FAIL"
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-    if first_line != "SUCCESS":
-        print "neither success nor fail: {}".format(first_line)
-
-    ideas = []
-    assignment_count = int(jar_output_file.readline().rstrip())
-    for i in xrange(assignment_count):
-        assignment_id = jar_output_file.readline().rstrip()
-        worker_id = jar_output_file.readline().rstrip()
-        epoch_time_ms_string = jar_output_file.readline().rstrip()
-        answers = []
-        for j in xrange(2):
-            answer_text = ""
-            jar_output_file.readline()
-            line = jar_output_file.readline().rstrip()
-            while line != "--[ANSWER END]--":
-                answer_text += line + '\n'
-                line = jar_output_file.readline().rstrip()
-            answer_text = answer_text.rstrip()
-            answers.append(answer_text)
-        idea = {
-            TEXT: answers[0],
-            TITLE: answers[1],
-            TIME_CREATED: epoch_time_ms_string,
-            WORKER_ID: worker_id,
-            IDEA_ID: assignment_id
-        }
-        ideas.append(idea)
-    return ideas
-
-
-def get_suggestion_hit_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'SuggestionHITResults.jar', hit_id],
-                         cwd=MTURK_JARS_PATH,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # output format:
-    # "SUCCESS"
-    #  assignments_count
-    #  assignmentId
-    #  worker_id
-    #  epoch_time_ms
-    # "--[ANSWER START]--"
-    #  answer
-    # "--[ANSWER END]--"
-
-    jar_output_file = p.stdout
-    if jar_output_file.readline().rstrip() == "FAIL":
-        print "SuggestionHITResults: FAIL"
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-
-    suggestions = []
-    assignment_count = int(jar_output_file.readline().rstrip())
-    for i in xrange(assignment_count):
-        assignment_id = jar_output_file.readline().rstrip()
-        worker_id = jar_output_file.readline().rstrip()
-        epoch_time_ms_string = jar_output_file.readline().rstrip()
-        jar_output_file.readline()
-        answer_text = ""
-        line = jar_output_file.readline().rstrip()
-        while line != "--[ANSWER END]--":
-            answer_text += line + '\n'
-            line = jar_output_file.readline().rstrip()
-        answer_text = answer_text.rstrip()
-
-        suggestion = {
-            TEXT: answer_text,
-            TIME_CREATED: epoch_time_ms_string,
-            WORKER_ID: worker_id,
-            SUGGESTION_ID: assignment_id
-        }
-        suggestions.append(suggestion)
-    return suggestions
-
-
-def get_ranking_results(hit_id):
-    p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+'RankSchemaHITResults.jar', hit_id],
-                         cwd=MTURK_JARS_PATH,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # output format:
-    #  "SUCCESS"
-    #  how_many
-    #  assignment_id
-    #  worker_id
-    #  epoch_time_ms
-    #  answer: GOOD or BAD
-
-    jar_output_file = p.stdout
-    first_line = jar_output_file.readline().rstrip()
-    if first_line == "FAIL":
-        print "RankSchemaHITResults: FAIL"
-        print jar_output_file.readline().rstrip()
-        return "FAIL"
-    if first_line != "SUCCESS":
-        print "UNEXPECTED! neither fail/success: {}".format(first_line)
-        return "FAIL"
-    how_many = int(jar_output_file.readline().rstrip())
-    ranks = []
-    for i in xrange(how_many):
-        assignment_id = jar_output_file.readline().rstrip()
-        worker_id = jar_output_file.readline().rstrip()
-        epoch_time_ms_string = jar_output_file.readline().rstrip()
-        rank = int(jar_output_file.readline().rstrip())
-        rank_dict = {
-            RANK: rank,
-            TIME_CREATED: epoch_time_ms_string,
-            WORKER_ID: worker_id,
-            RANK_ID: assignment_id
-        }
-        ranks.append(rank_dict)
-    return ranks
+    def get_data(self, jar_output_file):
+        # output format:
+        #  "SUCCESS"
+        #  how_many
+        #  assignment_id
+        #  worker_id
+        #  epoch_time_ms
+        #  answer: GOOD or BAD
+        how_many = int(jar_output_file.readline().rstrip())
+        ranks = []
+        for i in xrange(how_many):
+            assignment_id = jar_output_file.readline().rstrip()
+            worker_id = jar_output_file.readline().rstrip()
+            epoch_time_ms_string = jar_output_file.readline().rstrip()
+            rank = int(jar_output_file.readline().rstrip())
+            rank_dict = {
+                RANK: rank,
+                TIME_CREATED: epoch_time_ms_string,
+                WORKER_ID: worker_id,
+                RANK_ID: assignment_id
+            }
+            ranks.append(rank_dict)
+        return ranks

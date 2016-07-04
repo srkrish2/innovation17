@@ -1,6 +1,7 @@
 import cherrypy
 import mongodb_controller
 from constants import *
+from dateutil.tz import tzlocal
 
 
 def check_problem_access(problem_slug):
@@ -52,3 +53,9 @@ def make_links_list(slug, problem_id):
     elif stage != mongodb_controller.STAGE_INSPIRATION:
         inspirations_page_link = ""
     return schemas_page_link, inspirations_page_link, ideas_page_link
+
+
+def convert_object_id_to_readable_time(object_id):
+    utc_time = object_id.generation_time
+    local_tz = tzlocal()
+    utc_time.astimezone(local_tz).strftime(READABLE_TIME_FORMAT)

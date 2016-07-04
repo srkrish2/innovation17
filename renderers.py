@@ -2,7 +2,7 @@ import cherrypy
 from constants import *
 import mongodb_controller as mc
 from jinja2 import Environment, PackageLoader
-from utility_functions import check_problem_access, make_links_list
+from utility_functions import check_problem_access, make_links_list, convert_object_id_to_readable_time
 import well_ranked_counters
 env = Environment(loader=PackageLoader('renderers', '/templates'))
 
@@ -39,6 +39,8 @@ def render_problems_page():
         problem[INSPIRATIONS_PAGE_LINK] = INSPIRATIONS_LINK_FORMAT.format(problem[mc.SLUG])
         problem[SUGGESTIONS_PAGE_LINK] = SUGGESTIONS_LINK_FORMAT.format(problem[mc.SLUG])
         problem[VIEW_PAGE_LINK] = VIEW_LINK_FORMAT.format(problem[mc.SLUG])
+
+        problem[TIME_CREATED] = convert_object_id_to_readable_time(problem["_id"])
 
         problems.append(problem)
     template = env.get_template('problems.html')

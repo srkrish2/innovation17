@@ -5,14 +5,13 @@ from constants import *
 
 ######################## INSERT ONE #################################
 
-def save_problem(problem_id, title, description, owner_username, schema_assignments_num, time_created, lazy=False):
+def insert_problem(problem_id, title, description, owner_username, schema_assignments_num, lazy):
     problem = {
         PROBLEM_ID: problem_id,
         TITLE: title,
         DESCRIPTION: description,
         OWNER_USERNAME: owner_username,
         SLUG: slugify(title),
-        TIME_CREATED: time_created,
         STAGE: STAGE_UNPUBLISHED,
         SCHEMA_ASSIGNMENTS_NUM: schema_assignments_num,
         LAZY: lazy
@@ -139,6 +138,7 @@ def insert_inspiration_rank(rank_dict):
 def insert_idea_rank(rank_dict):
     idea_ranks_collection.insert_one(rank_dict)
 
+
 def insert_suggestion_rank(rank_dict):
     suggestion_ranks_collection.insert_one(rank_dict)
 
@@ -209,48 +209,6 @@ def set_suggestion_stage(problem_id):
         STAGE: STAGE_SUGGESTION
     }}
     problems_collection.update_one(query_filter, update)
-
-
-# def set_schema_count(problem_id, count):
-#     query_filter = {PROBLEM_ID: problem_id}
-#     update = {'$set': {SCHEMA_COUNT: count}}
-#     problems_collection.update_one(query_filter, update)
-#
-#
-# def set_inspiration_count(problem_id, count):
-#     query_filter = {PROBLEM_ID: problem_id}
-#     update = {'$set': {INSPIRATION_COUNT: count}}
-#     problems_collection.update_one(query_filter, update)
-#
-#
-# def set_idea_count(problem_id, how_much):
-#     query_filter = {PROBLEM_ID: problem_id}
-#     update = {'$set': {IDEA_COUNT: how_much}}
-#     problems_collection.update_one(query_filter, update)
-#
-#
-# def set_suggestion_count(problem_id, how_much):
-#     query_filter = {PROBLEM_ID: problem_id}
-#     update = {'$set': {SUGGESTION_COUNT: how_much}}
-#     problems_collection.update_one(query_filter, update)
-
-#
-# def increment_schema_assignments_num(problem_id, how_much):
-#     query_filter = {PROBLEM_ID: problem_id}
-#     update = {'$inc': {SCHEMA_COUNT_GOAL: how_much}}
-#     problems_collection.update_one(query_filter, update)
-#
-#
-# def increment_inspiration_count_goal(problem_id, how_much):
-#     query_filter = {PROBLEM_ID: problem_id}
-#     update = {'$inc': {INSPIRATION_COUNT_GOAL: how_much}}
-#     problems_collection.update_one(query_filter, update)
-#
-#
-# def increment_idea_count_goal(problem_id, how_much):
-#     query_filter = {PROBLEM_ID: problem_id}
-#     update = {'$inc': {IDEA_COUNT_GOAL: how_much}}
-#     problems_collection.update_one(query_filter, update)
 
 
 def increment_schema_hit_count(hit_id, how_much):

@@ -1,5 +1,6 @@
 # format example: 23 Apr 2012 4:00 PM
 READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
+TIME_CREATED = "time_created"
 USERNAME_KEY = "username"
 PREVIOUS_URL_KEY = "previous_url"
 HOW_MANY_RANKS = 1
@@ -49,7 +50,6 @@ STAGE = "stage"
 OWNER_USERNAME = "owner_username"
 SLUG = "slug"
 PROBLEM_ID = "problem_id"
-TIME_CREATED = "time_created"
 SCHEMA_ASSIGNMENTS_NUM = "schema_assignments_num"
 LAZY = "lazy"
 # }

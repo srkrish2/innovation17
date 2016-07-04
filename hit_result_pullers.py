@@ -91,7 +91,8 @@ class SchemaHIT(HITObject):
         return schema_dict[mc.SCHEMA_ID]
 
     def get_mturk_dicts(self, schema_hit_id):
-        return mturk_controller.get_schema_making_results(schema_hit_id)
+        result_getter = mturk_controller.GeneratedSchemas()
+        return result_getter.get_results(schema_hit_id)
 
     def is_contained(self, schema_id):
         return mc.contains_schema(schema_id)
@@ -124,7 +125,8 @@ class SchemaHIT(HITObject):
 class RankSchemaHIT(HITObject):
 
     def get_mturk_dicts(self, rank_schema_hit_id):
-        return mturk_controller.get_ranking_results(rank_schema_hit_id)
+        result_getter = mturk_controller.GeneratedRanks()
+        return result_getter.get_results(rank_schema_hit_id)
 
     def get_item_id_from_mturk_dict(self, rank_dict):
         return rank_dict[mc.RANK_ID]
@@ -158,7 +160,8 @@ class RankSchemaHIT(HITObject):
 class InspirationHIT(HITObject):
 
     def get_mturk_dicts(self, inspiration_hit_id):
-        return mturk_controller.get_inspiration_hit_results(inspiration_hit_id)
+        result_getter = mturk_controller.GeneratedInspirations()
+        return result_getter.get_results(inspiration_hit_id)
 
     def get_item_id_from_mturk_dict(self, inspiration_dict):
         return inspiration_dict[mc.INSPIRATION_ID]
@@ -201,7 +204,8 @@ class InspirationHIT(HITObject):
 class RankInspirationHIT(HITObject):
 
     def get_mturk_dicts(self, rank_inspiration_hit_id):
-        return mturk_controller.get_ranking_results(rank_inspiration_hit_id)
+        result_getter = mturk_controller.GeneratedRanks()
+        return result_getter.get_results(rank_inspiration_hit_id)
 
     def get_item_id_from_mturk_dict(self, rank_dict):
         return rank_dict[mc.RANK_ID]
@@ -235,7 +239,8 @@ class RankInspirationHIT(HITObject):
 class IdeaHIT(HITObject):
 
     def get_mturk_dicts(self, hit_id):
-        return mturk_controller.get_idea_hit_results(hit_id)
+        result_getter = mturk_controller.GeneratedIdeas()
+        return result_getter.get_results(hit_id)
 
     def get_item_id_from_mturk_dict(self, mturk_dict):
         return mturk_dict[mc.IDEA_ID]
@@ -275,7 +280,8 @@ class IdeaHIT(HITObject):
 class RankIdeaHIT(HITObject):
 
     def get_mturk_dicts(self, hit_id):
-        return mturk_controller.get_ranking_results(hit_id)
+        result_getter = mturk_controller.GeneratedRanks()
+        return result_getter.get_results(hit_id)
 
     def get_item_id_from_mturk_dict(self, mturk_dict):
         return mturk_dict[mc.RANK_ID]
@@ -309,7 +315,8 @@ class RankIdeaHIT(HITObject):
 class SuggestionHIT(HITObject):
 
     def get_mturk_dicts(self, suggestion_hit_id):
-        return mturk_controller.get_suggestion_hit_results(suggestion_hit_id)
+        result_getter = mturk_controller.GeneratedSuggestions()
+        return result_getter.get_results(suggestion_hit_id)
 
     def get_item_id_from_mturk_dict(self, mturk_dict):
         return mturk_dict[mc.SUGGESTION_ID]
@@ -351,7 +358,8 @@ class SuggestionHIT(HITObject):
 class RankSuggestionHIT(HITObject):
 
     def get_mturk_dicts(self, hit_id):
-        return mturk_controller.get_ranking_results(hit_id)
+        result_getter = mturk_controller.GeneratedRanks()
+        return result_getter.get_results(hit_id)
 
     def get_item_id_from_mturk_dict(self, mturk_dict):
         return mturk_dict[mc.RANK_ID]
