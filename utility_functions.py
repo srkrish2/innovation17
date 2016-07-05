@@ -1,6 +1,7 @@
 import cherrypy
 import mongodb_controller
-from constants import USERNAME_KEY, PREVIOUS_URL_KEY
+from constants import *
+from dateutil.tz import tzlocal
 
 
 def check_problem_access(problem_slug):
@@ -15,34 +16,35 @@ def check_problem_access(problem_slug):
         raise cherrypy.HTTPRedirect("/sign_in")
 
 
-def get_problem_parameters():
+def get_problem_parameters(no_count=False):
     if USERNAME_KEY not in cherrypy.session:
         raise cherrypy.HTTPError(403)
     owner_username = cherrypy.session[USERNAME_KEY]
     data = cherrypy.request.json
     title = data["title"]
     description = data["description"]
-    schema_count_goal = convert_input_count(data["schema_count_goal"])
-
-    return owner_username, title, description, schema_count_goal
+    if no_count:
+        return owner_username, title, description
+    schema_assignments_num = convert_input_count(data["schema_assignments_num"])
+    return owner_username, title, description, schema_assignments_num
 
 
 def convert_input_count(user_input):
     if not isinstance(user_input, int):
         try:
-            schema_count_goal = int(user_input)
+            count = int(user_input)
         except ValueError:
             print "Casting fail!!!"
-            schema_count_goal = -1
+            count = -1
     else:
-        schema_count_goal = user_input
-    return schema_count_goal
+        count = user_input
+    return count
 
 
 def make_links_list(slug, problem_id):
-    schemas_page_link = "/{}/schemas".format(slug)
-    inspirations_page_link = "/{}/inspirations".format(slug)
-    ideas_page_link = "/{}/ideas".format(slug)
+    schemas_page_link = SCHEMAS_LINK_FORMAT.format(slug)
+    inspirations_page_link = INSPIRATIONS_LINK_FORMAT.format(slug)
+    ideas_page_link = IDEAS_LINK_FORMAT.format(slug)
     stage = mongodb_controller.get_stage(problem_id)
     if stage == mongodb_controller.STAGE_SUGGESTION:
         return schemas_page_link, inspirations_page_link, ideas_page_link
@@ -51,3 +53,9 @@ def make_links_list(slug, problem_id):
     elif stage != mongodb_controller.STAGE_INSPIRATION:
         inspirations_page_link = ""
     return schemas_page_link, inspirations_page_link, ideas_page_link
+
+
+def convert_object_id_to_readable_time(object_id):
+    utc_time = object_id.generation_time
+    local_tz = tzlocal()
+    utc_time.astimezone(local_tz).strftime(READABLE_TIME_FORMAT)
