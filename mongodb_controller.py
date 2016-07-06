@@ -582,6 +582,20 @@ def get_schema_dicts(problem_id):
     return schemas_collection.find({PROBLEM_ID: problem_id})
 
 
+def get_well_ranked_inspirations(problem_id):
+    return inspirations_collection.find({
+        RANK: {"$gte": MIN_RANK},
+        PROBLEM_ID: problem_id
+    })
+
+
+def get_well_ranked_ideas(problem_id):
+    return ideas_collection.find({
+        RANK: {"$gte": MIN_RANK},
+        PROBLEM_ID: problem_id
+    })
+
+
 def get_well_ranked_schemas(problem_id):
     return schemas_collection.find({
         RANK: {"$gte": MIN_RANK},

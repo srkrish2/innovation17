@@ -61,17 +61,15 @@ def render_schemas_page(problem_slug):
 def render_inspirations_page(problem_slug):
     if check_problem_access(problem_slug) is True:
         problem_id = mc.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-        inspirations = mc.get_inspirations(problem_id)
-        template = env.get_template('inspirations_card.html')
-        inspiration_dicts_list = []
-        for inspiration in inspirations:
+        inspiration_dicts = list(mc.get_well_ranked_inspirations(problem_id))
+        for inspiration in inspiration_dicts:
             problem_text = mc.get_problem_description(problem_id)
             schema_text = mc.get_schema_text(inspiration[mc.SCHEMA_ID])
             inspiration[PROBLEM_TEXT_FIELD] = problem_text
             inspiration[SCHEMA_TEXT_FIELD] = schema_text
-            inspiration_dicts_list.append(inspiration)
         [schemas_page_link, inspirations_page_link, ideas_page_link] = make_links_list(problem_slug, problem_id)
-        return template.render(inspirations=inspiration_dicts_list, problem_id=problem_id,
+        template = env.get_template('inspirations_card.html')
+        return template.render(inspirations=inspiration_dicts, problem_id=problem_id,
                                problem_stage=mc.get_stage(problem_id),
                                schemas_page_link=schemas_page_link, inspirations_page_link=inspirations_page_link,
                                ideas_page_link=ideas_page_link)
@@ -80,10 +78,8 @@ def render_inspirations_page(problem_slug):
 def render_ideas_page(problem_slug):
     if check_problem_access(problem_slug) is True:
         problem_id = mc.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
-        ideas = mc.get_ideas(problem_id)
-        template = env.get_template('ideas.html')
-        ideas_dicts_list = []
-        for idea in ideas:
+        idea_dicts = list(mc.get_well_ranked_ideas(problem_id))
+        for idea in idea_dicts:
             problem_text = mc.get_problem_description(problem_id)
             inspiration_id = idea[mc.INSPIRATION_ID]
             schema_text = mc.get_schema_text_from_inspiration(inspiration_id)
@@ -91,11 +87,11 @@ def render_ideas_page(problem_slug):
             idea[PROBLEM_TEXT_FIELD] = problem_text
             idea[SCHEMA_TEXT_FIELD] = schema_text
             idea[INSPIRATION_TEXT_FIELD] = inspiration_summary
-            idea[FEEDBACKS_NUM] = len(mc.get_feedback_dicts(idea[IDEA_ID]))
+            idea[FEEDBACKS_NUM] = len(list(mc.get_feedback_dicts(idea[IDEA_ID])))
             idea[SUGGESTIONS_PAGE_LINK] = SUGGESTIONS_FOR_IDEA_LINK_FORMAT.format(idea[mc.SLUG])
-            ideas_dicts_list.append(idea)
         [schemas_page_link, inspirations_page_link, ideas_page_link] = make_links_list(problem_slug, problem_id)
-        return template.render(ideas=ideas_dicts_list, problem_id=problem_id,
+        template = env.get_template('ideas.html')
+        return template.render(ideas=idea_dicts, problem_id=problem_id,
                                problem_stage=mc.get_stage(problem_id),
                                schemas_page_link=schemas_page_link, inspirations_page_link=inspirations_page_link,
                                ideas_page_link=ideas_page_link)

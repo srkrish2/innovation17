@@ -78,7 +78,7 @@ class HITObject:
                 rank_item_hit_id = rank_hit_creator.post()
                 if rank_item_hit_id == "FAIL":
                     print "FAIL when posting rank hit!"
-                    return
+                    continue
                 self.save_rank_hit(rank_item_hit_id, mturk_dict)
             else:
                 self.increment_item_rank(mturk_dict)
