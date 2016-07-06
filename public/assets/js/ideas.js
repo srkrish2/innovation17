@@ -1,6 +1,4 @@
 (function(global){
-	if($('.suggestion-list').length) makePostRequest();
-    var interval = setInterval(makePostRequest,10000);
 	var currentIdea;
 	$(document).on('click','.proceed',function(e){
 		$('.ui.modal .teal.ui.label').html($(e.currentTarget.parentElement).siblings()[0].innerHTML);
@@ -23,11 +21,10 @@
 				'feedbacks': feedbackArray
 			}),
 			success: function(sdata){
-				$('tr.'+currentIdea+' td')[4].html('<div class="ui button view"><a href='+ sdata["suggestions_page_link"]+'><i class="icon doctor"></i>0</a></div>');
-				console.log('launched suggestion seeking');
+			    // the following line causes: Uncaught TypeError: $(...)[4].html is not a function
+				// $('tr.'+currentIdea+' td')[4].html('<div class="ui button view"><a href='+ sdata["suggestions_page_link"]+'><i class="icon doctor"></i>0</a></div>');
 				$('.ui.modal').modal('hide');
 				$(e.currentTarget).prop('disabled',false);
-				makePostRequest();
 			},
 			error: function(e){
 				console.log("error! "+e);
@@ -56,22 +53,4 @@
 	// $(document).on('click','.ui.button.view', function(e){
 	// 	$('<div class="field"><input type="text" class="feedback" placeholder="Enter the feedback for the idea">').insertBefore($(e.currentTarget));
 	// });
-	
-
-	function makePostRequest(){
-		$.ajax({
-			type: "POST",
-			contentType: 'application/json; charset=utf-8',
-			data: JSON.stringify({
-				"problem_id": $('thead').attr('class')
-			}),
-			url: '/suggestion_updates',
-			success:function(sdata){
-			    sdata = sdata["ideas"]
-				for (var i= 0;i<sdata.length; i++){
-					if($('tr.'+sdata[i]['idea_id']+' .suggestion-list').length)$('tr.'+sdata[i]['idea_id']+' .suggestion-list')[0].innerHTML="<i class='doctor icon'></i> "+sdata[i]['suggestion_count'];
-				}
-			}
-		})
-	}
 }(window));
