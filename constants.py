@@ -3,12 +3,12 @@ READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 TIME_CREATED = "time_created"
 USERNAME_KEY = "username"
 PREVIOUS_URL_KEY = "previous_url"
-HOW_MANY_RANKS = 0 ## the number of turker to ask about the schema quality
-MIN_RANK = 0 ##present the result to the front end user
-HOW_MANY_SCHEMAS = 0
-HOW_MANY_INSPIRATIONS = 0
-HOW_MANY_IDEAS = 0
-PERIOD = 20
+HOW_MANY_RANKS = 1
+MIN_RANK = 1
+HOW_MANY_SCHEMAS = 1
+HOW_MANY_INSPIRATIONS = 1
+HOW_MANY_IDEAS = 1
+PERIOD = 10
 
 EDIT_LINK_FORMAT = "/problem/{}/edit"
 SCHEMAS_LINK_FORMAT = "/problem/{}/schemas"
@@ -33,6 +33,7 @@ SUGGESTIONS_PAGE_LINK = "suggestions_page_link"
 FEEDBACKS_FIELD = "feedbacks"
 SUGGESTIONS_FIELD = "suggestions"
 IDEAS_FIELD = "ideas"
+FEEDBACKS_NUM = "feedbacks_num"
 
 PROBLEM_TEXT_FIELD = "problem_text"
 SCHEMA_TEXT_FIELD = "schema_text"

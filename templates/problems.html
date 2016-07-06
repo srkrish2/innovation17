@@ -69,7 +69,7 @@
           <a href={{ problem.inspirations_page_link|default('#')}} class="ui label inspiration-list" data-tooltip="The number of (evaluated) inspirations" ><i class="write icon"></i> {{problem.inspiration_count|default(0)}}</a>
           {% endif %}
           {% if problem.lazy %}
-          <div class="ui label blue">in progress</div>
+          <div class="ui label blue" data-tooltip="Please check back later">in progress</div>
           {% endif %}
           {% if problem.stage=='idea' or problem.stage=='suggestion' %}
           <a href={{ problem.ideas_page_link|default('#')}} class="ui label idea-list" data-tooltip="The number of (evaluated) ideas" ><i class="idea icon"></i> {{problem.idea_count|default(0)}}</a>

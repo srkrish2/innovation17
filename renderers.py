@@ -42,7 +42,6 @@ def render_problems_page():
 
         problem[TIME_CREATED] = convert_object_id_to_readable_time(problem["_id"])
         problems.append(problem)
-    print problems
     template = env.get_template('problems.html')
     return template.render(problems=problems)
 
@@ -92,6 +91,7 @@ def render_ideas_page(problem_slug):
             idea[PROBLEM_TEXT_FIELD] = problem_text
             idea[SCHEMA_TEXT_FIELD] = schema_text
             idea[INSPIRATION_TEXT_FIELD] = inspiration_summary
+            idea[FEEDBACKS_NUM] = len(mc.get_feedback_dicts(idea[IDEA_ID]))
             idea[SUGGESTIONS_PAGE_LINK] = SUGGESTIONS_FOR_IDEA_LINK_FORMAT.format(idea[mc.SLUG])
             ideas_dicts_list.append(idea)
         [schemas_page_link, inspirations_page_link, ideas_page_link] = make_links_list(problem_slug, problem_id)

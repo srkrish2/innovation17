@@ -367,13 +367,14 @@ class DeleteProblemHandler(object):
 class GetFeedbacksHandler(object):
     exposed = True
 
-    # @cherrypy.tools.json_out()
-    def GET(self, idea_id):
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
         idea_id = data[IDEA_ID]
-        feedback_dicts = mc.get_feedback_dicts_for_idea(idea_id)
+        feedback_dicts = mc.get_feedback_dicts(idea_id)
         result = []
         for feedback_dict in feedback_dicts:
             for_result = {
@@ -381,7 +382,6 @@ class GetFeedbacksHandler(object):
                 TEXT: feedback_dict[TEXT]
             }
             result.append(for_result)
-        print "HELLLOOOOO"
         return {FEEDBACKS_FIELD: result}
 
 

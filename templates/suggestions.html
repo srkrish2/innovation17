@@ -5,32 +5,33 @@
 	{% for idea in ideas %}
 	<div class="ui styled fluid accordion">
 		<div class="active title">
-			<i class="dropdown icon"></i>
-			<div class="active content">
-				<h2 class="ui header">{{idea.text}}</h2>
-				<div class="segments">
-					{% for feedback in idea.feedbacks %}
-					<div class="ui teal dividing header">
-						<i class="doctor icon"></i>
-						<div class="content">
-							No. {{loop.index}} feedback: {{feedback.text}}
-							
-							<div class="ui cell ordered list suggestions">
-								{% for suggestion in feedback.suggestions %}
-								<div class="item suggestion">
-									<h5 class="ui header">{{suggestion.text}}</h5>
-								</div>
-								{% endfor %}
-								
+			<i class="dropdown icon"></i>{{idea.text}}
+		</div>
+		<div class="active content">
+			<!-- <h2 class="ui header">{{idea.text}}</h2> -->
+			<div class="segments">
+				{% for feedback in idea.feedbacks %}
+				<div class="ui teal dividing header">
+					<i class="doctor icon"></i>
+					<div class="content">
+						No. {{loop.index}} feedback: {{feedback.text}}
+						
+						<div class="ui cell ordered list suggestions">
+							{% for suggestion in feedback.suggestions %}
+							<div class="item suggestion">
+								<h5 class="ui header">{{suggestion.text}}</h5>
 							</div>
+							{% endfor %}
+							
 						</div>
 					</div>
-					<!-- <div class="segment feedback {{feedback.feedback_id}}">{{feedback.text}}</div> -->
-					
-					{% endfor %}
 				</div>
+				<!-- <div class="segment feedback {{feedback.feedback_id}}">{{feedback.text}}</div> -->
+				
+				{% endfor %}
 			</div>
 		</div>
+		
 	</div>
 	{% endfor %}
 </div>

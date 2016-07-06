@@ -94,8 +94,8 @@ also problem_id, problem_stage, schemas_page_link, inspirations_page_link,ideas_
 ```
 ideas = array of the format:
 {
-    "is_launched" : boolean
-	"suggestion_count" : int
+    "is_launched" : boolean,
+	"feedbacks_num" : int,
 	"text" : string,
 	"inspiration_id" : string,
 	"idea_id" : string,
@@ -377,7 +377,7 @@ output
 ```
 
 
-### /get_feedbacks GET request
+### /get_feedbacks POST request
 input
 ```
 {
