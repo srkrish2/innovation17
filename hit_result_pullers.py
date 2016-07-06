@@ -26,7 +26,7 @@ class HITObject:
         epoch_time = epoch_time_ms / 1000.0
         readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
         # add readable time
-        mturk_dict[mc.TIME_CREATED] = readable_time
+        mturk_dict[TIME_CREATED] = readable_time
 
     @abc.abstractmethod
     def add_useful_fields(self, schema_dict, hit_dict):
@@ -57,7 +57,7 @@ class HITObject:
         return
 
     def pull_results(self, hit_dict):
-        hit_id = hit_dict[mc.HIT_ID]
+        hit_id = hit_dict[HIT_ID]
         mturk_dicts = self.get_mturk_dicts(hit_id)
         if mturk_dicts == "FAIL":
             print "FAIL when getting mturk dicts!"
@@ -88,7 +88,7 @@ class HITObject:
 class SchemaHIT(HITObject):
 
     def get_item_id_from_mturk_dict(self, schema_dict):
-        return schema_dict[mc.SCHEMA_ID]
+        return schema_dict[SCHEMA_ID]
 
     def get_mturk_dicts(self, schema_hit_id):
         result_getter = mturk_controller.GeneratedSchemas()
@@ -99,8 +99,8 @@ class SchemaHIT(HITObject):
 
     def add_useful_fields(self, schema_dict, schema_hit_dict):
         # add problem_id, status, and rank
-        schema_dict[mc.STATUS] = mc.STATUS_ACCEPTED
-        schema_dict[mc.PROBLEM_ID] = schema_hit_dict[mc.PROBLEM_ID]
+        schema_dict[STATUS] = mc.STATUS_ACCEPTED
+        schema_dict[PROBLEM_ID] = schema_hit_dict[PROBLEM_ID]
 
     def add_mturk_dict_to_db(self, schema_dict):
         mc.add_schema(schema_dict)
@@ -109,10 +109,10 @@ class SchemaHIT(HITObject):
         return True
 
     def get_rank_hit_creator(self, mturk_dict):
-        return mturk_controller.RankSchemaHITCreator(mturk_dict[mc.TEXT], HOW_MANY_RANKS)
+        return mturk_controller.RankSchemaHITCreator(mturk_dict[TEXT], HOW_MANY_RANKS)
 
     def save_rank_hit(self, rank_item_hit_id, mturk_dict):
-        schema_id = mturk_dict[mc.SCHEMA_ID]
+        schema_id = mturk_dict[SCHEMA_ID]
         mc.insert_new_rank_schema_hit(schema_id, HOW_MANY_RANKS, rank_item_hit_id)
 
     def increment_item_rank(self, mturk_dict):
@@ -129,14 +129,14 @@ class RankSchemaHIT(HITObject):
         return result_getter.get_results(rank_schema_hit_id)
 
     def get_item_id_from_mturk_dict(self, rank_dict):
-        return rank_dict[mc.RANK_ID]
+        return rank_dict[RANK_ID]
 
     def is_contained(self, rank_id):
         return mc.contains_schema_rank(rank_id)
 
     def add_useful_fields(self, rank_dict, rank_schema_hit_dict):
         # add schema_id
-        rank_dict[mc.SCHEMA_ID] = rank_schema_hit_dict[mc.SCHEMA_ID]
+        rank_dict[SCHEMA_ID] = rank_schema_hit_dict[SCHEMA_ID]
 
     def add_mturk_dict_to_db(self, rank_dict):
         mc.add_schema_rank(rank_dict)
@@ -151,7 +151,7 @@ class RankSchemaHIT(HITObject):
         return
 
     def increment_item_rank(self, mturk_dict):
-        mc.increment_schema_rank(mturk_dict[mc.SCHEMA_ID], mturk_dict[mc.RANK])
+        mc.increment_schema_rank(mturk_dict[SCHEMA_ID], mturk_dict[RANK])
 
     def increment_count(self, rank_schema_hit_id, new_dicts_count):
         mc.increment_rank_schema_hit_count(rank_schema_hit_id, new_dicts_count)
@@ -164,16 +164,16 @@ class InspirationHIT(HITObject):
         return result_getter.get_results(inspiration_hit_id)
 
     def get_item_id_from_mturk_dict(self, inspiration_dict):
-        return inspiration_dict[mc.INSPIRATION_ID]
+        return inspiration_dict[INSPIRATION_ID]
 
     def is_contained(self, inspiration_id):
         return mc.contains_inspiration(inspiration_id)
 
     def add_useful_fields(self, inspiration_dict, inspiration_hit_dict):
         # add problem id, schema id, status, and rank
-        inspiration_dict[mc.PROBLEM_ID] = inspiration_hit_dict[mc.PROBLEM_ID]
-        inspiration_dict[mc.SCHEMA_ID] = inspiration_hit_dict[mc.SCHEMA_ID]
-        inspiration_dict[mc.STATUS] = mc.STATUS_ACCEPTED
+        inspiration_dict[PROBLEM_ID] = inspiration_hit_dict[PROBLEM_ID]
+        inspiration_dict[SCHEMA_ID] = inspiration_hit_dict[SCHEMA_ID]
+        inspiration_dict[STATUS] = mc.STATUS_ACCEPTED
 
     def add_mturk_dict_to_db(self, inspiration_dict):
         mc.add_inspiration(inspiration_dict)
@@ -182,16 +182,16 @@ class InspirationHIT(HITObject):
         return True
 
     def get_rank_hit_creator(self, mturk_dict):
-        problem_text = mc.get_problem_description(mturk_dict[mc.PROBLEM_ID])
-        schema_text = mc.get_schema_text(mturk_dict[mc.SCHEMA_ID])
-        inspiration_link = mturk_dict[mc.INSPIRATION_LINK]
-        inspiration_additional = mturk_dict[mc.INSPIRATION_ADDITIONAL]
-        inspiration_reason = mturk_dict[mc.INSPIRATION_REASON]
+        problem_text = mc.get_problem_description(mturk_dict[PROBLEM_ID])
+        schema_text = mc.get_schema_text(mturk_dict[SCHEMA_ID])
+        inspiration_link = mturk_dict[INSPIRATION_LINK]
+        inspiration_additional = mturk_dict[INSPIRATION_ADDITIONAL]
+        inspiration_reason = mturk_dict[INSPIRATION_REASON]
         return mturk_controller.RankInspirationHITCreator(problem_text, schema_text, inspiration_link,
                                                           inspiration_additional, inspiration_reason, HOW_MANY_RANKS)
 
     def save_rank_hit(self, rank_item_hit_id, mturk_dict):
-        inspiration_id = mturk_dict[mc.INSPIRATION_ID]
+        inspiration_id = mturk_dict[INSPIRATION_ID]
         mc.insert_new_rank_inspiration_hit(inspiration_id, HOW_MANY_RANKS, rank_item_hit_id)
 
     def increment_item_rank(self, mturk_dict):
@@ -208,14 +208,14 @@ class RankInspirationHIT(HITObject):
         return result_getter.get_results(rank_inspiration_hit_id)
 
     def get_item_id_from_mturk_dict(self, rank_dict):
-        return rank_dict[mc.RANK_ID]
+        return rank_dict[RANK_ID]
 
     def is_contained(self, rank_id):
         return mc.contains_inspiration_rank(rank_id)
 
     def add_useful_fields(self, rank_dict, hit_dict):
         # add inspiration id
-        rank_dict[mc.INSPIRATION_ID] = hit_dict[mc.INSPIRATION_ID]
+        rank_dict[INSPIRATION_ID] = hit_dict[INSPIRATION_ID]
 
     def add_mturk_dict_to_db(self, rank_dict):
         mc.insert_inspiration_rank(rank_dict)
@@ -230,7 +230,7 @@ class RankInspirationHIT(HITObject):
         return
 
     def increment_item_rank(self, mturk_dict):
-        mc.increment_inspiration_rank(mturk_dict[mc.INSPIRATION_ID], mturk_dict[mc.RANK])
+        mc.increment_inspiration_rank(mturk_dict[INSPIRATION_ID], mturk_dict[RANK])
 
     def increment_count(self, rank_inspiration_hit_id, new_dicts_count):
         mc.increment_rank_inspiration_hit_count(rank_inspiration_hit_id, new_dicts_count)
@@ -243,17 +243,17 @@ class IdeaHIT(HITObject):
         return result_getter.get_results(hit_id)
 
     def get_item_id_from_mturk_dict(self, mturk_dict):
-        return mturk_dict[mc.IDEA_ID]
+        return mturk_dict[IDEA_ID]
 
     def is_contained(self, idea_id):
         return mc.contains_idea(idea_id)
 
     def add_useful_fields(self, idea_dict, hit_dict):
         # add problem id, schema id, inspiration_id, and status
-        idea_dict[mc.PROBLEM_ID] = hit_dict[mc.PROBLEM_ID]
-        idea_dict[mc.SCHEMA_ID] = hit_dict[mc.SCHEMA_ID]
-        idea_dict[mc.INSPIRATION_ID] = hit_dict[mc.INSPIRATION_ID]
-        idea_dict[mc.STATUS] = mc.STATUS_NEW
+        idea_dict[PROBLEM_ID] = hit_dict[PROBLEM_ID]
+        idea_dict[SCHEMA_ID] = hit_dict[SCHEMA_ID]
+        idea_dict[INSPIRATION_ID] = hit_dict[INSPIRATION_ID]
+        idea_dict[STATUS] = mc.STATUS_NEW
 
     def add_mturk_dict_to_db(self, idea_dict):
         mc.add_idea(idea_dict)
@@ -262,12 +262,12 @@ class IdeaHIT(HITObject):
         return True
 
     def get_rank_hit_creator(self, mturk_dict):
-        problem_text = mc.get_problem_description(mturk_dict[mc.PROBLEM_ID])
-        idea_text = mturk_dict[mc.TEXT]
+        problem_text = mc.get_problem_description(mturk_dict[PROBLEM_ID])
+        idea_text = mturk_dict[TEXT]
         return mturk_controller.RankIdeaHITCreator(problem_text, idea_text, HOW_MANY_RANKS)
 
     def save_rank_hit(self, rank_item_hit_id, mturk_dict):
-        idea_id = mturk_dict[mc.IDEA_ID]
+        idea_id = mturk_dict[IDEA_ID]
         mc.insert_new_rank_idea_hit(idea_id, HOW_MANY_RANKS, rank_item_hit_id)
 
     def increment_item_rank(self, mturk_dict):
@@ -284,14 +284,14 @@ class RankIdeaHIT(HITObject):
         return result_getter.get_results(hit_id)
 
     def get_item_id_from_mturk_dict(self, mturk_dict):
-        return mturk_dict[mc.RANK_ID]
+        return mturk_dict[RANK_ID]
 
     def is_contained(self, idea_rank_id):
         return mc.contains_idea_rank(idea_rank_id)
 
     def add_useful_fields(self, mturk_dict, hit_dict):
         # add idea id
-        mturk_dict[mc.IDEA_ID] = hit_dict[mc.IDEA_ID]
+        mturk_dict[IDEA_ID] = hit_dict[IDEA_ID]
 
     def add_mturk_dict_to_db(self, idea_rank_dict):
         mc.insert_idea_rank(idea_rank_dict)
@@ -306,7 +306,7 @@ class RankIdeaHIT(HITObject):
         return
 
     def increment_item_rank(self, mturk_dict):
-        mc.increment_idea_rank(mturk_dict[mc.IDEA_ID], mturk_dict[mc.RANK])
+        mc.increment_idea_rank(mturk_dict[IDEA_ID], mturk_dict[RANK])
 
     def increment_count(self, rank_idea_hit_id, new_dicts_count):
         mc.increment_rank_idea_hit_count(rank_idea_hit_id, new_dicts_count)
@@ -319,16 +319,16 @@ class SuggestionHIT(HITObject):
         return result_getter.get_results(suggestion_hit_id)
 
     def get_item_id_from_mturk_dict(self, mturk_dict):
-        return mturk_dict[mc.SUGGESTION_ID]
+        return mturk_dict[SUGGESTION_ID]
 
     def is_contained(self, suggestion_id):
         return mc.contains_suggestion(suggestion_id)
 
     def add_useful_fields(self, suggestion_dict, hit_dict):
         # add feedback_id, problem_id, idea_id
-        suggestion_dict[mc.PROBLEM_ID] = hit_dict[mc.PROBLEM_ID]
-        suggestion_dict[mc.IDEA_ID] = hit_dict[mc.IDEA_ID]
-        suggestion_dict[mc.FEEDBACK_ID] = hit_dict[mc.FEEDBACK_ID]
+        suggestion_dict[PROBLEM_ID] = hit_dict[PROBLEM_ID]
+        suggestion_dict[IDEA_ID] = hit_dict[IDEA_ID]
+        suggestion_dict[FEEDBACK_ID] = hit_dict[FEEDBACK_ID]
 
     def add_mturk_dict_to_db(self, suggestion_dict):
         mc.add_suggestion(suggestion_dict)
@@ -337,15 +337,15 @@ class SuggestionHIT(HITObject):
         return True
 
     def get_rank_hit_creator(self, mturk_dict):
-        problem_text = mc.get_problem_description(mturk_dict[mc.PROBLEM_ID])
-        idea_text = mturk_dict[mc.TEXT]
-        feedback_text = mc.get_feedback_dict(mturk_dict[mc.FEEDBACK_ID])[mc.TEXT]
-        suggestion_text = mturk_dict[mc.TEXT]
+        problem_text = mc.get_problem_description(mturk_dict[PROBLEM_ID])
+        idea_text = mc.get_idea_dict(mturk_dict[IDEA_ID])[TEXT]
+        feedback_text = mc.get_feedback_dict(mturk_dict[FEEDBACK_ID])[TEXT]
+        suggestion_text = mturk_dict[TEXT]
         return mturk_controller.RankSuggestionHITCreator(problem_text, idea_text, feedback_text, suggestion_text,
                                                          HOW_MANY_RANKS)
 
     def save_rank_hit(self, rank_item_hit_id, mturk_dict):
-        suggestion_id = mturk_dict[mc.SUGGESTION_ID]
+        suggestion_id = mturk_dict[SUGGESTION_ID]
         mc.insert_new_rank_suggestion_hit(suggestion_id, HOW_MANY_RANKS, rank_item_hit_id)
 
     def increment_item_rank(self, mturk_dict):
@@ -362,14 +362,14 @@ class RankSuggestionHIT(HITObject):
         return result_getter.get_results(hit_id)
 
     def get_item_id_from_mturk_dict(self, mturk_dict):
-        return mturk_dict[mc.RANK_ID]
+        return mturk_dict[RANK_ID]
 
     def is_contained(self, suggestion_rank_id):
         return mc.contains_suggestion_rank(suggestion_rank_id)
 
     def add_useful_fields(self, mturk_dict, hit_dict):
         # add suggestion id
-        mturk_dict[mc.SUGGESTION_ID] = hit_dict[mc.SUGGESTION_ID]
+        mturk_dict[SUGGESTION_ID] = hit_dict[SUGGESTION_ID]
 
     def add_mturk_dict_to_db(self, idea_rank_dict):
         mc.insert_suggestion_rank(idea_rank_dict)
@@ -384,7 +384,7 @@ class RankSuggestionHIT(HITObject):
         return
 
     def increment_item_rank(self, mturk_dict):
-        mc.increment_suggestion_rank(mturk_dict[mc.SUGGESTION_ID], mturk_dict[mc.RANK])
+        mc.increment_suggestion_rank(mturk_dict[SUGGESTION_ID], mturk_dict[RANK])
 
     def increment_count(self, rank_suggestion_hit_id, new_dicts_count):
         mc.increment_rank_suggestion_hit_count(rank_suggestion_hit_id, new_dicts_count)
