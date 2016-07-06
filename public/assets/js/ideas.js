@@ -56,19 +56,25 @@
 	$(document).on('click','.ui.button.view', function(e){
 		e.preventDefault();
 		$.ajax({
-			type: "GET",
-			contentType: 'application/json; charset=utf-8',
-			data: JSON.stringify({
-				"idea_id":$(e.currentTarget.parentElement.parentElement).attr('class')
-			}),
-			url: '/get_feedbacks',
-			success: function(sdata){
-				sdata = sdata['feedbacks'];
-				for (var i = 0; i < sdata.length; i++){
-					$('<div class="feedback item "'+sdata['feedback_id']+'>'+sdata[text]+'</div>').appendTo('.field.feedback-list');
-				}
-			}
-		})
+		  url: '/get_feedbacks',
+		  contentType: 'application/json',
+		  data: {'idea_id':$(e.currentTarget.parentElement.parentElement).attr('class')},
+		  success: function(sdata){
+		  	window.alert(sdata)
+		  }
+		})		// });
+		// $.ajax({
+		// 	type: "get",
+		// 	dataTy: 
+		// 	data: ,
+		// 	url: 
+		// 	success: function(sdata){
+		// 		sdata = sdata['feedbacks'];
+		// 		for (var i = 0; i < sdata.length; i++){
+		// 			$('<div class="feedback item "'+sdata['feedback_id']+'>'+sdata[text]+'</div>').appendTo('.field.feedback-list');
+		// 		}
+		// 	}
+		// });
 	});
 	
 
