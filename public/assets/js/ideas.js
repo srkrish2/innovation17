@@ -1,13 +1,13 @@
 (function(global){
-	if($('.suggestion-list').length) makePostRequest();
-    var interval = setInterval(makePostRequest,10000);
+	//if($('.suggestion-list').length) makePostRequest();
+	//var interval = setInterval(makePostRequest,10000);
 	var currentIdea;
 	$(document).on('click','.proceed',function(e){
-		$('.ui.modal .teal.ui.label').html($(e.currentTarget.parentElement).siblings()[0].innerHTML);
-		$('.ui.modal').modal('show');
+		$('.ui.modal.launchnext .teal.ui.label').html($(e.currentTarget.parentElement).siblings()[0].innerHTML);
+		$('.ui.modal.launchnext').modal('show');
 	});
 	$(document).on('click','.startsuggestion',function(e){
-		$('.ui.modal').modal('hide');
+		$('.ui.modal.launchnext').modal('hide');
 		var feedbacks = $('input.feedback'), feedbackArray = [];
 		for (var i = 0; i<feedbacks.length; i++){
 			feedbackArray.push(feedbacks[i].value);
@@ -23,11 +23,11 @@
 				'feedbacks': feedbackArray
 			}),
 			success: function(sdata){
-				$('tr.'+currentIdea+' td')[4].html('<div class="ui button view"><a href='+ sdata["suggestions_page_link"]+'><i class="icon doctor"></i>0</a></div>');
+				$('tr.'+currentIdea+' td')[3].html('<div class="ui button view"><a href="#" class="ui label feedback-list count"><i class="icon doctor"></i>'+feedbacks.length+'</a></div>');
 				console.log('launched suggestion seeking');
-				$('.ui.modal').modal('hide');
+				$('.ui.modal.launchnext').modal('hide');
 				$(e.currentTarget).prop('disabled',false);
-				makePostRequest();
+				// makePostRequest();
 			},
 			error: function(e){
 				console.log("error! "+e);
@@ -36,7 +36,7 @@
 		
 	});
 	$(document).on('click','.cancelsuggestion',function(e){
-		$('.ui.modal').modal('hide');
+		$('.ui.modal.launchnext').modal('hide');
 	});
 	$(document).on('click','.ui.button.rj', function(e){
 		
@@ -53,25 +53,39 @@
 	$(document).on('click','.addfeedback', function(e){
 		$('<div class="field"><input type="text" class="feedback" placeholder="Enter the feedback for the idea">').insertBefore($(e.currentTarget));
 	});
-	// $(document).on('click','.ui.button.view', function(e){
-	// 	$('<div class="field"><input type="text" class="feedback" placeholder="Enter the feedback for the idea">').insertBefore($(e.currentTarget));
-	// });
-	
-
-	function makePostRequest(){
+	$(document).on('click','.ui.button.view', function(e){
+		e.preventDefault();
 		$.ajax({
-			type: "POST",
+			type: "GET",
 			contentType: 'application/json; charset=utf-8',
 			data: JSON.stringify({
-				"problem_id": $('thead').attr('class')
+				"idea_id":$(e.currentTarget.parentElement.parentElement).attr('class')
 			}),
-			url: '/suggestion_updates',
-			success:function(sdata){
-			    sdata = sdata["ideas"]
-				for (var i= 0;i<sdata.length; i++){
-					if($('tr.'+sdata[i]['idea_id']+' .suggestion-list').length)$('tr.'+sdata[i]['idea_id']+' .suggestion-list')[0].innerHTML="<i class='doctor icon'></i> "+sdata[i]['suggestion_count'];
+			url: '/get_feedbacks',
+			success: function(sdata){
+				sdata = sdata['feedbacks'];
+				for (var i = 0; i < sdata.length; i++){
+					$('<div class="feedback item "'+sdata['feedback_id']+'>'+sdata[text]+'</div>').appendTo('.field.feedback-list');
 				}
 			}
 		})
-	}
+	});
+	
+
+	// function makePostRequest(){
+	// 	$.ajax({
+	// 		type: "POST",
+	// 		contentType: 'application/json; charset=utf-8',
+	// 		data: JSON.stringify({
+	// 			"problem_id": $('thead').attr('class')
+	// 		}),
+	// 		url: '/feedback_updates',
+	// 		success:function(sdata){
+	// 			sdata = sdata["ideas"]
+	// 			for (var i= 0;i<sdata.length; i++){
+	// 				if($('tr.'+sdata[i]['idea_id']+' .feedback-list').length)$('tr.'+sdata[i]['idea_id']+' .feedback-list')[0].innerHTML="<i class='doctor icon'></i> "+sdata[i]['feedback_count'];
+	// 			}
+	// 		}
+	// 	})
+	// }
 }(window));

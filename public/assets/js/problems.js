@@ -1,10 +1,11 @@
 (function(global){
+    var begin = new Date().getTime();
     makePostRequest();
-    setInterval(makePostRequest, 10000)
-//    var timeoutID = setTimeout(makePostRequest,10000);
-//    $(document).on('click', 'a.schemalist, div.button', function(e){
-//        clearTimeout(timeoutID);
-//    });
+    // setInterval(makePostRequest, 10000)
+   var timeoutID = setTimeout(makePostRequest,10000);
+   $(document).on('click', 'a.schemalist, div.button', function(e){
+       clearTimeout(timeoutID);
+   });
     $(document).on('click','div.button.publish',function(e){
         e.preventDefault();
         $(e.currentTarget).prop('disabled',true);
@@ -25,7 +26,7 @@
                 $('tr.'+rowclass+' .ui.button.view').removeClass('hidden');
                 $(e.currentTarget).prop('disabled',false);
                 makePostRequest();
-                ///$('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";
+                // /$('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";
             }
         });
     });
@@ -81,7 +82,9 @@
     });
 
     function makePostRequest(){
-
+        var temp = new Date().getTime();
+        console.log("it has been " + (temp-begin)/1000);
+        // begin = new Date().getTime();
         $.ajax({
             type: "GET",
             url: '/get_count_updates',
@@ -91,7 +94,8 @@
                     if($('tr.'+sdata[i]['problem_id']+' .inspiration-list').length)$('tr.'+sdata[i]['problem_id']+' .inspiration-list')[0].innerHTML="<i class='write icon'></i> "+sdata[i]['inspiration_count'];
                     if($('tr.'+sdata[i]['problem_id']+' .idea-list').length)$('tr.'+sdata[i]['problem_id']+' .idea-list')[0].innerHTML="<i class='idea icon'></i> "+sdata[i]['idea_count'];
                 }
-//                timeoutID = setTimeout(makePostRequest,10000);
+                console.log('within makerequest, after success return');
+               timeoutID = setTimeout(makePostRequest,10000);
             }
         })
     }
