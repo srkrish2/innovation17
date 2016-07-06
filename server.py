@@ -369,12 +369,12 @@ class GetFeedbacksHandler(object):
 
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def GET(self):
+    def POST(self):
         if USERNAME_KEY not in cherrypy.session:
             raise cherrypy.HTTPError(403)
         data = cherrypy.request.json
         idea_id = data[IDEA_ID]
-        feedback_dicts = mc.get_feedback_dicts_for_idea(idea_id)
+        feedback_dicts = mc.get_feedback_dicts(idea_id)
         result = []
         for feedback_dict in feedback_dicts:
             for_result = {

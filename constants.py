@@ -8,7 +8,7 @@ MIN_RANK = 1
 HOW_MANY_SCHEMAS = 1
 HOW_MANY_INSPIRATIONS = 1
 HOW_MANY_IDEAS = 1
-PERIOD = 20
+PERIOD = 10
 
 EDIT_LINK_FORMAT = "/problem/{}/edit"
 SCHEMAS_LINK_FORMAT = "/problem/{}/schemas"
@@ -33,6 +33,7 @@ SUGGESTIONS_PAGE_LINK = "suggestions_page_link"
 FEEDBACKS_FIELD = "feedbacks"
 SUGGESTIONS_FIELD = "suggestions"
 IDEAS_FIELD = "ideas"
+FEEDBACKS_NUM = "feedbacks_num"
 
 PROBLEM_TEXT_FIELD = "problem_text"
 SCHEMA_TEXT_FIELD = "schema_text"

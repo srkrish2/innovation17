@@ -57,6 +57,8 @@ class Updater(object):
         for item_dict in self.get_item_dicts(problem_id):
             item_id = self.get_item_id(item_dict)
             rank_item_hit_dict = self.get_rank_item_hit_dict(item_id)
+            if rank_item_hit_dict is None:  # hit not posted yet
+                continue
             count = rank_item_hit_dict[COUNT]
             count_goal = rank_item_hit_dict[COUNT_GOAL]
             if count < count_goal:

@@ -589,10 +589,6 @@ def get_well_ranked_schemas(problem_id):
     })
 
 
-def get_feedback_dicts_for_idea(idea_id):
-    return feedbacks_collection.find({IDEA_ID: idea_id})
-
-
 def set_schema_processed_status(schema_id):
     query_filter = {
         SCHEMA_ID: schema_id
