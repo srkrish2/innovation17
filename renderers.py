@@ -41,8 +41,8 @@ def render_problems_page():
         problem[VIEW_PAGE_LINK] = VIEW_LINK_FORMAT.format(problem[mc.SLUG])
 
         problem[TIME_CREATED] = convert_object_id_to_readable_time(problem["_id"])
-
         problems.append(problem)
+    print problems
     template = env.get_template('problems.html')
     return template.render(problems=problems)
 
