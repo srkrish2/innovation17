@@ -364,6 +364,27 @@ class DeleteProblemHandler(object):
         mc.delete_problem(data[PROBLEM_ID])
 
 
+class GetFeedbacksHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def GET(self):
+        if USERNAME_KEY not in cherrypy.session:
+            raise cherrypy.HTTPError(403)
+        data = cherrypy.request.json
+        idea_id = data[IDEA_ID]
+        feedback_dicts = mc.get_feedback_dicts_for_idea(idea_id)
+        result = []
+        for feedback_dict in feedback_dicts:
+            for_result = {
+                FEEDBACK_ID: feedback_dict[FEEDBACK_ID],
+                TEXT: feedback_dict[TEXT]
+            }
+            result.append(for_result)
+        return {FEEDBACKS_FIELD: result}
+
+
 if __name__ == '__main__':
     # server configurations
     conf = {
@@ -426,6 +447,9 @@ if __name__ == '__main__':
         },
         '/post_problem_lazy': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/get_feedbacks': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -448,6 +472,7 @@ if __name__ == '__main__':
     webapp.more_schemas = MoreSchemasHandler()
     webapp.more_suggestions = MoreSuggestionsHandler()
     webapp.post_problem_lazy = PostProblemLazyHandler()
+    webapp.get_feedbacks = GetFeedbacksHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 

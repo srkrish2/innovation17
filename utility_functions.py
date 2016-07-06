@@ -58,4 +58,4 @@ def make_links_list(slug, problem_id):
 def convert_object_id_to_readable_time(object_id):
     utc_time = object_id.generation_time
     local_tz = tzlocal()
-    utc_time.astimezone(local_tz).strftime(READABLE_TIME_FORMAT)
+    return utc_time.astimezone(local_tz).strftime(READABLE_TIME_FORMAT)
