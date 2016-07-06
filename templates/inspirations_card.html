@@ -3,7 +3,7 @@
 {% block content %}
 <div class="ui container center middle aligned first-page-element">
 	<div class="ui divided items {{problem_id}}">
-		{% for inspiration in inspirations %}
+		{% for inspiration in items %}
 		<div class="item {{inspiration.inspiration_id}}">
 			<div class="image"><img src={{inspiration.image_link}} alt=""></div>
 			<div class="content">
