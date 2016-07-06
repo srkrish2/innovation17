@@ -583,10 +583,14 @@ def get_schema_dicts(problem_id):
 
 
 def get_well_ranked_schemas(problem_id):
-    return db.schemas.find({
+    return schemas_collection.find({
         RANK: {"$gte": MIN_RANK},
         PROBLEM_ID: problem_id
     })
+
+
+def get_feedback_dicts_for_idea(idea_id):
+    return feedbacks_collection.find({IDEA_ID: idea_id})
 
 
 def set_schema_processed_status(schema_id):

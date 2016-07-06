@@ -325,7 +325,7 @@ input
 ```
 output
 ```
-array of maps. each map has the following format:
+"ideas" = array of maps. each map has the following format:
 {
   "idea_id": string,
   "suggestion_count": int
@@ -373,5 +373,22 @@ output
 ```
 {
     "success": boolean
+}
+```
+
+
+### /get_feedbacks GET request
+input
+```
+{
+    "idea_id": string
+}
+```
+output
+```
+"feedbacks": array of maps:
+{
+    "feedback_id": string,
+    "text": string,
 }
 ```
