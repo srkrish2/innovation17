@@ -14,7 +14,6 @@ def get_count_dicts_for_user(username):
         for_result[INSPIRATION_COUNT] = counter.get_count(problem_id)
         counter = WellRankedIdeaCounter()
         for_result[IDEA_COUNT] = counter.get_count(problem_id)
-        result.append(for_result)
         counter = WellRankedSuggestionCounter()
         for_result[SUGGESTION_COUNT] = counter.get_count(problem_id)
         result.append(for_result)
