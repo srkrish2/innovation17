@@ -257,6 +257,7 @@ class FeedbackHandler(object):
         count_goal = convert_input_count(data['count_goal'])
         if count_goal == -1:
             return {"success": False}
+        print "IDEA_ID =", idea_id
         idea_dict = mc.get_idea_dict(idea_id)
         mc.set_suggestion_stage(idea_dict[PROBLEM_ID])
         thread = Thread(target=launchers.post_feedback, args=[idea_dict, idea_id, feedbacks, count_goal])
@@ -488,7 +489,7 @@ if __name__ == '__main__':
     cherrypy.config.update({'error_page.404': renderers.error_page_404,
                             'error_page.403': renderers.error_page_403,
                             'request.error_response': renderers.unanticipated_error
-                            # 'server.socket_host': '192.168.1.168',
+                            # 'server.socket_host': '192.168.1.147',
                             # 'server.socket_port': 8080
                             })
 

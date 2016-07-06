@@ -5,10 +5,12 @@ USERNAME_KEY = "username"
 PREVIOUS_URL_KEY = "previous_url"
 HOW_MANY_RANKS = 1
 MIN_RANK = 1
-HOW_MANY_SCHEMAS = 1
-HOW_MANY_INSPIRATIONS = 1
-HOW_MANY_IDEAS = 1
-PERIOD = 10
+
+# Lazy mode settings. Since lazy users don't choose how many schemas/inspiration/ideas to get, we define that here.
+HOW_MANY_SCHEMAS = 1  # how many schemas for each problem
+HOW_MANY_INSPIRATIONS = 1  # how many inspirations for each schema
+HOW_MANY_IDEAS = 1  # how many ideas for each ideas
+PERIOD = 10  # how often to check mturk for updates, in seconds.
 
 EDIT_LINK_FORMAT = "/problem/{}/edit"
 SCHEMAS_LINK_FORMAT = "/problem/{}/schemas"
