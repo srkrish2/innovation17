@@ -3,23 +3,24 @@ import abc
 import os
 from constants import *
 
-MTURK_JARS_PATH = os.getcwd()+"/mturk_jars/"
+MTURK_PATH = os.getcwd()+"/mturk/"
 
 
 class HITCreator:
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def get_popen_args_arr(self):
-        return
+    def get_jar_args(self):
+        return []
 
     @abc.abstractmethod
     def get_creator_name(self):
         return
 
     def post(self):
-        args_arr = self.get_popen_args_arr()
-        p = subprocess.Popen(args_arr, cwd=MTURK_JARS_PATH, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        args = ['java', '-jar', MTURK_PATH+'MTurkSDK.jar']
+        args.extend(self.get_jar_args())
+        p = subprocess.Popen(args, cwd=MTURK_PATH, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         # output format:
         #  * "SUCCESS"
@@ -48,8 +49,8 @@ class SchemaHITCreator(HITCreator):
     def get_creator_name(self):
         return "SchemaHITCreator"
 
-    def get_popen_args_arr(self):
-        return ['java', '-jar', MTURK_JARS_PATH+'SchemaMaking.jar', self.problem, str(self.count_goal)]
+    def get_jar_args(self):
+        return ["PostSchemaHIT", self.problem, str(self.count_goal)]
 
 
 class InspirationHITCreator(HITCreator):
@@ -60,8 +61,8 @@ class InspirationHITCreator(HITCreator):
     def get_creator_name(self):
         return "InspirationHITCreator"
 
-    def get_popen_args_arr(self):
-        return ['java', '-jar', MTURK_JARS_PATH+'PostInspirationHIT.jar', self.schema, str(self.count_goal)]
+    def get_jar_args(self):
+        return ['PostInspirationHIT', self.schema, str(self.count_goal)]
 
 
 class IdeaHITCreator(HITCreator):
@@ -75,8 +76,8 @@ class IdeaHITCreator(HITCreator):
     def get_creator_name(self):
         return "IdeaHITCreator"
 
-    def get_popen_args_arr(self):
-        return ['java', '-jar', MTURK_JARS_PATH+'PostIdeaHIT.jar', self.problem, self.source_link, self.image_link, self.explanation,
+    def get_jar_args(self):
+        return ['PostIdeaHIT', self.problem, self.source_link, self.image_link, self.explanation,
                 str(self.count_goal)]
 
 
@@ -90,8 +91,8 @@ class SuggestionHITCreator(HITCreator):
     def get_creator_name(self):
         return "SuggestionHITCreator"
 
-    def get_popen_args_arr(self):
-        return ['java', '-jar', MTURK_JARS_PATH+'PostSuggestionHIT.jar', self.problem, self.idea, self.feedback, str(self.count_goal)]
+    def get_jar_args(self):
+        return ['PostSuggestionHIT', self.problem, self.idea, self.feedback, str(self.count_goal)]
 
 
 class RankSchemaHITCreator(HITCreator):
@@ -102,8 +103,8 @@ class RankSchemaHITCreator(HITCreator):
     def get_creator_name(self):
         return "RankSchemaHITCreator"
 
-    def get_popen_args_arr(self):
-        return ['java', '-jar', MTURK_JARS_PATH+'PostRankSchemaHIT.jar', self.schema, str(self.count_goal)]
+    def get_jar_args(self):
+        return ['PostRankSchemaHIT', self.schema, str(self.count_goal)]
 
 
 class RankInspirationHITCreator(HITCreator):
@@ -118,8 +119,8 @@ class RankInspirationHITCreator(HITCreator):
     def get_creator_name(self):
         return "RankInspirationHITCreator"
 
-    def get_popen_args_arr(self):
-        return ['java', '-jar', MTURK_JARS_PATH+'PostRankInspirationHIT.jar', self.problem, self.schema, self.i_link,
+    def get_jar_args(self):
+        return ['PostRankInspirationHIT', self.problem, self.schema, self.i_link,
                 self.i_additional, self.i_reason, str(self.count_goal)]
 
 
@@ -132,8 +133,8 @@ class RankIdeaHITCreator(HITCreator):
     def get_creator_name(self):
         return "RankIdeaHITCreator"
 
-    def get_popen_args_arr(self):
-        return ['java', '-jar', MTURK_JARS_PATH+'PostRankIdeaHIT.jar', self.problem, self.idea, str(self.count_goal)]
+    def get_jar_args(self):
+        return ['PostRankIdeaHIT', self.problem, self.idea, str(self.count_goal)]
 
 
 class RankSuggestionHITCreator(HITCreator):
@@ -147,8 +148,8 @@ class RankSuggestionHITCreator(HITCreator):
     def get_creator_name(self):
         return "RankSuggestionHITCreator"
 
-    def get_popen_args_arr(self):
-        return ['java', '-jar', MTURK_JARS_PATH+'PostRankSuggestionHIT.jar', self.problem, self.idea, self.feedback, self.suggestion,
+    def get_jar_args(self):
+        return ['PostRankSuggestionHIT', self.problem, self.idea, self.feedback, self.suggestion,
                 str(self.count_goal)]
 
 
@@ -156,7 +157,7 @@ class ResultPuller(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def get_jar_filename(self):
+    def get_command_name(self):
         return ""
 
     @abc.abstractmethod
@@ -164,26 +165,24 @@ class ResultPuller(object):
         return
 
     def get_results(self, hit_id):
-        p = subprocess.Popen(['java', '-jar', MTURK_JARS_PATH+self.get_jar_filename(), hit_id],
-                             cwd=MTURK_JARS_PATH,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
+        args = ['java', '-jar', MTURK_PATH+'MTurkSDK.jar', self.get_command_name(), hit_id]
+        p = subprocess.Popen(args, cwd=MTURK_PATH, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         jar_output_file = p.stdout
         first_line = jar_output_file.readline().rstrip()
         if first_line == "FAIL":
-            print "SchemaMakingResults: FAIL"
+            print "{}: FAIL".format(self.get_command_name())
             print jar_output_file.readline().rstrip()
             return "FAIL"
         if first_line != "SUCCESS":
-            print "UNEXPECTED! neither fail/success: {}".format(first_line)
+            print "UNEXPECTED in {}! neither fail/success: {}".format(self.get_command_name(), first_line)
             print jar_output_file.readline().rstrip()
             return []
         return self.get_data(jar_output_file)
 
 
 class GeneratedSchemas(ResultPuller):
-    def get_jar_filename(self):
-        return "SchemaMakingResults.jar"
+    def get_command_name(self):
+        return "SchemaHITResults"
 
     def get_data(self, jar_output_file):
         # output format:
@@ -224,8 +223,8 @@ class GeneratedSchemas(ResultPuller):
 
 
 class GeneratedInspirations(ResultPuller):
-    def get_jar_filename(self):
-        return "InspirationHITResults.jar"
+    def get_command_name(self):
+        return "InspirationHITResults"
 
     def get_data(self, jar_output_file):
         # output format:
@@ -268,8 +267,8 @@ class GeneratedInspirations(ResultPuller):
 
 
 class GeneratedIdeas(ResultPuller):
-    def get_jar_filename(self):
-        return "IdeaHITResults.jar"
+    def get_command_name(self):
+        return "IdeaHITResults"
 
     def get_data(self, jar_output_file):
         # output format:
@@ -309,8 +308,8 @@ class GeneratedIdeas(ResultPuller):
 
 
 class GeneratedSuggestions(ResultPuller):
-    def get_jar_filename(self):
-        return "SuggestionHITResults.jar"
+    def get_command_name(self):
+        return "SuggestionHITResults"
 
     def get_data(self, jar_output_file):
         # output format:
@@ -347,8 +346,8 @@ class GeneratedSuggestions(ResultPuller):
 
 
 class GeneratedRanks(ResultPuller):
-    def get_jar_filename(self):
-        return "RankSchemaHITResults.jar"
+    def get_command_name(self):
+        return "RankHITResults"
 
     def get_data(self, jar_output_file):
         # output format:

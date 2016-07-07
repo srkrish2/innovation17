@@ -73,36 +73,5 @@
 				$('.ui.modal.display').modal('show');
 			}
 		});
-
-		// $.ajax({
-		// 	type: "get",
-		// 	dataTy: 
-		// 	data: ,
-		// 	url: 
-		// 	success: function(sdata){
-		// 		sdata = sdata['feedbacks'];
-		// 		for (var i = 0; i < sdata.length; i++){
-		// 			$('<div class="feedback item "'+sdata['feedback_id']+'>'+sdata[text]+'</div>').appendTo('.field.feedback-list');
-		// 		}
-		// 	}
-		// });
 	});
-	
-
-	// function makePostRequest(){
-	// 	$.ajax({
-	// 		type: "POST",
-	// 		contentType: 'application/json; charset=utf-8',
-	// 		data: JSON.stringify({
-	// 			"problem_id": $('thead').attr('class')
-	// 		}),
-	// 		url: '/feedback_updates',
-	// 		success:function(sdata){
-	// 			sdata = sdata["ideas"]
-	// 			for (var i= 0;i<sdata.length; i++){
-	// 				if($('tr.'+sdata[i]['idea_id']+' .feedback-list').length)$('tr.'+sdata[i]['idea_id']+' .feedback-list')[0].innerHTML="<i class='doctor icon'></i> "+sdata[i]['feedback_count'];
-	// 			}
-	// 		}
-	// 	})
-	// }
 }(window));

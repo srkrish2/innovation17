@@ -3,13 +3,16 @@ READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 TIME_CREATED = "time_created"
 USERNAME_KEY = "username"
 PREVIOUS_URL_KEY = "previous_url"
-HOW_MANY_RANKS = 0
-MIN_RANK = 0
+
+# Auto ranking settings.
+HOW_MANY_RANKS = 1  # defines how many turkers to ask to rank an item
+MIN_RANK = 0  # turkers' ranks are either 0 or 1. ranks are summed up for each item. This number defines what minimum
+              # rank an item should have to be displayed
 
 # Lazy mode settings. Since lazy users don't choose how many schemas/inspiration/ideas to get, we define that here.
 HOW_MANY_SCHEMAS = 1  # how many schemas for each problem
 HOW_MANY_INSPIRATIONS = 1  # how many inspirations for each schema
-HOW_MANY_IDEAS = 1  # how many ideas for each ideas
+HOW_MANY_IDEAS = 1  # how many ideas for each inspiration
 PERIOD = 10  # how often to check mturk for updates, in seconds.
 
 EDIT_LINK_FORMAT = "/problem/{}/edit"
@@ -18,7 +21,6 @@ IDEAS_LINK_FORMAT = "/problem/{}/ideas"
 INSPIRATIONS_LINK_FORMAT = "/problem/{}/inspirations"
 VIEW_LINK_FORMAT = "/problem/{}/view"
 SUGGESTIONS_LINK_FORMAT = "/problem/{}/suggestions"
-SUGGESTIONS_FOR_IDEA_LINK_FORMAT = "/idea/{}/suggestions"
 
 SCHEMA_COUNT = "schema_count"
 INSPIRATION_COUNT = "inspiration_count"

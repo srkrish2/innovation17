@@ -22,14 +22,9 @@ class HtmlPageLoader(object):
 
     def _cp_dispatch(self, vpath):
         if len(vpath) == 3:
-            if vpath[2] == "suggestions":
-                cherrypy.request.params['arg_type'] = vpath.pop(0)
-                cherrypy.request.params['slug'] = vpath.pop(0)
-            else:
-                if vpath.pop(0) != "problem":
-                    vpath.pop(-1)
-                else:
-                    cherrypy.request.params['problem_slug'] = vpath.pop(0)
+            if vpath.pop(0) != "problem":
+                vpath.pop(-1)
+            cherrypy.request.params['problem_slug'] = vpath.pop(0)
             # print "new vpath =", vpath
             return self
 
@@ -91,13 +86,8 @@ class HtmlPageLoader(object):
         return renderers.render_profile()
 
     @cherrypy.expose
-    def suggestions(self, arg_type, slug):
-        if arg_type == "problem":
-            return renderers.render_suggestions_page(slug)
-        elif arg_type == "idea":
-            return renderers.render_suggestions_page_for_idea(slug)
-        else:
-            raise cherrypy.HTTPError(404)
+    def suggestions(self, problem_slug):
+        return renderers.render_suggestions_page(problem_slug)
 
 
 class SaveNewProblemHandler(object):
@@ -257,13 +247,11 @@ class FeedbackHandler(object):
         count_goal = convert_input_count(data['count_goal'])
         if count_goal == -1:
             return {"success": False}
-        print "IDEA_ID =", idea_id
         idea_dict = mc.get_idea_dict(idea_id)
         mc.set_suggestion_stage(idea_dict[PROBLEM_ID])
         thread = Thread(target=launchers.post_feedback, args=[idea_dict, idea_id, feedbacks, count_goal])
         thread.start()
-        return {"success": True,
-                SUGGESTIONS_PAGE_LINK: SUGGESTIONS_FOR_IDEA_LINK_FORMAT.format(idea_dict[SLUG])}
+        return {"success": True}
 
 
 class MoreSuggestionsHandler(object):
@@ -434,9 +422,6 @@ if __name__ == '__main__':
         '/post_feedback': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
-        '/suggestion_updates': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        },
         '/get_accepted_schemas_count': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
@@ -468,7 +453,6 @@ if __name__ == '__main__':
     webapp.post_idea_task = IdeaTaskHandler()
     webapp.post_reject = RejectHandler()
     webapp.post_feedback = FeedbackHandler()
-    webapp.suggestion_updates = SuggestionUpdatesHandler()
     webapp.get_accepted_schemas_count = AcceptedSchemasCountHandler()
     webapp.more_schemas = MoreSchemasHandler()
     webapp.more_suggestions = MoreSuggestionsHandler()
