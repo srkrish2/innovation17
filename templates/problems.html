@@ -51,7 +51,9 @@
           <div class="ui button delete hidden">Delete</div>
           <div class="ui button publish hidden">Publish</div>
           <div class="ui button view"><a href= {{problem.view_page_link}}>View</a></div>
+          {% if problem.lazy==false %}
           <div class="ui button addschemas"><a href='#'>More schemas</a></div>
+          {% endif %}
           <div class="ui popup flowing hidden">
             <div class="ui labeled input">
               <div class="ui label" >Enter the additional </div>
@@ -62,17 +64,20 @@
           {% endif %}
         </td>
         <td>
-          {% if problem.stage=='schema' or problem.stage=='inspiration' or problem.stage=='idea' or problem.stage=='suggestion' %}
-          <a href={{problem.schemas_page_link|default('#')}} class="ui label schema schema-list"><i class="sitemap icon"></i> {{problem.schema_count|default(0)}} </a>
+          {% if problem.lazy!=True and (problem.stage=='schema' or problem.stage=='inspiration' or problem.stage=='idea' or problem.stage=='suggestion') %}
+          <a href={{problem.schemas_page_link|default('#')}} class="ui label schema schema-list" data-tooltip="The number of (evaluated) schemas" ><i class="sitemap icon"></i> {{problem.schema_count|default(0)}} </a>
           {% endif %}
-          {% if problem.stage=='inspiration' or problem.stage=='idea' or problem.stage=='suggestion' %}
-          <a href={{ problem.inspirations_page_link|default('#')}} class="ui label inspiration-list"><i class="write icon"></i> {{problem.inspiration_count|default(0)}}</a>
+          {% if problem.lazy==False and (problem.stage=='inspiration' or problem.stage=='idea' or problem.stage=='suggestion') %}
+          <a href={{ problem.inspirations_page_link|default('#')}} class="ui label inspiration-list" data-tooltip="The number of (evaluated) inspirations" ><i class="write icon"></i> {{problem.inspiration_count|default(0)}}</a>
+          {% endif %}
+          {% if problem.lazy %}
+          <div class="ui label blue" data-tooltip="Please check back later">in progress</div>
           {% endif %}
           {% if problem.stage=='idea' or problem.stage=='suggestion' %}
-          <a href={{ problem.ideas_page_link|default('#')}} class="ui label idea-list"><i class="idea icon"></i> {{problem.idea_count|default(0)}}</a>
+          <a href={{ problem.ideas_page_link|default('#')}} class="ui label idea-list" data-tooltip="The number of (evaluated) ideas" ><i class="idea icon"></i> {{problem.idea_count|default(0)}}</a>
           {% endif %}
           {% if problem.stage=='suggestion' %}
-          <a href={{ problem.suggestions_page_link|default('#')}} class="ui label suggestion-list"><i class="doctor icon"></i> {{problem.suggestion_count|default(0)}}</a>
+          <a href={{ problem.suggestions_page_link|default('#')}} class="ui label suggestion-list" data-tooltip="The number of (evaluated) suggestions" ><i class="doctor icon"></i> {{problem.suggestion_count|default(0)}}</a>
           {% endif %}
         </td>
       </tr>
