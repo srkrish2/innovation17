@@ -128,6 +128,7 @@ def render_suggestions_page(problem_slug):
             }
             ideas.append(idea)
         template = env.get_template('suggestions.html')
+        print 'this is render suggestion', ideas
         return template.render(ideas=ideas, problem_id=problem_id)
 
 

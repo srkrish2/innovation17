@@ -57,37 +57,40 @@
     </div>
     <div class="two fields">
       <div class="field">
-          <!-- <label for="file" class="ui icon button">
-            <i class="file icon"></i>
-            Open File</label>
-            <input type="file" id="file" style="display:none"> -->
-            {% if problem_id %}
-            <input type="text" name="schemagoal" id="schemagoal" value={{count_goal}}
-            {% if operation=="view" %}
-            disabled
-            {% endif %}
-            >
-            {% else %}
-            <input type="text" name="schemagoal" id="schemagoal" placeholder="Target number of schemas to get">
-            {% endif %}
-          </div>
-          <div class="field">
-            <div class="ui teal button submit right save"><i class="icon save"></i> Save
-              <div class="ui save-loader small inline mini text loader"></div> 
-            </div>
-            <div class="ui blue button submit">Submit
-              <div class="ui submit-loader small inline mini loader"></div> 
-            </div>
-            <div class="ui blue button lazy">Lazy
-              <div class="ui submit-loader small inline mini loader"></div>
-            </div>
-          </div>
-        </div>
-        <div class="ui error message"></div>
+        {% if problem_id %}
+        <input type="text" name="schemagoal" id="schemagoal" value={{count_goal}}
+        {% if operation=="view" %}
+        disabled
+        {% endif %}
+        >
+        {% else %}
+        <input type="text" name="schemagoal" id="schemagoal" placeholder="Target number of schemas to get">
+        {% endif %}
       </div>
-
-      <script src="/static/semantic/dist/semantic.js"></script>
-      <script src="/static/assets/js/new_project.js"></script>
+      
+      <div class="field">
+       {% if operation!='view' %}
+       <div class="ui teal button submit right save"><i class="icon save"></i> Save
+        <div class="ui save-loader small inline mini text loader"></div> 
+      </div>
+      <div class="ui blue button submit">Submit
+        <div class="ui submit-loader small inline mini loader"></div> 
+      </div>
+      {% endif %}
+      <div class="ui toggle checkbox
+      {% if lazy %}checked{% endif %}"
+      >
+      <input type="checkbox" name="public">
+      <label>Lazy mode</label>
     </div>
+  </div>
+  
+</div>
+<div class="ui error message"></div>
+</div>
 
-    {% endblock %}
+<script src="/static/semantic/dist/semantic.js"></script>
+<script src="/static/assets/js/new_project.js"></script>
+</div>
+
+{% endblock %}

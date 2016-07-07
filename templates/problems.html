@@ -46,6 +46,14 @@
           <div class="ui button delete">Delete</div>
           <div class="ui button publish">Publish</div>
           <div class="ui button view hidden"><a href={{problem.view_page_link}}>View</a></div>
+          <div class="ui button hidden addschemas"><a href='#'>More schemas</a></div>
+          <div class="ui popup flowing hidden">
+            <div class="ui labeled input">
+              <div class="ui label" >Enter the additional </div>
+              <input type="text" class="moreschemas" placeholder="number of schemas">
+            </div>
+            <div class="ui blue button reactivate" style="display: block">Go!</div>
+          </div>
           {% else %}
           <div class="ui button hidden" ><a href={{problem.edit_page_link}}>Edit</a></div>
           <div class="ui button delete hidden">Delete</div>

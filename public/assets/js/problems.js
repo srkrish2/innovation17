@@ -24,6 +24,7 @@
                 $('tr.'+rowclass+' .ui.button.delete').addClass('hidden');
                 $('tr.'+rowclass+' .ui.button.publish').addClass('hidden');
                 $('tr.'+rowclass+' .ui.button.view').removeClass('hidden');
+                $('tr.'+rowclass+' .ui.button.addschemas').removeClass('hidden');
                 $(e.currentTarget).prop('disabled',false);
                 makePostRequest();
                 // /$('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";

@@ -56,7 +56,7 @@ function init() {
                 REF = $('.new-tag.label')[InsIdx];
             }
             $("<div class = 'ui olive new-tag label'>" + tag
-               + " <i class='delete icon'></i></div>").insertAfter(REF);
+             + " <i class='delete icon'></i></div>").insertAfter(REF);
             $(this).val('');
         }
     });
@@ -73,10 +73,11 @@ $(document).on('click','.ui.save, .ui.submit',function(e){
         var title = $(SELECTOR).form("get value", "title");
         var description = $(SELECTOR).form("get value", "description");
         var schemagoal = $(SELECTOR).form("get value", "schemagoal");
-
+        var lazy = $('.ui.checkbox').checkbox('is checked')?true:false;
         var data = {
             "problem_id": id,
             "title": title,
+            "lazy": lazy,
             "description": description,
             "schema_assignments_num": schemagoal
         };
@@ -115,6 +116,7 @@ $(document).on('click','.ui.save, .ui.submit',function(e){
         });
     }
 });
+
 
 
 $(document).on('click','.ui.lazy',function(e){
