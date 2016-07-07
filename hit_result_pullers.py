@@ -240,7 +240,8 @@ class IdeaHIT(HITObject):
 
     def get_mturk_dicts(self, hit_id):
         result_getter = mturk_controller.GeneratedIdeas()
-        return result_getter.get_results(hit_id)
+        result = result_getter.get_results(hit_id)
+        return result
 
     def get_item_id_from_mturk_dict(self, mturk_dict):
         return mturk_dict[IDEA_ID]

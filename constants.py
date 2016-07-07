@@ -6,7 +6,7 @@ PREVIOUS_URL_KEY = "previous_url"
 
 # Auto ranking settings.
 HOW_MANY_RANKS = 1  # defines how many turkers to ask to rank an item
-MIN_RANK = 1  # turkers' ranks are either 0 or 1. ranks are summed up for each item. This number defines what minimum
+MIN_RANK = 0  # turkers' ranks are either 0 or 1. ranks are summed up for each item. This number defines what minimum
               # rank an item should have to be displayed
 
 # Lazy mode settings. Since lazy users don't choose how many schemas/inspiration/ideas to get, we define that here.

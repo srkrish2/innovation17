@@ -247,7 +247,6 @@ class FeedbackHandler(object):
         count_goal = convert_input_count(data['count_goal'])
         if count_goal == -1:
             return {"success": False}
-        print "IDEA_ID =", idea_id
         idea_dict = mc.get_idea_dict(idea_id)
         mc.set_suggestion_stage(idea_dict[PROBLEM_ID])
         thread = Thread(target=launchers.post_feedback, args=[idea_dict, idea_id, feedbacks, count_goal])
