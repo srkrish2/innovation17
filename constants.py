@@ -3,8 +3,8 @@ READABLE_TIME_FORMAT = "%d %b %Y %I:%M %p"
 TIME_CREATED = "time_created"
 USERNAME_KEY = "username"
 PREVIOUS_URL_KEY = "previous_url"
-HOW_MANY_RANKS = 1
-MIN_RANK = 1
+HOW_MANY_RANKS = 0
+MIN_RANK = 0
 
 # Lazy mode settings. Since lazy users don't choose how many schemas/inspiration/ideas to get, we define that here.
 HOW_MANY_SCHEMAS = 1  # how many schemas for each problem

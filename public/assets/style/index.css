@@ -85,7 +85,7 @@ input:focus:-ms-input-placeholder {
   color: red;
 }
 
-div.ui.modal.launchnext {
+div.ui.modal.launchnext, div.ui.modal.display {
   padding: 2em;
 }
 
@@ -128,4 +128,9 @@ tr.rj {
 
    .grid.pusher.project-list, .ui.container {
     overflow: visible!important;
+  }
+
+  div.number {
+    display: flex;
+    align-items: center;
   }
