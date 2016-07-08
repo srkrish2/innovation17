@@ -18,8 +18,11 @@ def update_hit_results_for_problem(problem_id):
 def update_hit_results(username):
     for problem_id in mc.get_users_problem_ids(username):
         problem_dict = mc.get_problem_dict(problem_id)
-        if not problem_dict[mc.LAZY] or problem_dict[STAGE] == STAGE_SUGGESTION:
-            update_hit_results_for_problem(problem_id)
+        if problem_dict is not None:
+            if not problem_dict[mc.LAZY] or problem_dict[STAGE] == STAGE_SUGGESTION:
+                update_hit_results_for_problem(problem_id)
+        else:
+            print "Didn't find problem with id =", problem_id
 
 
 class Updater(object):

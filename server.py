@@ -105,10 +105,10 @@ class SubmitProblemHandler(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def POST(self):
-        result_dict = launchers.save_problem()
+        result_dict = launchers.save_problem(True)
         if not result_dict["success"]:
             return result_dict
-        input_problem_dict = get_input_problem_dict()
+        input_problem_dict = result_dict["input_problem_dict"]
         problem_id = input_problem_dict[PROBLEM_ID]
         description = input_problem_dict[DESCRIPTION]
         schema_assignments_num = input_problem_dict[SCHEMA_ASSIGNMENTS_NUM]

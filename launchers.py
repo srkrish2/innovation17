@@ -93,15 +93,13 @@ def start_lazy_problem(description, how_many_to_post, problem_id):
     done = idea_stage_waiter.wait_until_done()
     print "idea stage done!"
 
-    mc.set_suggestion_stage(problem_id)
-
 
 def relaunch_schema_task(problem_id, assignments_num):
     description = mc.get_problem_description(problem_id)
     launch_schema_hit(problem_id, description, assignments_num)
 
 
-def save_problem():
+def save_problem(for_submit=False):
     username = check_if_logged_in()
     input_problem_dict = get_input_problem_dict()
     lazy = input_problem_dict[LAZY]
@@ -117,7 +115,10 @@ def save_problem():
     else:
         mc.does_user_have_problem_with_id(username, problem_id)
         mc.edit_problem(input_problem_dict)
-    return {
+    result = {
         "success": True,
         "url": "problems"
     }
+    if for_submit:
+        result["input_problem_dict"] = input_problem_dict
+    return result
