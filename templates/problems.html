@@ -78,7 +78,7 @@
           {% if problem.lazy==False and (problem.stage=='inspiration' or problem.stage=='idea' or problem.stage=='suggestion') %}
           <a href={{ problem.inspirations_page_link|default('#')}} class="ui label inspiration-list" data-tooltip="The number of (evaluated) inspirations" ><i class="write icon"></i> {{problem.inspiration_count|default(0)}}</a>
           {% endif %}
-          {% if problem.lazy and problem.stage!='unpublished' %}
+          {% if problem.lazy and (problem.stage=='schema' or problem.stage=='inspiration') %}
           <div class="ui label blue" data-tooltip="Please check back later">in progress</div>
           {% endif %}
           {% if problem.stage=='idea' or problem.stage=='suggestion' %}
