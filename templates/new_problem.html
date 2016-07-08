@@ -67,7 +67,7 @@
         <input type="text" name="schemagoal" id="schemagoal" placeholder="Target number of schemas to get">
         {% endif %}
       </div>
-      
+
       <div class="field">
        {% if operation!='view' %}
        <div class="ui teal button submit right save"><i class="icon save"></i> Save
@@ -77,14 +77,13 @@
         <div class="ui submit-loader small inline mini loader"></div> 
       </div>
       {% endif %}
-      <div class="ui toggle checkbox
-      {% if lazy %}checked{% endif %}"
+      <div class="ui toggle checkbox"
       >
-      <input type="checkbox" name="public">
+      <input type="checkbox" name="public" {% if lazy %}checked{% endif %}>
       <label>Lazy mode</label>
     </div>
   </div>
-  
+
 </div>
 <div class="ui error message"></div>
 </div>

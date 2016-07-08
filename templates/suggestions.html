@@ -14,21 +14,16 @@
 				<div class="ui teal dividing header">
 					<i class="doctor icon"></i>
 					<div class="content">
-						
 						No. {{loop.index}} feedback: {{feedback.text}}
-						
 						<div class="ui cell ordered list suggestions">
 							{% for suggestion in feedback.suggestions %}
 							<div class="item suggestion">
 								<h5 class="ui header">{{suggestion.text}}</h5>
 							</div>
 							{% endfor %}
-							
 						</div>
 					</div>
 				</div>
-				<!-- <div class="segment feedback {{feedback.feedback_id}}">{{feedback.text}}</div> -->
-				
 				{% endfor %}
 			</div>
 		</div>
