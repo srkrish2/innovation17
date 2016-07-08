@@ -20,7 +20,7 @@
 					<td>{{idea.schema_text}}</td>
 					<td>
 						{% if idea.status == 2 %}
-						<div class="ui button view"><a href="#" class="ui label feedback-list count" data-tooltip="Click to see the feedback you gave"><i class="icon doctor"></i>{{idea.feedback_count|default(0)}}</a></div>
+						<div class="ui button view"><a href="#" class="ui label feedback-list count" data-tooltip="Click to see the feedback you gave"><i class="icon doctor"></i>{{idea.feedbacks_num}}</a></div>
 						{% else %}
 						<div class="ui button ac proceed" idea.status==1?" selected":"">Accept</div>
 						<div class="ui button red rj" idea.status==0?" selected":"">Reject</div>

@@ -2,6 +2,9 @@ import cherrypy
 import mongodb_controller
 from constants import *
 from dateutil.tz import tzlocal
+import re
+import random
+import string
 
 
 def check_problem_access(problem_slug):
@@ -16,17 +19,11 @@ def check_problem_access(problem_slug):
         raise cherrypy.HTTPRedirect("/sign_in")
 
 
-def get_problem_parameters(no_count=False):
+def check_if_logged_in():
     if USERNAME_KEY not in cherrypy.session:
         raise cherrypy.HTTPError(403)
-    owner_username = cherrypy.session[USERNAME_KEY]
-    data = cherrypy.request.json
-    title = data["title"]
-    description = data["description"]
-    if no_count:
-        return owner_username, title, description
-    schema_assignments_num = convert_input_count(data["schema_assignments_num"])
-    return owner_username, title, description, schema_assignments_num
+    else:
+        return cherrypy.session[USERNAME_KEY]
 
 
 def convert_input_count(user_input):
@@ -59,3 +56,31 @@ def convert_object_id_to_readable_time(object_id):
     utc_time = object_id.generation_time
     local_tz = tzlocal()
     return utc_time.astimezone(local_tz).strftime(READABLE_TIME_FORMAT)
+
+
+def slugify(s):
+    s = s.lower()
+    for c in [' ', '-', '.', '/']:
+        s = s.replace(c, '_')
+    s = re.sub('\W', '', s)
+    s = s.replace('_', ' ')
+    s = re.sub('\s+', ' ', s)
+    s = s.strip()
+    s = s.replace(' ', '-')
+    return s
+
+
+def get_input_problem_dict():
+    data = cherrypy.request.json
+    return {
+        OWNER_USERNAME: cherrypy.session[USERNAME_KEY],
+        TITLE: data[TITLE],
+        DESCRIPTION: data[DESCRIPTION],
+        SCHEMA_ASSIGNMENTS_NUM: convert_input_count(data[SCHEMA_ASSIGNMENTS_NUM]),
+        LAZY: data[LAZY],
+        PROBLEM_ID: data[PROBLEM_ID]
+    }
+
+
+def generate_id():
+    return ''.join(random.sample(string.hexdigits, 8))

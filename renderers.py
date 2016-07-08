@@ -26,21 +26,21 @@ def render_problems_page():
     for problem in db_problems:
         # add counts
         counter = well_ranked_counters.WellRankedSchemaCounter()
-        problem[SCHEMA_COUNT] = counter.get_count(problem[mc.PROBLEM_ID])
+        problem[SCHEMA_COUNT] = counter.get_count(problem[PROBLEM_ID])
         counter = well_ranked_counters.WellRankedInspirationCounter()
-        problem[INSPIRATION_COUNT] = counter.get_count(problem[mc.PROBLEM_ID])
+        problem[INSPIRATION_COUNT] = counter.get_count(problem[PROBLEM_ID])
         counter = well_ranked_counters.WellRankedIdeaCounter()
-        problem[IDEA_COUNT] = counter.get_count(problem[mc.PROBLEM_ID])
+        problem[IDEA_COUNT] = counter.get_count(problem[PROBLEM_ID])
         counter = well_ranked_counters.WellRankedSuggestionCounter()
-        problem[SUGGESTION_COUNT] = counter.get_count(problem[mc.PROBLEM_ID])
+        problem[SUGGESTION_COUNT] = counter.get_count(problem[PROBLEM_ID])
 
         # add links
-        problem[EDIT_PAGE_LINK] = EDIT_LINK_FORMAT.format(problem[mc.SLUG])
-        problem[SCHEMAS_PAGE_LINK] = SCHEMAS_LINK_FORMAT.format(problem[mc.SLUG])
-        problem[IDEAS_PAGE_LINK] = IDEAS_LINK_FORMAT.format(problem[mc.SLUG])
-        problem[INSPIRATIONS_PAGE_LINK] = INSPIRATIONS_LINK_FORMAT.format(problem[mc.SLUG])
-        problem[SUGGESTIONS_PAGE_LINK] = SUGGESTIONS_LINK_FORMAT.format(problem[mc.SLUG])
-        problem[VIEW_PAGE_LINK] = VIEW_LINK_FORMAT.format(problem[mc.SLUG])
+        problem[EDIT_PAGE_LINK] = EDIT_LINK_FORMAT.format(problem[SLUG])
+        problem[SCHEMAS_PAGE_LINK] = SCHEMAS_LINK_FORMAT.format(problem[SLUG])
+        problem[IDEAS_PAGE_LINK] = IDEAS_LINK_FORMAT.format(problem[SLUG])
+        problem[INSPIRATIONS_PAGE_LINK] = INSPIRATIONS_LINK_FORMAT.format(problem[SLUG])
+        problem[SUGGESTIONS_PAGE_LINK] = SUGGESTIONS_LINK_FORMAT.format(problem[SLUG])
+        problem[VIEW_PAGE_LINK] = VIEW_LINK_FORMAT.format(problem[SLUG])
 
         problem[TIME_CREATED] = convert_object_id_to_readable_time(problem["_id"])
         problems.append(problem)
@@ -112,7 +112,7 @@ class InspirationsPageRenderer(StagePageRenderer):
         inspiration_dicts = list(mc.get_well_ranked_inspirations(problem_id))
         for inspiration in inspiration_dicts:
             problem_text = mc.get_problem_description(problem_id)
-            schema_text = mc.get_schema_text(inspiration[mc.SCHEMA_ID])
+            schema_text = mc.get_schema_text(inspiration[SCHEMA_ID])
             inspiration[PROBLEM_TEXT_FIELD] = problem_text
             inspiration[SCHEMA_TEXT_FIELD] = schema_text
         return inspiration_dicts
@@ -148,7 +148,7 @@ class SuggestionsPageRenderer(StagePageRenderer):
             idea_id = idea_dict[mc.IDEA_ID]
             idea = {
                 mc.IDEA_ID: idea_id,
-                mc.TEXT: idea_dict[mc.TEXT],
+                TEXT: idea_dict[TEXT],
                 FEEDBACKS_FIELD: get_feedbacks_with_suggestions(idea_id)
             }
             if len(idea[FEEDBACKS_FIELD]) > 0:
@@ -174,8 +174,10 @@ def render_edit_page(problem_slug):
         problem_id = mc.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
         problem_dict = mc.get_problem_dict(problem_id)
         template = env.get_template('new_problem.html')
-        return template.render(count_goal=problem_dict[mc.SCHEMA_ASSIGNMENTS_NUM], problem_id=problem_id,
-                               title=problem_dict[mc.TITLE], operation="edit", description=problem_dict[mc.DESCRIPTION])
+        print "lazy is", problem_dict[LAZY]
+        return template.render(count_goal=problem_dict[SCHEMA_ASSIGNMENTS_NUM], problem_id=problem_id,
+                               title=problem_dict[TITLE], operation="edit", description=problem_dict[mc.DESCRIPTION],
+                               lazy=problem_dict[LAZY])
 
 
 def render_view_page(problem_slug):
@@ -183,8 +185,9 @@ def render_view_page(problem_slug):
         problem_id = mc.get_problem_id(cherrypy.session[USERNAME_KEY], problem_slug)
         problem_dict = mc.get_problem_dict(problem_id)
         template = env.get_template('new_problem.html')
-        return template.render(count_goal=problem_dict[mc.SCHEMA_ASSIGNMENTS_NUM], problem_id=problem_id, operation="view",
-                               title=problem_dict[mc.TITLE], description=problem_dict[mc.DESCRIPTION])
+        return template.render(count_goal=problem_dict[SCHEMA_ASSIGNMENTS_NUM], problem_id=problem_id,
+                               operation="view", title=problem_dict[TITLE], description=problem_dict[mc.DESCRIPTION],
+                               lazy=problem_dict[LAZY])
 
 
 def render_new_problem():

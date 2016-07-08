@@ -1,20 +1,20 @@
 import pymongo
-import re
 from constants import *
+from utility_functions import slugify
 
 
 ######################## INSERT ONE #################################
 
-def insert_problem(problem_id, title, description, owner_username, schema_assignments_num, lazy):
+def insert_problem(problem_dict):
     problem = {
-        PROBLEM_ID: problem_id,
-        TITLE: title,
-        DESCRIPTION: description,
-        OWNER_USERNAME: owner_username,
-        SLUG: slugify(title),
+        PROBLEM_ID: problem_dict[PROBLEM_ID],
+        TITLE: problem_dict[TITLE],
+        DESCRIPTION: problem_dict[DESCRIPTION],
+        OWNER_USERNAME: problem_dict[OWNER_USERNAME],
+        SLUG: slugify(problem_dict[TITLE]),
         STAGE: STAGE_UNPUBLISHED,
-        SCHEMA_ASSIGNMENTS_NUM: schema_assignments_num,
-        LAZY: lazy
+        SCHEMA_ASSIGNMENTS_NUM: problem_dict[SCHEMA_ASSIGNMENTS_NUM],
+        LAZY: problem_dict[LAZY]
     }
     problems_collection.insert_one(problem)
 
@@ -533,7 +533,8 @@ def edit_problem(problem_dict):
     query_filter = {PROBLEM_ID: problem_id}
     new_fields = {
         DESCRIPTION: problem_dict[DESCRIPTION],
-        SCHEMA_ASSIGNMENTS_NUM: problem_dict[SCHEMA_ASSIGNMENTS_NUM]
+        SCHEMA_ASSIGNMENTS_NUM: problem_dict[SCHEMA_ASSIGNMENTS_NUM],
+        LAZY: problem_dict[LAZY]
     }
     problem = problems_collection.find_one({PROBLEM_ID: problem_id})
     if problem_dict[TITLE] != problem[TITLE]:
@@ -622,17 +623,6 @@ def set_inspiration_processed_status(inspiration_id):
     }}
     inspirations_collection.update_one(query_filter, update)
 
-
-def slugify(s):
-    s = s.lower()
-    for c in [' ', '-', '.', '/']:
-        s = s.replace(c, '_')
-    s = re.sub('\W', '', s)
-    s = s.replace('_', ' ')
-    s = re.sub('\s+', ' ', s)
-    s = s.strip()
-    s = s.replace(' ', '-')
-    return s
 
 # client
 client = pymongo.MongoClient()
