@@ -87,11 +87,11 @@ class StagePageRenderer(object):
             problem_id = mc.get_problem_id(cherrypy.session[USERNAME_KEY], self.problem_slug)
             items = self.get_items(problem_id)
             template = env.get_template(self.get_template_filename())
-            [schemas_page_link, inspirations_page_link, ideas_page_link] = make_links_list(self.problem_slug, problem_id)
+            [schemas_link, insps_link, ideas_link, suggs_link] = make_links_list(self.problem_slug, problem_id)
             return template.render(items=items, problem_id=problem_id,
                                    problem_stage=mc.get_stage(problem_id),
-                                   schemas_page_link=schemas_page_link, inspirations_page_link=inspirations_page_link,
-                                   ideas_page_link=ideas_page_link)
+                                   schemas_page_link=schemas_link, inspirations_page_link=insps_link,
+                                   ideas_page_link=ideas_link, suggestions_page_link=suggs_link)
 
 
 class SchemasPageRenderer(StagePageRenderer):

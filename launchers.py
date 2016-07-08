@@ -93,8 +93,6 @@ def start_lazy_problem(description, how_many_to_post, problem_id):
     done = idea_stage_waiter.wait_until_done()
     print "idea stage done!"
 
-    mc.set_suggestion_stage(problem_id)
-
 
 def relaunch_schema_task(problem_id, assignments_num):
     description = mc.get_problem_description(problem_id)

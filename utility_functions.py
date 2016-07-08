@@ -42,14 +42,16 @@ def make_links_list(slug, problem_id):
     schemas_page_link = SCHEMAS_LINK_FORMAT.format(slug)
     inspirations_page_link = INSPIRATIONS_LINK_FORMAT.format(slug)
     ideas_page_link = IDEAS_LINK_FORMAT.format(slug)
+    suggestions_page_link = SUGGESTIONS_LINK_FORMAT.format(slug)
     stage = mongodb_controller.get_stage(problem_id)
     if stage == mongodb_controller.STAGE_SUGGESTION:
-        return schemas_page_link, inspirations_page_link, ideas_page_link
+        return schemas_page_link, inspirations_page_link, ideas_page_link, suggestions_page_link
+    suggestions_page_link = ""
     if stage != mongodb_controller.STAGE_IDEA:
         ideas_page_link = ""
     elif stage != mongodb_controller.STAGE_INSPIRATION:
         inspirations_page_link = ""
-    return schemas_page_link, inspirations_page_link, ideas_page_link
+    return schemas_page_link, inspirations_page_link, ideas_page_link, suggestions_page_link
 
 
 def convert_object_id_to_readable_time(object_id):
