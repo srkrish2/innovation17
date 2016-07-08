@@ -146,12 +146,15 @@ also problem_id
 ```
 
 
-### /save_new_problem POST request
+### /save_problem POST request
 input
 ```
 {
   "title": string,
-  "description": string
+  "description": string,
+  "schema_assignments_num": int,
+  "lazy": boolean,
+  "problem_id": string or null
 }
 ```
 output
@@ -163,13 +166,14 @@ output
 ```
 
 
-### /post_new_problem POST request
+### /submit_problem POST request
 input
 ```
 {
   "title": string,
   "description": string,
-  "schema_assignments_num": int
+  "schema_assignments_num": int,
+  "lazy": boolean
 }
 ```
 output

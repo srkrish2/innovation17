@@ -1,10 +1,9 @@
 import mongodb_controller as mc
 import mturk_controller
 from constants import *
-import random
-import string
 from multiprocessing.pool import ThreadPool
 import waiters
+from utility_functions import generate_id, get_input_problem_dict, check_if_logged_in
 
 
 def launch_schema_hit(problem_id, description, assignments_num):
@@ -57,16 +56,10 @@ def post_feedback(idea_dict, idea_id, feedbacks, count_goal):
         if hit_id == "FAIL":
             print "post_feedback: FAIL!"
             continue
-        feedback_id = ''.join(random.sample(string.hexdigits, 8))
+        feedback_id = generate_id()
         mc.add_feedback(feedback_id, feedback, idea_id)
         mc.insert_new_suggestion_hit(problem_id, idea_id, feedback_id, count_goal, hit_id)
     mc.idea_launched(idea_id)
-
-
-def save_problem(owner_username, title, description, schema_assignments_num, lazy=False):
-    problem_id = ''.join(random.sample(string.hexdigits, 8))
-    mc.insert_problem(problem_id, title, description, owner_username, schema_assignments_num, lazy)
-    return problem_id
 
 
 def publish_problem(problem_id):
@@ -106,3 +99,25 @@ def start_lazy_problem(description, how_many_to_post, problem_id):
 def relaunch_schema_task(problem_id, assignments_num):
     description = mc.get_problem_description(problem_id)
     launch_schema_hit(problem_id, description, assignments_num)
+
+
+def save_problem():
+    username = check_if_logged_in()
+    input_problem_dict = get_input_problem_dict()
+    lazy = input_problem_dict[LAZY]
+    schema_assignments_num = input_problem_dict[SCHEMA_ASSIGNMENTS_NUM]
+    if not lazy and schema_assignments_num == -1:
+        return {"success": False}
+    if lazy:
+        input_problem_dict[SCHEMA_ASSIGNMENTS_NUM] = HOW_MANY_SCHEMAS
+    problem_id = input_problem_dict[PROBLEM_ID]
+    if problem_id is None:  # new problem
+        input_problem_dict[PROBLEM_ID] = generate_id()
+        mc.insert_problem(input_problem_dict)
+    else:
+        mc.does_user_have_problem_with_id(username, problem_id)
+        mc.edit_problem(input_problem_dict)
+    return {
+        "success": True,
+        "url": "problems"
+    }

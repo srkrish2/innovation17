@@ -11,7 +11,7 @@ import mongodb_controller as mc
 from threading import Thread
 import update_managers
 import authorization
-from utility_functions import convert_input_count, get_problem_parameters
+from utility_functions import convert_input_count, get_input_problem_dict
 from constants import *
 import renderers
 import well_ranked_counters
@@ -90,35 +90,35 @@ class HtmlPageLoader(object):
         return renderers.render_suggestions_page(problem_slug)
 
 
-class SaveNewProblemHandler(object):
+class SaveProblemHandler(object):
     exposed = True
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):
-        [owner_username, title, description, schema_assignments_num] = get_problem_parameters()
-        if schema_assignments_num == -1:
-            return {"success": False}
-        launchers.save_problem(owner_username, title, description, schema_assignments_num)
-        return {
-            "success": True,
-            "url": "problems"
-        }
+        return launchers.save_problem()
 
 
-class PostNewProblemHandler(object):
+class SubmitProblemHandler(object):
     exposed = True
 
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def POST(self):
-        [owner_username, title, description, schema_assignments_num] = get_problem_parameters()
-        if schema_assignments_num == -1:
-            return {"success": False}
-        problem_id = launchers.save_problem(owner_username, title, description, schema_assignments_num)
+        result_dict = launchers.save_problem()
+        if not result_dict["success"]:
+            return result_dict
+        input_problem_dict = get_input_problem_dict()
+        problem_id = input_problem_dict[PROBLEM_ID]
+        description = input_problem_dict[DESCRIPTION]
+        schema_assignments_num = input_problem_dict[SCHEMA_ASSIGNMENTS_NUM]
         mc.set_schema_stage(problem_id)
-        thread = Thread(target=launchers.launch_schema_hit, args=[problem_id, description, schema_assignments_num])
-        thread.start()
+        if input_problem_dict[LAZY]:
+            thread = Thread(target=launchers.start_lazy_problem, args=[description, schema_assignments_num, problem_id])
+            thread.start()
+        else:
+            thread = Thread(target=launchers.launch_schema_hit, args=[problem_id, description, schema_assignments_num])
+            thread.start()
         return {
             "success": True,
             "url": "problems"
@@ -136,23 +136,6 @@ class PublishProblemHandler(object):
         thread = Thread(target=launchers.publish_problem, args=[problem_id])
         thread.start()
         return {"success": True}
-
-
-class PostProblemLazyHandler(object):
-    exposed = True
-
-    @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def POST(self):
-        [owner_username, title, description] = get_problem_parameters(no_count=True)
-        problem_id = launchers.save_problem(owner_username, title, description, HOW_MANY_SCHEMAS, True)
-        mc.set_schema_stage(problem_id)
-        thread = Thread(target=launchers.start_lazy_problem, args=[description, HOW_MANY_SCHEMAS, problem_id])
-        thread.start()
-        return {
-            "success": True,
-            "url": "problems"
-        }
 
 
 class CountUpdatesHandler(object):
@@ -178,7 +161,7 @@ class InspirationTaskHandler(object):
             raise cherrypy.HTTPError(403)
         owner_username = cherrypy.session[USERNAME_KEY]
         data = cherrypy.request.json
-        problem_id = data['problem_id']
+        problem_id = data[PROBLEM_ID]
         if not mc.does_user_have_problem_with_id(owner_username, problem_id):
             raise cherrypy.HTTPError(403)
         count_goal = convert_input_count(data['count_goal'])
@@ -324,22 +307,6 @@ class AcceptedSchemasCountHandler(object):
         return {"count": count}
 
 
-class ProblemEditHandler(object):
-    exposed = True
-
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def POST(self):
-        if USERNAME_KEY not in cherrypy.session:
-            raise cherrypy.HTTPError(403)
-        data = cherrypy.request.json
-        if not mc.does_user_have_problem_with_id(cherrypy.session[USERNAME_KEY], data[PROBLEM_ID]):
-            raise cherrypy.HTTPError(403)
-        mc.edit_problem(data)
-        return {"success": True,
-                "url": "problems"}
-
-
 class DeleteProblemHandler(object):
     exposed = True
 
@@ -386,7 +353,7 @@ if __name__ == '__main__':
             'tools.sessions.timeout': 365*24*60
         },
         # these are for rest api requests, not html pages, so create method dispatchers
-        '/save_new_problem': {
+        '/save_problem': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
         '/post_new_account': {
@@ -407,10 +374,7 @@ if __name__ == '__main__':
         '/delete_problem': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
-        '/post_new_problem': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        },
-        '/post_problem_edit': {
+        '/submit_problem': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
         '/post_idea_task': {
@@ -431,9 +395,6 @@ if __name__ == '__main__':
         '/more_suggestions': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         },
-        '/post_problem_lazy': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        },
         '/get_feedbacks': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
@@ -442,21 +403,19 @@ if __name__ == '__main__':
     webapp = HtmlPageLoader()
 
     webapp.post_sign_in = authorization.SignInHandler()
-    webapp.save_new_problem = SaveNewProblemHandler()
-    webapp.post_new_problem = PostNewProblemHandler()
+    webapp.save_problem = SaveProblemHandler()
+    webapp.submit_problem = SubmitProblemHandler()
     webapp.publish_problem = PublishProblemHandler()
     webapp.post_new_account = authorization.NewAccountHandler()
     webapp.get_count_updates = CountUpdatesHandler()
     webapp.post_inspiration_task = InspirationTaskHandler()
     webapp.delete_problem = DeleteProblemHandler()
-    webapp.post_problem_edit = ProblemEditHandler()
     webapp.post_idea_task = IdeaTaskHandler()
     webapp.post_reject = RejectHandler()
     webapp.post_feedback = FeedbackHandler()
     webapp.get_accepted_schemas_count = AcceptedSchemasCountHandler()
     webapp.more_schemas = MoreSchemasHandler()
     webapp.more_suggestions = MoreSuggestionsHandler()
-    webapp.post_problem_lazy = PostProblemLazyHandler()
     webapp.get_feedbacks = GetFeedbacksHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
