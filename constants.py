@@ -10,8 +10,8 @@ MIN_RANK = 0  # turkers' ranks are either 0 or 1. ranks are summed up for each i
               # rank an item should have to be displayed
 
 # Lazy mode settings. Since lazy users don't choose how many schemas/inspiration/ideas to get, we define that here.
-HOW_MANY_SCHEMAS = 1  # how many schemas for each problem
-HOW_MANY_INSPIRATIONS = 1  # how many inspirations for each schema
+HOW_MANY_SCHEMAS = 2  # how many schemas for each problem
+HOW_MANY_INSPIRATIONS = 2  # how many inspirations for each schema
 HOW_MANY_IDEAS = 1  # how many ideas for each inspiration
 PERIOD = 10  # how often to check mturk for updates, in seconds.
 

@@ -1,7 +1,8 @@
 (function(global){
 	//if($('.suggestion-list').length) makePostRequest();
 	//var interval = setInterval(makePostRequest,10000);
-	var currentIdea, currentTotal;
+	var currentIdea;
+	var currentTotal = 0
 	$(document).on('click','.proceed',function(e){
 		$('.ui.modal.launchnext .teal.ui.label').html($(e.currentTarget.parentElement).siblings()[0].innerHTML);
 		$('.ui.modal.launchnext').modal('show');
@@ -28,6 +29,7 @@
 				$('.ui.modal.launchnext').modal('hide');
 				$(e.currentTarget).prop('disabled',false);
 				$(':input').val('');
+				currentTotal = 0
 				// makePostRequest();
 			},
 			error: function(e){

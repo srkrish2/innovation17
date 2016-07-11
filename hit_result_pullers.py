@@ -73,15 +73,16 @@ class HITObject:
                 mturk_dict[RANK] = 0
             self.add_mturk_dict_to_db(mturk_dict)
             new_dicts_count += 1
-            if self.needs_to_post_rank():
-                rank_hit_creator = self.get_rank_hit_creator(mturk_dict)
-                rank_item_hit_id = rank_hit_creator.post()
-                if rank_item_hit_id == "FAIL":
-                    print "FAIL when posting rank hit!"
-                    continue
-                self.save_rank_hit(rank_item_hit_id, mturk_dict)
-            else:
-                self.increment_item_rank(mturk_dict)
+            if HOW_MANY_RANKS != 0:
+                if self.needs_to_post_rank():
+                    rank_hit_creator = self.get_rank_hit_creator(mturk_dict)
+                    rank_item_hit_id = rank_hit_creator.post()
+                    if rank_item_hit_id == "FAIL":
+                        print "FAIL when posting rank hit!"
+                        continue
+                    self.save_rank_hit(rank_item_hit_id, mturk_dict)
+                else:
+                    self.increment_item_rank(mturk_dict)
         self.increment_count(hit_id, new_dicts_count)
 
 

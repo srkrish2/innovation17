@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1 align="center">Rank an idea</h1>
+			<h2>Instructions</h2>
+			<p>Your task is to rank an idea</p>
+			<br/>
+			<p>Problem: <i><font color="green">$problem</font></i></p>
+			<p>Idea: <i><font color="blue">$idea</font></i></p>
+			<h2>Task</h2>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+		<QuestionIdentifier>1</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+			<Text>Rank the idea</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+			<SelectionAnswer>
+				<MinSelectionCount>1</MinSelectionCount>
+				<MaxSelectionCount>1</MaxSelectionCount>
+				<StyleSuggestion>radiobutton</StyleSuggestion>
+				<Selections>
+					<Selection>
+						<SelectionIdentifier>1</SelectionIdentifier>
+						<Text>Good</Text>
+					</Selection>
+					<Selection>
+						<SelectionIdentifier>0</SelectionIdentifier>
+						<Text>Bad</Text>
+					</Selection>
+				</Selections>
+			</SelectionAnswer>
+		</AnswerSpecification>
+	</Question>
+</QuestionForm>

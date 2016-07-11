@@ -89,7 +89,7 @@ div.ui.modal.launchnext, div.ui.modal.display {
   padding: 2em;
 }
 
-div.hidden {
+div.hidden, span.hidden {
   display: none!important;
 }
 

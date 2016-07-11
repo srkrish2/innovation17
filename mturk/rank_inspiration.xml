@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1 align="center">Rank an inspiration</h1>
+			<h2>Instructions</h2>
+			<p>Your task is to rank an inspiration</p>
+			<p>Problem: <i><font color="green">$problem</font></i></p>
+			<p>Schema: <i><font color="blue">$schema</font></i></p>
+			<p><strong><a href="$sourceLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.</strong></p>
+			#if ($hasImage)
+				<p> The worker also attached the image: </p>
+				<img src="$imageLink" alt="Worker's image" />
+			#end
+			<p>Explanation: $explanation</p>
+			<h2>Task</h2>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+		<QuestionIdentifier>1</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+			<Text>Rank the inspiration</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+			<SelectionAnswer>
+				<MinSelectionCount>1</MinSelectionCount>
+				<MaxSelectionCount>1</MaxSelectionCount>
+				<StyleSuggestion>radiobutton</StyleSuggestion>
+				<Selections>
+					<Selection>
+						<SelectionIdentifier>1</SelectionIdentifier>
+						<Text>Good</Text>
+					</Selection>
+					<Selection>
+						<SelectionIdentifier>0</SelectionIdentifier>
+						<Text>Bad</Text>
+					</Selection>
+				</Selections>
+			</SelectionAnswer>
+		</AnswerSpecification>
+	</Question>
+</QuestionForm>

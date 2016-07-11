@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1>Instructions</h1>
+			<p><strong>
+				Below is a problem we have. In a previous task, we asked workers to find inspirations for this problem.
+				In this task, we would like you to solve this problem by using the inspiration.
+			</strong></p>
+			<p>Problem: <i><font color="green">$problem</font></i></p>
+			<p><strong>
+				<a href="$sourceLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.
+			</strong></p>
+			#if ($hasImage)
+				<p> The worker also attached the image: </p>
+				<img src="$imageLink" alt="Worker's image" />
+			#end
+			<p><strong>The explanation from the previous worker regarding why this link can help with solving the problem:</strong></p>
+			<p>$explanation</p>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+	    <QuestionIdentifier>1</QuestionIdentifier>
+	    <IsRequired>true</IsRequired>
+	    <QuestionContent>
+	        <Text>Summarize the content of the inspiration link.</Text>
+	    </QuestionContent>
+	    <AnswerSpecification>
+	        <FreeTextAnswer/>
+	    </AnswerSpecification>
+	</Question>
+	<Question>
+	    <QuestionIdentifier>2</QuestionIdentifier>
+	    <IsRequired>true</IsRequired>
+	    <QuestionContent>
+	    	<Text>
+	    		Generate a solution for the problem by using the inspiration provided.
+				Describe your solution as detailed as possible. It should be elaborate enough that the engineers know how
+				to design the product based on your solution description.
+			</Text>
+	    </QuestionContent>
+	    <AnswerSpecification>
+	    	<FreeTextAnswer/>
+	    </AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>3</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>Come up with a short title (2-3 words) for your solution.</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+</QuestionForm>

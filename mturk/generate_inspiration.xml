@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1>Instructions</h1>
+			<strong>Please find inspirations for solving the following problem.</strong>
+			<p><i><font color="green">$schema</font></i></p>
+			<strong>Please search online to find an inspiration that you think can help with solving the above problem.</strong>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+	    <QuestionIdentifier>1</QuestionIdentifier>
+	    <IsRequired>true</IsRequired>
+	    <QuestionContent>
+	        <Text>Inspiration: Paste the link below. We are looking for inspirations (not solutions) to this problem. 
+	        	Your answer has to be a revevant inspiration, otherwise you risk being rejected.</Text>
+	    </QuestionContent>
+	    <AnswerSpecification>
+	        <FreeTextAnswer/>
+	    </AnswerSpecification>
+	</Question>
+	<Question>
+	    <QuestionIdentifier>2</QuestionIdentifier>
+	    <IsRequired>true</IsRequired>
+	    <QuestionContent>
+	    	<Text>Additional link:</Text>
+	    </QuestionContent>
+	    <AnswerSpecification>
+	    	<FreeTextAnswer/>
+	    </AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>3</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>Please summarize the inspiration in a few sentences.</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>4</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>Why do you think the inspiration you found might help with solving the problem?</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+</QuestionForm>

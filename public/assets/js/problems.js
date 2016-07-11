@@ -1,11 +1,6 @@
 (function(global){
     var begin = new Date().getTime();
     makePostRequest();
-    // setInterval(makePostRequest, 10000)
-   var timeoutID = setTimeout(makePostRequest,10000);
-   $(document).on('click', 'a.schemalist, div.button', function(e){
-       clearTimeout(timeoutID);
-   });
     $(document).on('click','div.button.publish',function(e){
         e.preventDefault();
         $(e.currentTarget).prop('disabled',true);
@@ -26,7 +21,6 @@
                 $('tr.'+rowclass+' .ui.button.view').removeClass('hidden');
                 $('tr.'+rowclass+' .ui.button.addschemas').removeClass('hidden');
                 $(e.currentTarget).prop('disabled',false);
-                makePostRequest();
                 // /$('tr.'+sdata['new_id']+' .schema-list')[0].innerHTML="<i class='paw icon'></i>0";
             }
         });
@@ -84,7 +78,6 @@
 
     function makePostRequest(){
         var temp = new Date().getTime();
-        console.log("it has been " + (temp-begin)/1000);
         // begin = new Date().getTime();
         $.ajax({
             type: "GET",
@@ -96,8 +89,7 @@
                     if($('tr.'+sdata[i]['problem_id']+' .idea-list').length)$('tr.'+sdata[i]['problem_id']+' .idea-list')[0].innerHTML="<i class='idea icon'></i> "+sdata[i]['idea_count'];
                     if($('tr.'+sdata[i]['problem_id']+' .suggestion-list').length)$('tr.'+sdata[i]['problem_id']+' .suggestion-list')[0].innerHTML="<i class='doctor icon'></i> "+sdata[i]['suggestion_count'];
                 }
-                console.log('within makerequest, after success return');
-               timeoutID = setTimeout(makePostRequest,10000);
+                setTimeout(makePostRequest,10000);
             }
         })
     }

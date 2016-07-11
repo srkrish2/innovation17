@@ -31,7 +31,7 @@ def convert_input_count(user_input):
         try:
             count = int(user_input)
         except ValueError:
-            print "Casting fail!!!"
+            print "Casting fail! Input:", user_input
             count = -1
     else:
         count = user_input
