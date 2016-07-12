@@ -3,21 +3,30 @@
 {% block content %}
 <div class="ui container center middle aligned first-page-element">
 	<div class="ui equal width grid">
-		<table class="ui cell padded table">
+		<table class="ui cell padded unstackable table">
 			<thead class={{problem_id}}>
 				<tr>
-					<td>Generated Idea</td>
-					<td>Inspiration</td>
-					<td>Schema</td>
-					<td>Action/Feedback</td>
+					<th>Generated Idea</th>
+					<!-- <th>Inspiration</th>
+					<th>Schema</th> -->
+					<th>Action/Feedback</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for idea in items %}
 				<tr class={{idea.idea_id}}>
-					<td>{{idea.text}}</td>
-					<td>{{idea.inspiration_text}}</td>
-					<td>{{idea.schema_text}}</td>
+					<td>{{idea.text}}
+						<div class="inspiration_description ui accordion">
+							<div class="title"><i class="dropdown icon"></i>Inspiration</div>
+							<div class="extra content">{{idea.inspiration_text}}</div>
+						</div>
+						<div class="schema_description ui accordion">
+							<div class="title"><i class="dropdown icon"></i>Schema</div>
+							<div class="extra content">{{idea.schema_text}}</div>
+						</div>
+					</td>
+					<!-- <td>{{idea.inspiration_text}}</td>
+					<td>{{idea.schema_text}}</td> -->
 					<td>
 						{% if idea.status == 2 %}
 						<div class="ui button view"><a href="#" class="ui label feedback-list count" data-tooltip="Click to see the feedback you gave"><i class="icon doctor"></i>{{idea.feedbacks_num}}</a></div>

@@ -8,13 +8,13 @@
   ] -%}
   <div class="ui middle aligned center container content first-page-element">
     <div class="ui schema-list equal width attached grid">
-      <table class='ui fixed celled padded table'>
+      <table class='ui fixed celled padded unstackable table'>
         <thead class={{problem_id}}>
           <tr>
-            <th>Schema Content</th>
-            <th>Date</th>
-            <th>By</th>
-            <th>Action</th>
+            <th class="eight wide">Schema Content</th>
+       <!--      <th>Date</th> -->
+            <th class="three wide">By</th>
+            <th class="five wide">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -28,7 +28,7 @@
             <!-- </h2> -->
           </td>
 
-          <td>{{schema.time_created}}</td>
+          <!-- <td>{{schema.time_created}}</td> -->
           <td>{{schema.worker_id}}</td>
           <td class='action'>
             {% if schema.status == 1 or schema.status ==0 %}
@@ -67,7 +67,7 @@
       </tbody>
       <tfoot class="full-width">
         <tr class="padded">
-          <th colspan="4">
+          <th colspan="3">
             <div class="ui button">Accept all</div>
             <div class="ui button colspan-btn">Reject all</div>
             <div class="ui float right teal button colspan-btn proceed">Proceed</div>

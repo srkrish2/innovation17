@@ -74,4 +74,8 @@
 			}
 		});
 	});
+
+	$(function(){
+		$('.ui.accordion').accordion()
+	});
 }(window));
