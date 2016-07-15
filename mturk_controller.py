@@ -142,17 +142,17 @@ class RankSuggestionHITCreator(HITCreator):
         self.problem = problem
         self.idea = idea
         self.feedback = feedback
-        self.suggestion1 = suggestions[0]
-        self.suggestion2 = suggestions[1]
-        self.suggestion3 = suggestions[2]
+        self.suggestions = suggestions
         self.count_goal = goal
 
     def get_creator_name(self):
         return "RankSuggestionHITCreator"
 
     def get_jar_args(self):
-        return ['PostRankSuggestionHIT', self.problem, self.idea, self.feedback, self.suggestion1, self.suggestion2,
-                self.suggestion3, str(self.count_goal)]
+        args = ['PostRankSuggestionHIT', self.problem, self.idea, self.feedback, str(len(self.suggestions))]
+        args.extend(self.suggestions)
+        args.append(str(self.count_goal))
+        return args
 
 ###################################################################
 ######################## RESULT PULLER ############################

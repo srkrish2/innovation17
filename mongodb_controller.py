@@ -440,6 +440,10 @@ def get_feedback_dict(feedback_id):
     return feedbacks_collection.find_one({FEEDBACK_ID: feedback_id})
 
 
+def get_suggestion_dict(suggestion_id):
+    return suggestions_collection.find_one({SUGGESTION_ID: suggestion_id})
+
+
 def get_stage(problem_id):
     return problems_collection.find_one({PROBLEM_ID: problem_id})[STAGE]
 
@@ -606,6 +610,10 @@ def get_new_inspiration_dicts(problem_id):
     })
 
 
+def search_suggestions(query):
+    return suggestions_collection.find(query)
+
+
 def get_well_ranked_inspirations(problem_id):
     return inspirations_collection.find({
         WELL_RANKED: True,
@@ -651,6 +659,36 @@ def set_inspiration_posted_for_rank(inspiration_id, val=True):
     }
     update = {'$set': {
         POSTED_FOR_RANK: val
+    }}
+    inspirations_collection.update_one(query_filter, update)
+
+
+def set_suggestion_posted_for_rank(suggestion_id, val=True):
+    query_filter = {
+        SUGGESTION_ID: suggestion_id
+    }
+    update = {'$set': {
+        POSTED_FOR_RANK: val
+    }}
+    suggestions_collection.update_one(query_filter, update)
+
+
+def set_schema_processed_status(schema_id):
+    query_filter = {
+        SCHEMA_ID: schema_id
+    }
+    update = {'$set': {
+        STATUS: STATUS_PROCESSED
+    }}
+    schemas_collection.update_one(query_filter, update)
+
+
+def set_inspiration_processed_status(inspiration_id):
+    query_filter = {
+        INSPIRATION_ID: inspiration_id
+    }
+    update = {'$set': {
+        STATUS: STATUS_PROCESSED
     }}
     inspirations_collection.update_one(query_filter, update)
 
