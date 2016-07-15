@@ -15,9 +15,7 @@
 				<b>An example problem:</b>
 				In cold weather, you often find single dropped gloves lying on the street lonely.
 				Almost everyone, not only kids, has lost one of their gloves, leaving the other useless. It is frustrating
-				and a waste of money. How can we solve the problem of losing gloves? An abstract description for this problem
-				is the following: Some objects need to work together in a pair. The problem is one of the pair is often lost
-				leaving their partner useless. How can we prevent losing one of the pair?
+				and a waste of money. How can we solve the problem of losing gloves?
 			</p>
 			<p>
 				<b>A similar problem:</b>
@@ -31,9 +29,9 @@
 				Some objects need to work together in a pair. The problem is one of the pair is often lost leaving their partner useless.
 				How can we prevent losing one of the pair?
 			</p>
-			<h3>The pattern describes the structure and essence of the problem without mentioning the specific domain information such as gloves.
+			<p><b>The pattern describes the structure and essence of the problem without mentioning the specific domain information such as gloves.
 				In this task, we would like you to generate a pattern for the following problem:
-			</h3>
+			</b></p>
 			<p><i><font color="green">$question</font></i></p>
 			<b> We know this task can be challenging. Please follow the steps that can help you generate a good pattern.</b>
 		]]></FormattedContent>
@@ -42,7 +40,7 @@
 	    <QuestionIdentifier>1</QuestionIdentifier>
 	    <IsRequired>true</IsRequired>
 	    <QuestionContent>
-	        <Text>Step 1: Please describe the engineer's problem in your own words: how do you describe it to a friend? Copy and paste is not allowed. </Text>
+	        <Text>Step 1: Please describe the problem in your own words: how do you describe it to a friend? Copy and paste is not allowed. </Text>
 	    </QuestionContent>
 	    <AnswerSpecification>
 	        <FreeTextAnswer/>
@@ -62,8 +60,8 @@
 		<QuestionIdentifier>3</QuestionIdentifier>
 		<IsRequired>true</IsRequired>
 		<QuestionContent>
-		 	<Text>Step 3: Now please generate a pattern for the engineer's problem. Tip 1: You can map the objects between the
-				engineer's problem and the one you came up with to generate the shared structure. Tip 2: The pattern should describe
+		 	<Text>Step 3: Now please generate a pattern for the problem. Tip 1: You can map the objects between the
+				problem and the one you came up with to generate the shared structure. Tip 2: The pattern should describe
 				the characteristics of the objects in the problem and the relation structure between objects. If you have difficulty
 				of describing objects and structures, you can search them in WordNet for inspirations.
 			</Text>

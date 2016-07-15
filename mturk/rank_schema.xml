@@ -4,16 +4,32 @@
 		<FormattedContent><![CDATA[
 			<h1 align="center">Rank a schema</h1>
 			<h2>Instructions</h2>
-			<p>Your task is to rank a schema</p>
-			<p>Schema: <i><font color="red">$schema</font></i></p>
-			<h2>Task</h2>
+			<p>
+				The schema of a problem represents the problem in the form of an outline or model. A problem schema describes the objects in a problem and their relations at a higher level without mentioning the specific domain information of the problem. The example below demonstrates what a good schema looks like.
+			</p>
+			<p>
+				The problem: In cold weather, you often find single dropped gloves lying on the street lonely. Almost everyone, not only kids, has lost one of their gloves, leaving the other useless. It is frustrating and a waste of money. How can we solve the problem of losing gloves? 
+			</p>
+			<p>
+				A bad schema:  Things don't work properly. How do we fix them? 
+				<font color="red">This schema is too general and doesn't describe the outline of the problem.</font><br/>
+				A bad schema: How to prevent people from losing gloves in the cold weather. 
+				<font color="red">This schema contains too much of the domain information such as "gloves" and "weather".</font>
+			</p>
+			<p>
+				A good schema: Some objects need to work together in a pair. The problem is one of the pair is often lost leaving their partner useless. How can we prevent losing one of the pair? <font color="red">This schema is good because it abstracts "gloves" into "a pair of objects" and captures the relation that "pairs need to work together.</font>
+			</p>
 		]]></FormattedContent>
 	</Overview>
 	<Question>
-		<QuestionIdentifier>1</QuestionIdentifier>
+		<QuestionIdentifier>0</QuestionIdentifier>
 		<IsRequired>true</IsRequired>
 		<QuestionContent>
-			<Text>Rank the schema</Text>
+			<Text>
+				Based on the instructions, does the following schema count as a good one?
+
+				Some objects need to work together in a pair. The problem is one of the pair is often lost leaving their partner useless.
+			</Text>
 		</QuestionContent>
 		<AnswerSpecification>
 			<SelectionAnswer>
@@ -22,15 +38,90 @@
 				<StyleSuggestion>radiobutton</StyleSuggestion>
 				<Selections>
 					<Selection>
-						<SelectionIdentifier>1</SelectionIdentifier>
-						<Text>Good</Text>
+						<SelectionIdentifier>NO</SelectionIdentifier>
+						<Text>No</Text>
 					</Selection>
 					<Selection>
-						<SelectionIdentifier>0</SelectionIdentifier>
-						<Text>Bad</Text>
+						<SelectionIdentifier>YES</SelectionIdentifier>
+						<Text>Yes</Text>
 					</Selection>
 				</Selections>
 			</SelectionAnswer>
 		</AnswerSpecification>
 	</Question>
+	<Overview>
+		<FormattedContent><![CDATA[
+			<p>
+				Below are a new problem and 3 schemas for it. Please judge the quality of the schemas by answering 2 questions for each.
+			</p>
+			<h3>Problem: <b><font color="green">$problem</font></b></h3>
+		]]></FormattedContent>
+	</Overview>
+	#foreach( $schema in $schemas )
+    	<Overview>
+		<FormattedContent><![CDATA[
+			<p>Schema: <i>$schema</i></p>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+		<QuestionIdentifier>CATEGORY 1</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+			<Text>
+				Does this schema describe the outline (objects and their relations) of the given problem?
+			</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+			<SelectionAnswer>
+				<MinSelectionCount>1</MinSelectionCount>
+				<MaxSelectionCount>1</MaxSelectionCount>
+				<StyleSuggestion>radiobutton</StyleSuggestion>
+				<Selections>
+					<Selection>
+						<SelectionIdentifier>2</SelectionIdentifier>
+						<Text>A clear outline</Text>
+					</Selection>
+					<Selection>
+						<SelectionIdentifier>1</SelectionIdentifier>
+						<Text>A vague outline</Text>
+					</Selection>
+					<Selection>
+						<SelectionIdentifier>0</SelectionIdentifier>
+						<Text>No outline</Text>
+					</Selection>
+				</Selections>
+			</SelectionAnswer>
+		</AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>CATEGORY 2</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+			<Text>
+				Does this schema mention the specific domain information of the given problem?
+			</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+			<SelectionAnswer>
+				<MinSelectionCount>1</MinSelectionCount>
+				<MaxSelectionCount>1</MaxSelectionCount>
+				<StyleSuggestion>radiobutton</StyleSuggestion>
+				<Selections>
+					<Selection>
+						<SelectionIdentifier>2</SelectionIdentifier>
+						<Text>All of them</Text>
+					</Selection>
+					<Selection>
+						<SelectionIdentifier>1</SelectionIdentifier>
+						<Text>A few</Text>
+					</Selection>
+					<Selection>
+						<SelectionIdentifier>0</SelectionIdentifier>
+						<Text>Not at all</Text>
+					</Selection>
+				</Selections>
+			</SelectionAnswer>
+		</AnswerSpecification>
+	</Question>
+    #end
 </QuestionForm>

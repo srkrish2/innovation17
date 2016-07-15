@@ -12,7 +12,6 @@
 				<a href="$sourceLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.
 			</strong></p>
 			#if ($hasImage)
-				<p> The worker also attached the image: </p>
 				<img src="$imageLink" alt="Worker's image" />
 			#end
 			<p><strong>The explanation from the previous worker regarding why this link can help with solving the problem:</strong></p>
@@ -23,7 +22,7 @@
 	    <QuestionIdentifier>1</QuestionIdentifier>
 	    <IsRequired>true</IsRequired>
 	    <QuestionContent>
-	        <Text>Summarize the content of the inspiration link.</Text>
+	        <Text>1. Summarize the content of the inspiration link.</Text>
 	    </QuestionContent>
 	    <AnswerSpecification>
 	        <FreeTextAnswer/>
@@ -34,9 +33,7 @@
 	    <IsRequired>true</IsRequired>
 	    <QuestionContent>
 	    	<Text>
-	    		Generate a solution for the problem by using the inspiration provided.
-				Describe your solution as detailed as possible. It should be elaborate enough that the engineers know how
-				to design the product based on your solution description.
+	    		2. Generate a solution for the problem by using the inspiration provided. Describe your solution as detailed as possible. It should be elaborate enough that the engineers know how to design the product based on your solution description.
 			</Text>
 	    </QuestionContent>
 	    <AnswerSpecification>
@@ -47,7 +44,7 @@
 		<QuestionIdentifier>3</QuestionIdentifier>
 		<IsRequired>true</IsRequired>
 		<QuestionContent>
-		 	<Text>Come up with a short title (2-3 words) for your solution.</Text>
+		 	<Text>3. Come up with a short title (2-3 words) for your solution.</Text>
 		</QuestionContent>
 		<AnswerSpecification>
 		    <FreeTextAnswer/>

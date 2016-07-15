@@ -3,24 +3,22 @@
 	<Overview>
 		<FormattedContent><![CDATA[
 			<h1 align="center">Rank an inspiration</h1>
-			<h2>Instructions</h2>
-			<p>Your task is to rank an inspiration</p>
-			<p>Problem: <i><font color="green">$problem</font></i></p>
-			<p>Schema: <i><font color="blue">$schema</font></i></p>
-			<p><strong><a href="$sourceLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.</strong></p>
-			#if ($hasImage)
-				<p> The worker also attached the image: </p>
-				<img src="$imageLink" alt="Worker's image" />
-			#end
-			<p>Explanation: $explanation</p>
-			<h2>Task</h2>
+			<p>
+				Below we present a problem. In order to solve this problem creatively, we have asked workers to find
+				inspirations for this problem. We would like you to judge the quality of the inspirations.
+			</p>
+			<h3>Problem: <b><font color="green">$schema</font></b></h3>
+			<h3><a href="$inspirationLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.</h3>
+			<p>Please study the inspiration link and answer the question below.</p>
 		]]></FormattedContent>
 	</Overview>
 	<Question>
 		<QuestionIdentifier>1</QuestionIdentifier>
 		<IsRequired>true</IsRequired>
 		<QuestionContent>
-			<Text>Rank the inspiration</Text>
+			<Text>
+				Does the link include a good inspiration? A good inspiration refers to methods, technologies, or knowledge that can potentially inspire creative solutions for a problem.
+			</Text>
 		</QuestionContent>
 		<AnswerSpecification>
 			<SelectionAnswer>
@@ -29,15 +27,31 @@
 				<StyleSuggestion>radiobutton</StyleSuggestion>
 				<Selections>
 					<Selection>
+						<SelectionIdentifier>2</SelectionIdentifier>
+						<Text>Yes, it applies to the problem.</Text>
+					</Selection>
+					<Selection>
 						<SelectionIdentifier>1</SelectionIdentifier>
-						<Text>Good</Text>
+						<Text>Probably, I can see the potential.</Text>
 					</Selection>
 					<Selection>
 						<SelectionIdentifier>0</SelectionIdentifier>
-						<Text>Bad</Text>
+						<Text>No, it is doesn't seem relevant to the problem at all.</Text>
 					</Selection>
 				</Selections>
 			</SelectionAnswer>
+		</AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>2</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>
+		 		Explain your answer (we will use your explanation to verify whether you read the inspiration or not)
+	 		</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
 		</AnswerSpecification>
 	</Question>
 </QuestionForm>

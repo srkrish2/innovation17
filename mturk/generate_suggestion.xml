@@ -2,22 +2,23 @@
 <QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
 	<Overview>
 		<FormattedContent><![CDATA[
-			<h1>Instructions</h1>
-			<p><strong>There is a problem, solution, and feedback. Improve solution to satisfy feedback.</strong></p>
-			<p><strong>The problem: $problem</strong></p>
-			<p><strong>The idea: $idea</strong></p>
-			<p><strong>The feedback: $feedback</strong></p>
-			<p><strong>
-				Below is a problem we have. In a previous task, we asked workers to find inspirations for this problem.
-				In this task, we would like you to solve this problem by using the inspiration.
-			</strong></p>
+			<h1 align="center">Help adjust a problem solution</h1>
+			<h2>Instructions</h2>
+			<p>
+				We have a problem as described below. Previous workers provided a good solution. 
+				However, some aspects of the solution need to be improved. We would like you to improve this solution 
+				by solving some of the limitations.
+			</p>
+			<h3>Problem: <font color="green">$problem</font></h3>
+			<h3>Solution: <font color="blue">$idea</font></h3>
+			<h3>Limitation: <font color="red">$feedback</font></h3>
 		]]></FormattedContent>
 	</Overview>
 	<Question>
 	    <QuestionIdentifier>1</QuestionIdentifier>
 	    <IsRequired>true</IsRequired>
 	    <QuestionContent>
-	        <Text>Enter improved solution.</Text>
+	        <Text>Solve the limitation.</Text>
 	    </QuestionContent>
 	    <AnswerSpecification>
 	        <FreeTextAnswer/>

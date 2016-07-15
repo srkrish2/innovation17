@@ -259,22 +259,6 @@ class MoreSuggestionsHandler(object):
         thread.start()
 
 
-class SuggestionUpdatesHandler(object):
-    exposed = True
-
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def POST(self):
-        if USERNAME_KEY not in cherrypy.session:
-            raise cherrypy.HTTPError(403)
-        data = cherrypy.request.json
-        problem_id = data[PROBLEM_ID]
-        thread = Thread(target=update_managers.update_hit_results_for_problem, args=[problem_id])
-        thread.start()
-        arr = well_ranked_counters.get_suggestion_counts_for_each_idea(problem_id)
-        return {IDEAS_FIELD: arr}
-
-
 class MoreSchemasHandler(object):
     exposed = True
 

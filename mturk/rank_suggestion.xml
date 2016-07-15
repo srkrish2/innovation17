@@ -2,22 +2,28 @@
 <QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
 	<Overview>
 		<FormattedContent><![CDATA[
-			<h1 align="center">Rank a suggestion</h1>
+			<h1 align="center">Rank 3 suggestions</h1>
 			<h2>Instructions</h2>
-			<p>Your task is to rank a suggestion</p>
-			<br/>
-			<p>Problem: <i><font color="green">$problem</font></i></p>
-			<p>Idea: <i><font color="blue">$idea</font></i></p>
-			<p>Feedback: <i>$feedback</i></p>
-			<p>Suggestion: <i><font color="red">$suggestion</font></i></p>
-			<h2>Task</h2>
+			<p>
+				We had a problem and a solution for it. Later we received a limitation for the solution, and produced a suggestion to address it.
+			</p>
+			<h3>Problem: <font color="green">$problem</font></h3>
+			<h3>Solution: <font color="blue">$idea</font></h3>
+			<h3>Limitation: <font color="red">$feedback</font></h3>
+			<p>
+				Below are three suggestions to solve this limitation. Rank the suggestions.
+				An effective solution solves the limitation and is also realistic/doable. 
+			</p>
 		]]></FormattedContent>
 	</Overview>
+	#foreach( $suggestion in $suggestions )
 	<Question>
 		<QuestionIdentifier>1</QuestionIdentifier>
 		<IsRequired>true</IsRequired>
 		<QuestionContent>
-			<Text>Rank the suggestion</Text>
+			<Text>
+				$suggestion
+			</Text>
 		</QuestionContent>
 		<AnswerSpecification>
 			<SelectionAnswer>
@@ -27,14 +33,15 @@
 				<Selections>
 					<Selection>
 						<SelectionIdentifier>1</SelectionIdentifier>
-						<Text>Good</Text>
+						<Text>Effective</Text>
 					</Selection>
 					<Selection>
 						<SelectionIdentifier>0</SelectionIdentifier>
-						<Text>Bad</Text>
+						<Text>Not effective</Text>
 					</Selection>
 				</Selections>
 			</SelectionAnswer>
 		</AnswerSpecification>
 	</Question>
+    #end
 </QuestionForm>

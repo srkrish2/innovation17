@@ -4,14 +4,22 @@ TIME_CREATED = "time_created"
 USERNAME_KEY = "username"
 PREVIOUS_URL_KEY = "previous_url"
 
-# Auto ranking settings.
-HOW_MANY_RANKS = 1  # defines how many turkers to ask to rank an item
-MIN_RANK = 0  # turkers' ranks are either 0 or 1. ranks are summed up for each item. This number defines what minimum
-              # rank an item should have to be displayed
+# ranking settings.
+# the following define how many turkers to ask to rank an item
+# to disable ranking for a stage, set the constant to 0 (so we won't post rank hit and won't filter anything by rank)
+HOW_MANY_SCHEMA_RANKS = 2
+HOW_MANY_INSPIRATION_RANKS = 2
+HOW_MANY_IDEA_RANKS = 0
+HOW_MANY_SUGGESTION_RANKS = 3
+
+# HIT evaluation details - don't change these if you're just trying to switch ranking on/off
+HOW_MANY_SCHEMAS_IN_ONE_RANK_HIT = 2
+HOW_MANY_SUGGESTIONS_IN_ONE_RANK_HIT = 3
+MIN_CATEGORY_RANK = 1
 
 # Lazy mode settings. Since lazy users don't choose how many schemas/inspiration/ideas to get, we define that here.
-HOW_MANY_SCHEMAS = 2  # how many schemas for each problem
-HOW_MANY_INSPIRATIONS = 2  # how many inspirations for each schema
+HOW_MANY_SCHEMAS = 3  # how many schemas for each problem
+HOW_MANY_INSPIRATIONS = 3  # how many inspirations for each schema
 HOW_MANY_IDEAS = 1  # how many ideas for each inspiration
 PERIOD = 10  # how often to check mturk for updates, in seconds.
 
@@ -43,6 +51,12 @@ PROBLEM_TEXT_FIELD = "problem_text"
 SCHEMA_TEXT_FIELD = "schema_text"
 INSPIRATION_TEXT_FIELD = "inspiration_text"
 
+RANKS_FIELD = "ranks"
+
+RESTART = "RESTART"
+FAIL = "FAIL"
+SUCCESS = "SUCCESS"
+
 ###################################################################
 ############################ DATABASE #############################
 ###################################################################
@@ -73,22 +87,24 @@ WORKER_ID = "worker_id"
 STATUS = "status"
 # TIME_CREATED
 # PROBLEM_ID
-RANK = "rank"
+WELL_RANKED = "well_ranked"
+POSTED_FOR_RANK = "posted_for_rank"
 # }
 
 # RANK_SCHEMA_HIT: {
 # HIT_ID
-# COUNT
-# COUNT_GOAL
-# SCHEMA_ID
+SUBMITTED_BY_WORKER = "submitted_by_worker"
+SCHEMA_IDS = "schema_ids"
 # }
 
 # SCHEMA_RANK: {
 RANK_ID = "rank_id"
-# RANK
+CATEGORY1 = "category1"
+CATEGORY2 = "category2"
 # TIME_CREATED
 # WORKER_ID
 # SCHEMA_ID
+# PROBLEM_ID
 # }
 
 # INSPIRATION_HIT: {
@@ -110,22 +126,22 @@ INSPIRATION_ID = "inspiration_id"
 # WORKER_ID
 # STATUS
 # PROBLEM_ID
-# RANK
+# POSTED_FOR_RANK
+# WELL_RANKED
 # }
 
 # RANK_INSPIRATION_HIT: {
 # HIT_ID
-# COUNT
-# COUNT_GOAL
 # INSPIRATION_ID
+# SUBMITTED
 # }
 
 # INSPIRATION_RANK: {
 # RANK_ID
-# RANK
+RANK = "rank"
 # TIME_CREATED
 # WORKER_ID
-# SCHEMA_ID
+# INSPIRATION_ID
 # }
 
 # IDEA_HIT: {
@@ -135,6 +151,8 @@ INSPIRATION_ID = "inspiration_id"
 # PROBLEM_ID
 # SCHEMA_ID
 # INSPIRATION_ID
+# POSTED_FOR_RANK
+# WELL_RANKED
 # }
 
 # IDEA: {
@@ -147,7 +165,8 @@ IDEA_ID = "idea_id"
 # SCHEMA_ID
 # INSPIRATION_ID
 # STATUS
-# RANK
+# POSTED_FOR_RANK
+# WELL_RANKED
 # }
 
 # RANK_IDEA_HIT: {
@@ -195,7 +214,8 @@ SUGGESTION_ID = "suggestion_id"
 # PROBLEM_ID
 # FEEDBACK_ID
 # IDEA_ID
-# RANK
+# POSTED_FOR_RANK
+# WELL_RANKED
 # }
 
 # RANK_SUGGESTION_HIT: {

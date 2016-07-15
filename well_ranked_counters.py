@@ -20,19 +20,6 @@ def get_count_dicts_for_user(username):
     return result
 
 
-def get_suggestion_counts_for_each_idea(problem_id):
-    result = []
-    for idea_dict in mc.get_ideas(problem_id):
-        idea_id = idea_dict[IDEA_ID]
-        counter = WellRankedIdeasSuggestionCounter()
-        for_result = {
-            IDEA_ID: idea_id,
-            SUGGESTION_COUNT: counter.get_count(idea_id)
-        }
-        result.append(for_result)
-    return result
-
-
 class WellRankedCounter(object):
     __metaclass__ = abc.ABCMeta
 
@@ -40,10 +27,14 @@ class WellRankedCounter(object):
     def get_dicts(self, problem_id):
         return []
 
+    @abc.abstractmethod
+    def is_ranking_disabled(self):
+        return True
+
     def get_count(self, problem_id):
         well_ranked_count = 0
         for dictionary in self.get_dicts(problem_id):
-            if dictionary[mc.RANK] >= MIN_RANK:
+            if self.is_ranking_disabled() or dictionary[WELL_RANKED]:
                 well_ranked_count += 1
         return well_ranked_count
 
@@ -52,22 +43,29 @@ class WellRankedSchemaCounter(WellRankedCounter):
     def get_dicts(self, problem_id):
         return mc.get_schema_dicts(problem_id)
 
+    def is_ranking_disabled(self):
+        return HOW_MANY_SCHEMA_RANKS == 0
+
 
 class WellRankedInspirationCounter(WellRankedCounter):
     def get_dicts(self, problem_id):
         return mc.get_inspirations(problem_id)
+
+    def is_ranking_disabled(self):
+        return HOW_MANY_INSPIRATION_RANKS == 0
 
 
 class WellRankedIdeaCounter(WellRankedCounter):
     def get_dicts(self, problem_id):
         return mc.get_ideas(problem_id)
 
+    def is_ranking_disabled(self):
+        return HOW_MANY_IDEA_RANKS == 0
+
 
 class WellRankedSuggestionCounter(WellRankedCounter):
     def get_dicts(self, problem_id):
         return mc.get_suggestions_for_problem(problem_id)
 
-
-class WellRankedIdeasSuggestionCounter(WellRankedCounter):
-    def get_dicts(self, idea_id):
-        return mc.get_suggestions_for_idea(idea_id)
+    def is_ranking_disabled(self):
+        return HOW_MANY_SUGGESTION_RANKS == 0

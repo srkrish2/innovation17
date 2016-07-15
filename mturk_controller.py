@@ -28,13 +28,13 @@ class HITCreator:
         #  * URL
         jar_output_file = p.stdout
         first_line = jar_output_file.readline().rstrip()
-        if first_line == "FAIL":
+        if first_line == FAIL:
             print "{}: FAIL".format(self.get_creator_name())
             print jar_output_file.readline().rstrip()
-            return "FAIL"
-        if first_line != "SUCCESS":
+            return FAIL
+        if first_line != SUCCESS:
             print "UNEXPECTED! neither fail/success: {}".format(first_line)
-            return "FAIL"
+            return FAIL
         hit_id = jar_output_file.readline().rstrip()
         url = jar_output_file.readline().rstrip()
         print "url =", url
@@ -96,32 +96,32 @@ class SuggestionHITCreator(HITCreator):
 
 
 class RankSchemaHITCreator(HITCreator):
-    def __init__(self, schema, goal):
-        self.schema = schema
+    def __init__(self, problem, schemas, goal):
+        self.problem = problem
+        self.schemas = schemas
         self.count_goal = goal
 
     def get_creator_name(self):
         return "RankSchemaHITCreator"
 
     def get_jar_args(self):
-        return ['PostRankSchemaHIT', self.schema, str(self.count_goal)]
+        args = ['PostRankSchemaHIT', self.problem, str(len(self.schemas))]
+        args.extend(self.schemas)
+        args.append(str(self.count_goal))
+        return args
 
 
 class RankInspirationHITCreator(HITCreator):
-    def __init__(self, problem, schema, i_link, i_add, i_reas, goal):
-        self.problem = problem
+    def __init__(self, schema, i_link, goal):
         self.schema = schema
         self.i_link = i_link
-        self.i_additional = i_add
-        self.i_reason = i_reas
         self.count_goal = goal
 
     def get_creator_name(self):
         return "RankInspirationHITCreator"
 
     def get_jar_args(self):
-        return ['PostRankInspirationHIT', self.problem, self.schema, self.i_link,
-                self.i_additional, self.i_reason, str(self.count_goal)]
+        return ['PostRankInspirationHIT', self.schema, self.i_link, str(self.count_goal)]
 
 
 class RankIdeaHITCreator(HITCreator):
@@ -138,19 +138,25 @@ class RankIdeaHITCreator(HITCreator):
 
 
 class RankSuggestionHITCreator(HITCreator):
-    def __init__(self, problem, idea, feedback, suggestion, goal):
+    def __init__(self, problem, idea, feedback, suggestions, goal):
         self.problem = problem
         self.idea = idea
         self.feedback = feedback
-        self.suggestion = suggestion
+        self.suggestion1 = suggestions[0]
+        self.suggestion2 = suggestions[1]
+        self.suggestion3 = suggestions[2]
         self.count_goal = goal
 
     def get_creator_name(self):
         return "RankSuggestionHITCreator"
 
     def get_jar_args(self):
-        return ['PostRankSuggestionHIT', self.problem, self.idea, self.feedback, self.suggestion,
-                str(self.count_goal)]
+        return ['PostRankSuggestionHIT', self.problem, self.idea, self.feedback, self.suggestion1, self.suggestion2,
+                self.suggestion3, str(self.count_goal)]
+
+###################################################################
+######################## RESULT PULLER ############################
+###################################################################
 
 
 class ResultPuller(object):
@@ -345,30 +351,72 @@ class GeneratedSuggestions(ResultPuller):
         return suggestions
 
 
-class GeneratedRanks(ResultPuller):
+class GeneratedSchemaRanks(ResultPuller):
     def get_command_name(self):
-        return "RankHITResults"
+        return "RankSchemaHITResults"
 
     def get_data(self, jar_output_file):
         # output format:
         #  "SUCCESS"
-        #  how_many
+        #  assignments_num
+        #  answers_num
+        #  {{answers_num}} ranks
         #  assignment_id
         #  worker_id
         #  epoch_time_ms
-        #  answer: GOOD or BAD
-        how_many = int(jar_output_file.readline().rstrip())
-        ranks = []
-        for i in xrange(how_many):
+        assignments_num = int(jar_output_file.readline().rstrip())
+        rank_dicts = []
+        if assignments_num == 0:
+            return rank_dicts
+        needs_restart = True
+        for i in xrange(assignments_num):
+            answers_num = int(jar_output_file.readline().rstrip())
+            if answers_num == 0:
+                continue
+            needs_restart = False
+            ranks = []
+            for j in xrange(answers_num):
+                ranks.append(int(jar_output_file.readline().rstrip()))
             assignment_id = jar_output_file.readline().rstrip()
             worker_id = jar_output_file.readline().rstrip()
             epoch_time_ms_string = jar_output_file.readline().rstrip()
+            rank_dict = {
+                RANKS_FIELD: ranks,
+                TIME_CREATED: epoch_time_ms_string,
+                WORKER_ID: worker_id,
+                RANK_ID: assignment_id
+            }
+            rank_dicts.append(rank_dict)
+        if needs_restart:
+            return RESTART
+        return rank_dicts
+
+
+class GeneratedInspirationRanks(ResultPuller):
+    def get_command_name(self):
+        return "RankInspirationHITResults"
+
+    def get_data(self, jar_output_file):
+        # output format:
+        #  "SUCCESS" -- already processed
+        #  assignments_num
+        #  answers
+        #  assignment_id
+        #  worker_id
+        #  epoch_time_ms
+        assignments_num = int(jar_output_file.readline().rstrip())
+        rank_dicts = []
+        for i in xrange(assignments_num):
             rank = int(jar_output_file.readline().rstrip())
+            explanation = jar_output_file.readline().rstrip()
+            assignment_id = jar_output_file.readline().rstrip()
+            worker_id = jar_output_file.readline().rstrip()
+            epoch_time_ms_string = jar_output_file.readline().rstrip()
             rank_dict = {
                 RANK: rank,
                 TIME_CREATED: epoch_time_ms_string,
                 WORKER_ID: worker_id,
                 RANK_ID: assignment_id
             }
-            ranks.append(rank_dict)
-        return ranks
+            rank_dicts.append(rank_dict)
+        return rank_dicts
