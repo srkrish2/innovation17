@@ -203,9 +203,42 @@ def pull_rank_inspiration_results(hit_dict):
         print "FAIL when getting mturk dicts!"
         return FAIL
     if len(mturk_dicts) > 0:
-        mc.rank_schema_hit_set_submitted(hit_id)
+        mc.rank_inspiration_hit_set_submitted(hit_id)
     for mturk_dict in mturk_dicts:
         add_readable_time(mturk_dict)
         mturk_dict[INSPIRATION_ID] = inspiration_id
         mc.insert_inspiration_rank(mturk_dict)
     return len(mturk_dicts)
+
+
+def pull_rank_suggestion_results(hit_dict):
+    hit_id = hit_dict[HIT_ID]
+    result_getter = mturk_controller.GeneratedSuggestionRanks()
+    mturk_dicts = result_getter.get_results(hit_id)
+    if mturk_dicts == FAIL:
+        print "FAIL when getting mturk dicts!"
+        return FAIL
+
+    suggestion_ids = hit_dict[SUGGESTION_IDS]
+    if len(mturk_dicts) > 0:
+        mc.rank_suggestion_hit_set_submitted(hit_id)
+    for mturk_dict in mturk_dicts:
+        # rank_dict = {
+        #     RANKS_FIELD: ranks,
+        #     TIME_CREATED: epoch_time_ms_string,
+        #     WORKER_ID: worker_id,
+        #     RANK_ID: assignment_id
+        # }
+        add_readable_time(mturk_dict)
+        ranks = mturk_dict[RANKS_FIELD]
+        for i in xrange(len(ranks)):
+            suggestion_id = suggestion_ids[i]
+            suggestion_rank_for_db = {
+                RANK_ID: mturk_dict[RANK_ID],
+                RANK: ranks[i],
+                TIME_CREATED: mturk_dict[TIME_CREATED],
+                WORKER_ID: mturk_dict[WORKER_ID],
+                SUGGESTION_ID: suggestion_id
+            }
+            mc.insert_suggestion_rank(suggestion_rank_for_db)
+    return len(mturk_dicts)  # return how many assignments were accepted

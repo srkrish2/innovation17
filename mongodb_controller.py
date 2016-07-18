@@ -39,10 +39,11 @@ def insert_new_rank_schema_hit(schema_ids, hit_id, problem_id):
     rank_schema_hits_collection.insert_one(new_rank_schema_hit)
 
 
-def insert_new_rank_inspiration_hit(inspiration_id, rank_inspiration_hit_id):
+def insert_new_rank_inspiration_hit(inspiration_id, rank_inspiration_hit_id, problem_id):
     new_rank_inspiration_hit = {
         INSPIRATION_ID: inspiration_id,
         HIT_ID: rank_inspiration_hit_id,
+        PROBLEM_ID: problem_id,
         SUBMITTED_BY_WORKER: False
     }
     rank_inspiration_hits_collection.insert_one(new_rank_inspiration_hit)
@@ -83,22 +84,12 @@ def insert_new_suggestion_hit(problem_id, idea_id, feedback_id, count_goal, hit_
     suggestion_hits_collection.insert_one(new_suggestion_hit)
 
 
-def insert_new_rank_idea_hit(idea_id, count_goal, hit_id):
-    new_rank_idea_hit = {
-        IDEA_ID: idea_id,
-        COUNT: 0,
-        COUNT_GOAL: count_goal,
-        HIT_ID: hit_id
-    }
-    rank_idea_hits_collection.insert_one(new_rank_idea_hit)
-
-
-def insert_new_rank_suggestion_hit(suggestion_id, count_goal, hit_id):
+def insert_new_rank_suggestion_hit(suggestion_ids, hit_id, problem_id):
     new_rank_suggestion_hit = {
-        SUGGESTION_ID: suggestion_id,
-        COUNT: 0,
-        COUNT_GOAL: count_goal,
-        HIT_ID: hit_id
+        SUGGESTION_IDS: suggestion_ids,
+        HIT_ID: hit_id,
+        PROBLEM_ID: problem_id,
+        SUBMITTED_BY_WORKER: False
     }
     rank_suggestion_hits_collection.insert_one(new_rank_suggestion_hit)
 
@@ -324,6 +315,15 @@ def inspiration_set_well_ranked(inspiration_id):
     inspirations_collection.update_one(query_filter, update)
 
 
+def suggestion_set_well_ranked(suggestion_id):
+    query_filter = {SUGGESTION_ID: suggestion_id}
+    new_fields = {
+        WELL_RANKED: True
+    }
+    update = {'$set': new_fields}
+    suggestions_collection.update_one(query_filter, update)
+
+
 def rank_schema_hit_set_submitted(hit_id):
     query_filter = {HIT_ID: hit_id}
     new_fields = {
@@ -331,6 +331,24 @@ def rank_schema_hit_set_submitted(hit_id):
     }
     update = {'$set': new_fields}
     rank_schema_hits_collection.update_one(query_filter, update)
+
+
+def rank_suggestion_hit_set_submitted(hit_id):
+    query_filter = {HIT_ID: hit_id}
+    new_fields = {
+        SUBMITTED_BY_WORKER: True
+    }
+    update = {'$set': new_fields}
+    rank_suggestion_hits_collection.update_one(query_filter, update)
+
+
+def rank_inspiration_hit_set_submitted(hit_id):
+    query_filter = {HIT_ID: hit_id}
+    new_fields = {
+        SUBMITTED_BY_WORKER: True
+    }
+    update = {'$set': new_fields}
+    rank_inspiration_hits_collection.update_one(query_filter, update)
 
 
 ############################ FIND ONE ##########################
@@ -495,12 +513,20 @@ def get_inspiration_rank_dicts(inspiration_id):
     return inspiration_ranks_collection.find({INSPIRATION_ID: inspiration_id})
 
 
-def find_rank_schema_hit_dicts_with_query(query):
+def get_suggestion_rank_dicts(suggestion_id):
+    return suggestion_ranks_collection.find({SUGGESTION_ID: suggestion_id})
+
+
+def search_rank_schema_hits(query):
     return rank_schema_hits_collection.find(query)
 
 
-def find_rank_inspiration_hits_dict_with_query(query):
+def search_rank_inspiration_hits(query):
     return rank_inspiration_hits_collection.find(query)
+
+
+def search_rank_suggestion_hits(query):
+    return rank_suggestion_hits_collection.find(query)
 
 
 def get_problems_by_user(username):
@@ -632,6 +658,13 @@ def get_well_ranked_schemas(problem_id):
     return schemas_collection.find({
         WELL_RANKED: True,
         PROBLEM_ID: problem_id
+    })
+
+
+def get_well_ranked_suggestions_for_feedback(feedback_id):
+    return suggestions_collection.find({
+        FEEDBACK_ID: feedback_id,
+        WELL_RANKED: True
     })
 
 

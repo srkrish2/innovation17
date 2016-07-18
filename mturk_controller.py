@@ -420,3 +420,36 @@ class GeneratedInspirationRanks(ResultPuller):
             }
             rank_dicts.append(rank_dict)
         return rank_dicts
+
+
+class GeneratedSuggestionRanks(ResultPuller):
+    def get_command_name(self):
+        return "RankSuggestionHITResults"
+
+    def get_data(self, jar_output_file):
+        # output format:
+        #  "SUCCESS" -- already processed
+        #  assignments_num
+        #  answers_num
+        #  {{answers_num}} ranks
+        #  assignment_id
+        #  worker_id
+        #  epoch_time_ms
+        assignments_num = int(jar_output_file.readline().rstrip())
+        rank_dicts = []
+        for i in xrange(assignments_num):
+            answers_num = int(jar_output_file.readline().rstrip())
+            ranks = []
+            for j in xrange(answers_num):
+                ranks.append(int(jar_output_file.readline().rstrip()))
+            assignment_id = jar_output_file.readline().rstrip()
+            worker_id = jar_output_file.readline().rstrip()
+            epoch_time_ms_string = jar_output_file.readline().rstrip()
+            rank_dict = {
+                RANKS_FIELD: ranks,
+                TIME_CREATED: epoch_time_ms_string,
+                WORKER_ID: worker_id,
+                RANK_ID: assignment_id
+            }
+            rank_dicts.append(rank_dict)
+        return rank_dicts

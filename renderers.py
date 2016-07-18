@@ -170,9 +170,10 @@ def get_feedbacks_with_suggestions(idea_id):
     feedbacks_with_suggestions = []
     for feedback_dict in mc.get_feedback_dicts(idea_id):
         feedback_id = feedback_dict[mc.FEEDBACK_ID]
-        suggestions = []
-        for suggestion in mc.get_suggestions_for_feedback(feedback_id):
-            suggestions.append(suggestion)
+        if HOW_MANY_SUGGESTION_RANKS > 0:
+            suggestions = list(mc.get_well_ranked_suggestions_for_feedback(feedback_id))
+        else:
+            suggestions = list(mc.get_suggestions_for_feedback(feedback_id))
         feedback_dict[SUGGESTIONS_FIELD] = suggestions
         if len(suggestions) > 0:
             feedbacks_with_suggestions.append(feedback_dict)

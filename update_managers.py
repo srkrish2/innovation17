@@ -17,9 +17,9 @@ def update_hit_results_for_problem(problem_id):
     if HOW_MANY_INSPIRATION_RANKS > 0:
         rank_functions.post_rank_hit_for_new_inspirations(problem_id)
         rank_functions.update_inspiration_ranks(problem_id)
-    # if HOW_MANY_SUGGESTION_RANKS > 0:
-    #     post_rank_hit_for_new_suggestions(problem_id)
-    #     update_suggestion_ranks(problem_id)
+    if HOW_MANY_SUGGESTION_RANKS > 0:
+        rank_functions.post_rank_hit_for_new_suggestions(problem_id)
+        rank_functions.update_suggestion_ranks(problem_id)
 
 
 def update_hit_results(username):

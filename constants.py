@@ -10,11 +10,11 @@ PREVIOUS_URL_KEY = "previous_url"
 HOW_MANY_SCHEMA_RANKS = 2
 HOW_MANY_INSPIRATION_RANKS = 2
 HOW_MANY_IDEA_RANKS = 0
-HOW_MANY_SUGGESTION_RANKS = 3
+HOW_MANY_SUGGESTION_RANKS = 2
 
 # HIT evaluation details - don't change these if you're just trying to switch ranking on/off
 HOW_MANY_SCHEMAS_IN_ONE_RANK_HIT = 2
-HOW_MANY_SUGGESTIONS_IN_ONE_RANK_HIT = 3
+HOW_MANY_SUGGESTIONS_IN_ONE_RANK_HIT = 2
 MIN_CATEGORY_RANK = 1
 
 # Lazy mode settings. Since lazy users don't choose how many schemas/inspiration/ideas to get, we define that here.
@@ -95,6 +95,7 @@ POSTED_FOR_RANK = "posted_for_rank"
 # HIT_ID
 SUBMITTED_BY_WORKER = "submitted_by_worker"
 SCHEMA_IDS = "schema_ids"
+# PROBLEM_ID
 # }
 
 # SCHEMA_RANK: {
@@ -134,6 +135,7 @@ INSPIRATION_ID = "inspiration_id"
 # HIT_ID
 # INSPIRATION_ID
 # SUBMITTED
+# PROBLEM_ID
 # }
 
 # INSPIRATION_RANK: {
@@ -169,28 +171,6 @@ IDEA_ID = "idea_id"
 # WELL_RANKED
 # }
 
-# RANK_IDEA_HIT: {
-# HIT_ID
-# COUNT
-# COUNT_GOAL
-# INSPIRATION_ID
-# }
-
-# RANK_IDEA_HIT: {
-# HIT_ID
-# COUNT
-# COUNT_GOAL
-# IDEA_ID
-# }
-
-# IDEA_RANK: {
-# RANK_ID
-# RANK
-# TIME_CREATED
-# WORKER_ID
-# SCHEMA_ID
-# }
-
 # FEEDBACK: {
 # TEXT
 FEEDBACK_ID = "feedback_id"
@@ -220,9 +200,9 @@ SUGGESTION_ID = "suggestion_id"
 
 # RANK_SUGGESTION_HIT: {
 # HIT_ID
-# COUNT
-# COUNT_GOAL
-# IDEA_ID
+SUGGESTION_IDS = "suggestion_ids"
+# SUBMITTED_BY_WORKER
+# PROBLEM_ID
 # }
 
 # SUGGESTION_RANK: {
@@ -230,7 +210,7 @@ SUGGESTION_ID = "suggestion_id"
 # RANK
 # TIME_CREATED
 # WORKER_ID
-# SCHEMA_ID
+# SUGGESTION_ID
 # }
 
 # USER: {
