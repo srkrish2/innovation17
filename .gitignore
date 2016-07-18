@@ -1,5 +1,5 @@
 .DS_Store
 .idea/
-velocity.log
+velocity.log*
 test.py
 *.pyc
