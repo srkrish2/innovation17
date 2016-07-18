@@ -24,13 +24,15 @@ class Waiter(object):
             time.sleep(PERIOD)
 
     def is_done(self):
-        hit_dicts = self.get_hit_dicts()
-        for hit_dict in hit_dicts:
+        for hit_dict in self.get_hit_dicts():
             if hit_dict[COUNT] != hit_dict[COUNT_GOAL]:
                 return False
+        if self.needs_ranking():
             for item_dict in self.get_item_dicts():
-                rank_item_hit_dict = self.get_rank_hit_dicts(item_dict)
-                if rank_item_hit_dict[COUNT] != rank_item_hit_dict[COUNT_GOAL]:
+                if not item_dict[POSTED_FOR_RANK]:
+                    return False
+            for rank_item_hit_dict in self.get_rank_item_hit_dicts():
+                if not rank_item_hit_dict[SUBMITTED_BY_WORKER]:
                     return False
         return True
 
@@ -39,11 +41,14 @@ class Waiter(object):
         return []
 
     @abc.abstractmethod
+    def needs_ranking(self):
+        return False
+
+    @abc.abstractmethod
     def get_item_dicts(self):
         return []
 
-    @abc.abstractmethod
-    def get_rank_hit_dicts(self, item_dict):
+    def get_rank_item_hit_dicts(self):
         return []
 
 
@@ -52,11 +57,14 @@ class SchemaStageWaiter(Waiter):
     def get_hit_dicts(self):
         return mc.get_schema_hits(self.problem_id)
 
+    def needs_ranking(self):
+        return HOW_MANY_SCHEMA_RANKS > 0
+
     def get_item_dicts(self):
         return mc.get_schema_dicts(self.problem_id)
 
-    def get_rank_hit_dicts(self, item_dict):
-        return mc.get_rank_schema_hit_dict(item_dict[SCHEMA_ID])
+    def get_rank_item_hit_dicts(self):
+        return mc.search_rank_schema_hits({})
 
 
 class InspirationStageWaiter(Waiter):
@@ -64,11 +72,14 @@ class InspirationStageWaiter(Waiter):
     def get_hit_dicts(self):
         return mc.get_inspiration_hits(self.problem_id)
 
+    def needs_ranking(self):
+        return HOW_MANY_INSPIRATION_RANKS > 0
+
     def get_item_dicts(self):
         return mc.get_inspirations(self.problem_id)
 
-    def get_rank_hit_dicts(self, item_dict):
-        return mc.get_rank_inspiration_hit_dict(item_dict[INSPIRATION_ID])
+    def get_rank_item_hit_dicts(self):
+        return mc.search_rank_inspiration_hits({})
 
 
 class IdeaStageWaiter(Waiter):
@@ -76,8 +87,8 @@ class IdeaStageWaiter(Waiter):
     def get_hit_dicts(self):
         return mc.get_idea_hits(self.problem_id)
 
+    def needs_ranking(self):
+        return HOW_MANY_IDEA_RANKS > 0
+
     def get_item_dicts(self):
         return mc.get_ideas(self.problem_id)
-
-    def get_rank_hit_dicts(self, item_dict):
-        return mc.get_rank_idea_hit_dict(item_dict[IDEA_ID])

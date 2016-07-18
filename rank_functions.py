@@ -5,8 +5,8 @@ import mt_to_db_pullers
 
 
 def post_rank_hit_for_new_schemas(problem_id):
-    schema_dicts = mc.get_new_schema_dicts(problem_id)
-    if len(list(schema_dicts)) < HOW_MANY_SCHEMAS_IN_ONE_RANK_HIT:
+    schema_dicts = list(mc.get_new_schema_dicts(problem_id))
+    if len(schema_dicts) < HOW_MANY_SCHEMAS_IN_ONE_RANK_HIT:
         return
     batch = []
     for schema_dict in schema_dicts:
