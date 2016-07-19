@@ -6,7 +6,7 @@ import java.util.List;
 import com.amazonaws.mturk.dataschema.QuestionFormAnswers;
 import com.amazonaws.mturk.dataschema.QuestionFormAnswersType;
 import com.amazonaws.mturk.requester.Assignment;
-import com.amazonaws.mturk.requester.AssignmentStatus;
+import com.amazonaws.mturk.requester.HIT;
 import com.amazonaws.mturk.service.axis.RequesterService;
 import com.amazonaws.mturk.util.PropertiesClientConfig;
 /*
@@ -25,15 +25,14 @@ public class RankSchemaHITResults {
 		try {
 			RequesterService service = new RequesterService(new PropertiesClientConfig());
 			
-			Assignment[] assignments = service.getAllAssignmentsForHIT(hitId);
+			HIT hit = service.getHIT(hitId);
 			System.out.println("SUCCESS");
-			for (Assignment assignment : assignments) {
-				if (assignment.getAssignmentStatus() != AssignmentStatus.Submitted) {
-					System.out.println(0);
-					return;
-				}
+			if (hit.getNumberOfAssignmentsAvailable() > 0 || hit.getNumberOfAssignmentsPending() > 0) {
+				System.out.println(0);
+				return;
 			}
-						
+			
+			Assignment[] assignments = service.getAllSubmittedAssignmentsForHIT(hitId);
 			System.out.println(assignments.length);
 			for (Assignment assignment : assignments) {
 		        String answerXML = assignment.getAnswer();
@@ -71,7 +70,7 @@ public class RankSchemaHITResults {
 	
 	public static void main(String[] args) {
 		String hitId = args[0];
-//		String hitId = "3HY86PZXPYI7JVTAOYAI86HREDW1EL";
+//		String hitId = "37S0QRNUFBG8LU34AGXXV68DHGT882";
 		getResults(hitId);
 	}
 }

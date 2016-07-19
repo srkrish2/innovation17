@@ -46,17 +46,15 @@ public class PostRankSchemaHIT {
 	}
 	
 	public static void main(String[] args) {
+//		String[] args = {"the problem", "3", "this is a test schema", "test schema 2", "schema 3", "1"};
 		String problem = args[0];
-		String schema1 = args[1];
-		String schema2 = args[2];
-		String schema3 = args[3];
-		int assignmentsNum = Integer.parseInt(args[4]);
-//		String problem = "the problem";
-//		String schema1 = "this is a test schema";
-//		String schema2 = "test schema 2";
-//		String schema3 = "schema 3";
+		int howManySchemas = Integer.parseInt(args[1]);
+		String[] schemas = new String[howManySchemas];
+		for (int i = 2; i < args.length-1; i++) {
+			schemas[i-2] = args[i];
+		}
+		int assignmentsNum = Integer.parseInt(args[args.length-1]);
 //		int assignmentsNum = 1;
-		String[] schemas = {schema1, schema2, schema3};
 		createHit(problem, schemas, assignmentsNum);
 	}
 }

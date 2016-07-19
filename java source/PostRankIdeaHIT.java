@@ -1,5 +1,11 @@
 package idea_stage;
 
+import java.io.StringWriter;
+
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+
 import com.amazonaws.mturk.addon.HITProperties;
 import com.amazonaws.mturk.requester.HIT;
 import com.amazonaws.mturk.service.axis.RequesterService;
@@ -26,50 +32,16 @@ public class PostRankIdeaHIT {
 		}
 	}
 	
-	private static String makeQuestion(String problem, String idea) {
-		String q = "";
-		q += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		q += "<QuestionForm xmlns=\"http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd\">";
-		q += "  <Overview>";
-		q += "  <FormattedContent><![CDATA[";
-		q += "    <h1 align=\"center\">Rank an idea</h1>";
-		q += "    <h2>Instructions</h2>";
-		q += "    Your task is to rank an idea";
-		q += "    <br/>";
-		q += "    <h2>Instructions</h2>";
-		q += "    Your task is to rank an idea";
-		q += "    <br/>";
-		q += "<p>Problem: <i><font color=\"green\">" + problem + "</font></i></p>";
-		q += "<p>Idea: <i><font color=\"blue\">" + idea + "</font></i></p>";
-		q += "    <h2>Task</h2>";
-		q += "  ]]></FormattedContent>";
-		q += "  </Overview>";
-		q += "  <Question>";
-		q += "    <QuestionIdentifier>1</QuestionIdentifier>";
-		q += "    <IsRequired>true</IsRequired>";
-		q += "    <QuestionContent>";
-		q += "      <Text> Rank the idea </Text>";
-		q += "    </QuestionContent>";
-		q += "    <AnswerSpecification>";
-		q += "          <SelectionAnswer>";
-		q += "            <MinSelectionCount>1</MinSelectionCount>";
-		q += "            <MaxSelectionCount>1</MaxSelectionCount>";
-		q += "            <StyleSuggestion>radiobutton</StyleSuggestion>";
-		q += "            <Selections>";
-		q += "              <Selection>";
-		q += "                <SelectionIdentifier>1</SelectionIdentifier>";
-		q += "                <Text>Good</Text>";
-		q += "              </Selection>";
-		q += "              <Selection>";
-		q += "                <SelectionIdentifier>0</SelectionIdentifier>";
-		q += "                <Text>Bad</Text>";
-		q += "              </Selection>";
-		q += "            </Selections>";
-		q += "          </SelectionAnswer>";
-		q += "        </AnswerSpecification>";
-		q += "  </Question>";
-		q += "</QuestionForm>";
-		return q;
+	private static String makeQuestion(String problem, String idea) throws Exception {
+		VelocityEngine ve = new VelocityEngine();
+        ve.init();
+        Template t = ve.getTemplate("./rank_idea.xml" );
+        VelocityContext context = new VelocityContext();
+        context.put("problem", problem);
+        context.put("idea", idea);
+        StringWriter writer = new StringWriter();
+        t.merge(context, writer);
+		return writer.toString();
 	}
 	
 	public static void main(String[] args) {

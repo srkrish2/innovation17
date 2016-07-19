@@ -9,7 +9,7 @@ PREVIOUS_URL_KEY = "previous_url"
 # to disable ranking for a stage, set the constant to 0 (so we won't post rank hit and won't filter anything by rank)
 HOW_MANY_SCHEMA_RANKS = 2
 HOW_MANY_INSPIRATION_RANKS = 2
-HOW_MANY_IDEA_RANKS = 0
+HOW_MANY_IDEA_RANKS = 0  # don't change this before adding supporting code :)
 HOW_MANY_SUGGESTION_RANKS = 2
 
 # HIT evaluation details - don't change these if you're just trying to switch ranking on/off

@@ -1,5 +1,11 @@
 package inspiration_stage;
 
+import java.io.StringWriter;
+
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+
 import com.amazonaws.mturk.addon.HITProperties;
 import com.amazonaws.mturk.requester.HIT;
 import com.amazonaws.mturk.service.axis.RequesterService;
@@ -55,60 +61,15 @@ public class PostInspirationHIT {
 		}
 	}
 
-	private static String makeQuestion(String schema) {
-		String q = "";
-		q += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		q += "<QuestionForm xmlns=\"http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd\">";
-		q += "<Overview>";
-		q += "<FormattedContent><![CDATA[";
-		q += "  <h1>Instructions</h1>";
-		q += "  <strong>Please find inspirations for solving the following problem.</strong>";
-		q += "<p><i><font color=\"green\">" + schema + "</font></i></p>";
-		q += "  <strong>Please search online to find an inspiration that you think can help with solving the above problem.</strong>";
-		q += "]]></FormattedContent>";
-		q += "</Overview>";
-		q += "  <Question>";
-		q += "    <QuestionIdentifier>1</QuestionIdentifier>";
-		q += "    <IsRequired>true</IsRequired>";
-		q += "    <QuestionContent>";
-		q += "      <Text>Inspiration: Paste the link below. We are looking for inspirations (not solutions) to this problem."
-				+ " Your answer has to be a revevant inspiration, otherwise you risk being rejected.  </Text>";
-		q += "    </QuestionContent>";
-		q += "    <AnswerSpecification>";
-		q += "      <FreeTextAnswer/>";
-		q += "    </AnswerSpecification>";
-		q += "  </Question>";
-		q += "  <Question>";
-		q += "    <QuestionIdentifier>2</QuestionIdentifier>";
-		q += "    <QuestionContent>";
-		q += "      <Text>Additional link:</Text>";
-		q += "    </QuestionContent>";
-		q += "    <AnswerSpecification>";
-		q += "      <FreeTextAnswer/>";
-		q += "    </AnswerSpecification>";
-		q += "  </Question>";
-		q += "  <Question>";
-		q += "    <QuestionIdentifier>3</QuestionIdentifier>";
-		q += "    <IsRequired>true</IsRequired>";
-		q += "    <QuestionContent>";
-		q += "      <Text>Please summarize the inspiration in a few sentences.</Text>";
-		q += "    </QuestionContent>";
-		q += "    <AnswerSpecification>";
-		q += "      <FreeTextAnswer/>";
-		q += "    </AnswerSpecification>";
-		q += "  </Question>";
-		q += "  <Question>";
-		q += "    <QuestionIdentifier>4</QuestionIdentifier>";
-		q += "    <IsRequired>true</IsRequired>";
-		q += "    <QuestionContent>";
-		q += "      <Text>Why do you think the inspiration you found might help with solving the problem? </Text>";
-		q += "    </QuestionContent>";
-		q += "    <AnswerSpecification>";
-		q += "      <FreeTextAnswer/>";
-		q += "    </AnswerSpecification>";
-		q += "  </Question>";
-		q += "</QuestionForm>";
-		return q;
+	private static String makeQuestion(String schema) throws Exception {
+		VelocityEngine ve = new VelocityEngine();
+        ve.init();
+        Template t = ve.getTemplate("./generate_inspiration.xml" );
+        VelocityContext context = new VelocityContext();
+        context.put("schema", schema);
+        StringWriter writer = new StringWriter();
+        t.merge(context, writer);
+		return writer.toString();
 	}
 
 	/**

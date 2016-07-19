@@ -125,8 +125,8 @@ def insert_inspiration_rank(rank_dict):
     inspiration_ranks_collection.insert_one(rank_dict)
 
 
-def insert_idea_rank(rank_dict):
-    idea_ranks_collection.insert_one(rank_dict)
+# def insert_idea_rank(rank_dict):
+#     idea_ranks_collection.insert_one(rank_dict)
 
 
 def insert_suggestion_rank(rank_dict):
@@ -237,10 +237,10 @@ def increment_rank_inspiration_hit_count(rank_inspiration_hit_id, how_much):
     rank_inspiration_hits_collection.update_one(query_filter, update)
 
 
-def increment_rank_idea_hit_count(rank_idea_hit_id, how_much):
-    query_filter = {HIT_ID: rank_idea_hit_id}
-    update = {'$inc': {COUNT: how_much}}
-    rank_idea_hits_collection.update_one(query_filter, update)
+# def increment_rank_idea_hit_count(rank_idea_hit_id, how_much):
+#     query_filter = {HIT_ID: rank_idea_hit_id}
+#     update = {'$inc': {COUNT: how_much}}
+#     rank_idea_hits_collection.update_one(query_filter, update)
 
 
 def increment_rank_suggestion_hit_count(rank_suggestion_hit_id, how_much):
@@ -402,8 +402,8 @@ def contains_inspiration_rank(rank_id):
     return inspiration_ranks_collection.find_one({RANK_ID: rank_id}) is not None
 
 
-def contains_idea_rank(rank_id):
-    return idea_ranks_collection.find_one({RANK_ID: rank_id}) is not None
+# def contains_idea_rank(rank_id):
+#     return idea_ranks_collection.find_one({RANK_ID: rank_id}) is not None
 
 
 def contains_suggestion_rank(rank_id):
@@ -495,8 +495,8 @@ def get_rank_inspiration_hit_dict(inspiration_id):
     return rank_inspiration_hits_collection.find_one({INSPIRATION_ID: inspiration_id})
 
 
-def get_rank_idea_hit_dict(idea_id):
-    return rank_idea_hits_collection.find_one({IDEA_ID: idea_id})
+# def get_rank_idea_hit_dict(idea_id):
+#     return rank_idea_hits_collection.find_one({IDEA_ID: idea_id})
 
 
 def get_rank_suggestion_hit_dict(suggestion_id):
@@ -743,8 +743,8 @@ rank_inspiration_hits_collection = db.rank_inspiration_hits
 inspiration_ranks_collection = db.inspiration_ranks
 idea_hits_collection = db.idea_hits
 ideas_collection = db.ideas
-rank_idea_hits_collection = db.rank_idea_hits
-idea_ranks_collection = db.idea_ranks
+# rank_idea_hits_collection = db.rank_idea_hits
+# idea_ranks_collection = db.idea_ranks
 feedbacks_collection = db.feedbacks
 suggestion_hits_collection = db.suggestion_hits
 suggestions_collection = db.suggestions

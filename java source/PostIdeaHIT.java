@@ -1,5 +1,11 @@
 package idea_stage;
 
+import java.io.StringWriter;
+
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+
 import com.amazonaws.mturk.addon.HITProperties;
 import com.amazonaws.mturk.requester.HIT;
 import com.amazonaws.mturk.service.axis.RequesterService;
@@ -33,59 +39,21 @@ public class PostIdeaHIT {
 		}
 	}
 	
-	private static String makeQuestion(String problem, String sourceLink, String imageLink, String explanation) {
-		String q = "";
-		q += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		q += "<QuestionForm xmlns=\"http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd\">";
-		q += "<Overview>";
-		q += "<FormattedContent><![CDATA[";
-		q += "  <h1>Instructions</h1>";
-		q += "  <p><strong>Below is a problem we have. In a previous task, we asked workers to find inspirations for this problem."
-				+ " In this task, we would like you to solve this problem by using the inspiration.</strong></p>";
-		q += "<p><i><font color=\"green\">" + problem + "</font></i></p>";
-		q += String.format("<p><strong><a href=\"%s\" target=\"blank\">Click here to look at the inspiration</a> It will open up a new tab.</strong></p>", sourceLink);
-		if (!imageLink.isEmpty()) {
-			q += "<p> The worker also attached the image: </p>";
-			q += String.format("<img src=\"%s\" alt=\"Worker's image\" />", imageLink);
-		}
-		q += "<p><strong>The explanation from the previous worker regarding why this link can help with solving the problem:</strong></p>";
-		q += "<p>" + explanation + "</p>";
-		q += "]]></FormattedContent>";
-		q += "</Overview>";
-		q += "  <Question>";
-		q += "    <QuestionIdentifier>1</QuestionIdentifier>";
-		q += "    <IsRequired>true</IsRequired>";
-		q += "    <QuestionContent>";
-		q += "      <Text>Summarize the content of the inspiration link. </Text>";
-		q += "    </QuestionContent>";
-		q += "    <AnswerSpecification>";
-		q += "      <FreeTextAnswer/>";
-		q += "    </AnswerSpecification>";
-		q += "  </Question>";
-		q += "  <Question>";
-		q += "    <QuestionIdentifier>2</QuestionIdentifier>";
-		q += "    <IsRequired>true</IsRequired>";
-		q += "    <QuestionContent>";
-		q += "      <Text>Generate a solution for the problem by using the inspiration provided. "
-				+ "Describe your solution as detailed as possible. It should be elaborate enough that the engineers know how"
-				+ " to design the product based on your solution description.</Text>";
-		q += "    </QuestionContent>";
-		q += "    <AnswerSpecification>";
-		q += "      <FreeTextAnswer/>";
-		q += "    </AnswerSpecification>";
-		q += "  </Question>";
-		q += "  <Question>";
-		q += "    <QuestionIdentifier>3</QuestionIdentifier>";
-		q += "    <IsRequired>true</IsRequired>";
-		q += "    <QuestionContent>";
-		q += "      <Text>Come up with a short title (2-3 words) for your solution. </Text>";
-		q += "    </QuestionContent>";
-		q += "    <AnswerSpecification>";
-		q += "      <FreeTextAnswer/>";
-		q += "    </AnswerSpecification>";
-		q += "  </Question>";
-		q += "</QuestionForm>";
-		return q;
+	private static String makeQuestion(String problem, String sourceLink, String imageLink, String explanation)
+	 throws Exception {
+		VelocityEngine ve = new VelocityEngine();
+        ve.init();
+        Template t = ve.getTemplate("./generate_idea.xml" );
+        VelocityContext context = new VelocityContext();
+        context.put("problem", problem);
+        context.put("sourceLink", sourceLink);
+        if (imageLink.isEmpty()) context.put("hasImage", false);
+        else context.put("hasImage", true);
+        context.put("imageLink", imageLink);
+        context.put("explanation", explanation);
+        StringWriter writer = new StringWriter();
+        t.merge(context, writer);
+		return writer.toString();
 	}
 	
 	public static void main(String[] args) {

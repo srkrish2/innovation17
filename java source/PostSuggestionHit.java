@@ -1,11 +1,17 @@
 package suggestion_stage;
 
+import java.io.StringWriter;
+
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+
 import com.amazonaws.mturk.addon.HITProperties;
 import com.amazonaws.mturk.requester.HIT;
 import com.amazonaws.mturk.service.axis.RequesterService;
 import com.amazonaws.mturk.util.PropertiesClientConfig;
 
-public class PostSuggestionHit {
+public class PostSuggestionHIT {
 
 	public static void post(String problem, String link, String explanation, int assignmentsNum) {
 		RequesterService service = new RequesterService(new PropertiesClientConfig());
@@ -30,34 +36,17 @@ public class PostSuggestionHit {
 		}
 	}
 	
-	private static String makeQuestion(String problem, String idea, String feedback) {
-		String q = "";
-		q += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		q += "<QuestionForm xmlns=\"http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd\">";
-		q += "<Overview>";
-		q += "<FormattedContent><![CDATA[";
-		q += "  <h1>Instructions</h1>";
-		q += "  <p><strong>There is a problem, solution, and feedback. Improve solution to satisfy feedback.</strong></p>";
-		q += "<p><strong>The problem:</strong></p>";
-		q += "<p><i><font color=\"red\">" + problem + "</font></i></p>";
-		q += "<p><strong>The idea:</strong></p>";
-		q += "<p><i><font color=\"green\">" + idea + "</font></i></p>";
-		q += "<p><strong>The feedback:</strong></p>";
-		q += "<p><i><font color=\"blue\">" + feedback + "</font></i></p>";
-		q += "]]></FormattedContent>";
-		q += "</Overview>";
-		q += "  <Question>";
-		q += "    <QuestionIdentifier>1</QuestionIdentifier>";
-		q += "    <IsRequired>true</IsRequired>";
-		q += "    <QuestionContent>";
-		q += "      <Text>Enter improved solution. </Text>";
-		q += "    </QuestionContent>";
-		q += "    <AnswerSpecification>";
-		q += "      <FreeTextAnswer/>";
-		q += "    </AnswerSpecification>";
-		q += "  </Question>";
-		q += "</QuestionForm>";
-		return q;
+	private static String makeQuestion(String problem, String idea, String feedback) throws Exception {
+		VelocityEngine ve = new VelocityEngine();
+        ve.init();
+        Template t = ve.getTemplate("./generate_suggestion.xml" );
+        VelocityContext context = new VelocityContext();
+        context.put("problem", problem);
+        context.put("idea", idea);
+        context.put("feedback", feedback);
+        StringWriter writer = new StringWriter();
+        t.merge(context, writer);
+		return writer.toString();
 	}
 	
 	public static void main(String[] args) {
@@ -69,6 +58,6 @@ public class PostSuggestionHit {
 //		String idea = "Use the same structure as birds ears";
 //		String feedback = "How to make it washer safe?";
 //		int assignmentsNum = 1;
-		PostSuggestionHit.post(problem, idea, feedback, assignmentsNum);
+		PostSuggestionHIT.post(problem, idea, feedback, assignmentsNum);
 	}
 }

@@ -47,21 +47,23 @@ public class PostRankSuggestionHIT {
 	}
 	
 	public static void main(String[] args) {
-//		String problem = args[0];
-//		String idea = args[1];
-//		String feedback = args[2];
-//		String suggestion1 = args[3];
-//		String suggestion2 = args[4];
-//		String suggestion3 = args[5];
-//		int assignmentsNum = Integer.parseInt(args[6]);
-		String idea = "java idea";
-		String problem = "java problem";
-		String feedback = "java feedback";
-		String suggestion1 = "sugg1";
-		String suggestion2 = "sugg2";
-		String suggestion3 = "sugg3";
-		int assignmentsNum = 1;
-		String[] suggestions = {suggestion1, suggestion2, suggestion3};
+		String problem = args[0];
+		String idea = args[1];
+		String feedback = args[2];
+		int howMany = Integer.parseInt(args[3]);
+		String[] suggestions = new String[howMany];
+		for (int i = 4; i < args.length-1; i++) {
+			suggestions[i-4] = args[i];
+		}
+		int assignmentsNum = Integer.parseInt(args[args.length-1]);
+//		String idea = "java idea";
+//		String problem = "java problem";
+//		String feedback = "java feedback";
+//		String suggestion1 = "sugg1";
+//		String suggestion2 = "sugg2";
+//		String suggestion3 = "sugg3";
+//		int assignmentsNum = 1;
+//		String[] suggestions = {suggestion1, suggestion2, suggestion3};
 		createHit(problem, idea, feedback, suggestions, assignmentsNum);
 	}
 }
