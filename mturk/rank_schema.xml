@@ -52,7 +52,7 @@
 	<Overview>
 		<FormattedContent><![CDATA[
 			<p>
-				Below are a new problem and 3 schemas for it. Please judge the quality of the schemas by answering 2 questions for each.
+				Below we're presenting a new problem and 3 schemas for it. Please judge the quality of the schemas by answering 2 questions for each.
 			</p>
 			<h3>Problem: <b><font color="green">$problem</font></b></h3>
 		]]></FormattedContent>
@@ -109,7 +109,7 @@
 				<Selections>
 					<Selection>
 						<SelectionIdentifier>2</SelectionIdentifier>
-						<Text>All of them</Text>
+						<Text>Not at all</Text>
 					</Selection>
 					<Selection>
 						<SelectionIdentifier>1</SelectionIdentifier>
@@ -117,7 +117,7 @@
 					</Selection>
 					<Selection>
 						<SelectionIdentifier>0</SelectionIdentifier>
-						<Text>Not at all</Text>
+						<Text>All of them</Text>
 					</Selection>
 				</Selections>
 			</SelectionAnswer>
