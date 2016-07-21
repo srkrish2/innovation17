@@ -2,7 +2,8 @@
 <QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
 	<Overview>
 		<FormattedContent><![CDATA[
-			<h1>Instructions</h1>
+			<h1 align="center">Generate an idea</h1>
+			<h2>Instructions</h2>
 			<p><strong>
 				Below is a problem we have. In a previous task, we asked workers to find inspirations for this problem.
 				In this task, we would like you to solve this problem by using the inspiration.

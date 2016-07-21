@@ -4,15 +4,17 @@
 		<FormattedContent><![CDATA[
 			<h1 align="center">Rank 3 suggestions</h1>
 			<h2>Instructions</h2>
-			<p>
-				We had a problem and a solution for it. Later we received a limitation for the solution, and produced a suggestion to address it.
-			</p>
+			<p><b>
+				We have a problem and a solution for it as described below.
+				However, the solution has a limitation, and previous workers suggested multiple ways of
+				 solving these limitations. We would like you to help us judge the effectiveness of the suggestions.
+			</b></p>
 			<h3>Problem: <font color="green">$problem</font></h3>
 			<h3>Solution: <font color="blue">$idea</font></h3>
 			<h3>Limitation: <font color="red">$feedback</font></h3>
 			<p>
-				Below are three suggestions to solve this limitation. Rank the suggestions.
-				An effective solution solves the limitation and is also realistic/doable. 
+				Below are three suggestions to solve this limitation.
+				An effective solution should solve the limitation in a realistic and doable way.
 			</p>
 		]]></FormattedContent>
 	</Overview>
@@ -41,6 +43,18 @@
 					</Selection>
 				</Selections>
 			</SelectionAnswer>
+		</AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>2</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>
+				Explain your answer.
+			</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
 		</AnswerSpecification>
 	</Question>
     #end

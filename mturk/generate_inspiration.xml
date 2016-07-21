@@ -2,13 +2,16 @@
 <QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
 	<Overview>
 		<FormattedContent><![CDATA[
-			<h1>Instructions</h1>
-			<strong>Please find inspirations for solving the following problem.</strong>
-			<p><i><font color="green">$schema</font></i></p>
-			<strong>
-				Please search online to find an inspiration that you think can help with solving the above problem.
-				Good inspirations include methods, technologies, knowledge which can potentially help.
-			</strong>
+			<h1 align="center">Generate an inspiration</h1>
+			<h2>Instructions</h2>
+			<p>
+				<b>Below we present a problem</b>:
+			</p>
+			<p><i><font color="green">$problem or $schema</font></i></p>
+			<p><b>
+				Find an inspiration in <a href="http://www.google.com">Google</a> that can help us solve the problem.
+				Good inspirations include methods, technologies, knowledge which can potentially inspire creative solutions.
+			</p>
 		]]></FormattedContent>
 	</Overview>
 	<Question>
@@ -16,8 +19,7 @@
 	    <IsRequired>true</IsRequired>
 	    <QuestionContent>
 	        <Text>
-	        	Inspiration: Paste the link of the webpage containing the inspiration. We are looking for inspirations (not solutions) to this problem.
-	        	Your answer has to be a relevant inspiration, otherwise you risk being rejected.
+	        	1. Please copy and paste the webpage link of the inspiration to the text box below.
 	        </Text>
 	    </QuestionContent>
 	    <AnswerSpecification>
@@ -29,12 +31,11 @@
 	    <IsRequired>true</IsRequired>
 	    <QuestionContent>
 	    	<Text>
-	    		1. Is there an image in the link you pasted above? If yes, please copy the image link and paste it below.
-	    		To copy image link, right click the image and:
-	    		-	In Google Chrome, select "Copy Image URL." 
-				-	In Safari, select "Copy Image Address." 
-				-	In Internet Explorer, select "Properties." Then, highlight the address under "Address (URL)" and copy (Ctrl+C). 
-				-	In Mozilla Firefox, select "Copy Image Location."
+	    		2. If the website you found contains an image of the inspiration, please copy the image link and paste it to the text box below.To copy image link, right click the image and:
+				- In Google Chrome, select "Copy Image URL."
+				- In Safari, select "Copy Image Address."
+				- In Internet Explorer, select "Properties." Then, highlight the address under "Address (URL)" and copy (Ctrl+C).
+				- In Mozilla Firefox, select "Copy Image Location."
 	    	</Text>
 	    </QuestionContent>
 	    <AnswerSpecification>
@@ -45,7 +46,7 @@
 		<QuestionIdentifier>3</QuestionIdentifier>
 		<IsRequired>true</IsRequired>
 		<QuestionContent>
-		 	<Text>2. Please summarize the inspiration in a few sentences.</Text>
+		 	<Text>3. Please summarize the inspiration in a few sentences.</Text>
 		</QuestionContent>
 		<AnswerSpecification>
 		    <FreeTextAnswer/>
@@ -55,7 +56,7 @@
 		<QuestionIdentifier>4</QuestionIdentifier>
 		<IsRequired>true</IsRequired>
 		<QuestionContent>
-		 	<Text>3. Why do you think the inspiration you found might help with solving the problem?</Text>
+		 	<Text>4. Why do you think the inspiration you found might help with solving the problem?</Text>
 		</QuestionContent>
 		<AnswerSpecification>
 		    <FreeTextAnswer/>

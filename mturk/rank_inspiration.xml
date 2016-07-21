@@ -3,13 +3,14 @@
 	<Overview>
 		<FormattedContent><![CDATA[
 			<h1 align="center">Rank an inspiration</h1>
-			<p>
+			<h2> Instructions </h2>
+			<p><b>
 				Below we present a problem. In order to solve this problem creatively, we have asked workers to find
-				inspirations for this problem. We would like you to judge the quality of the inspirations.
+				inspirations for this problem. We would like you to judge the quality of the inspirations.</b>
 			</p>
-			<h3>Problem: <b><font color="green">$schema</font></b></h3>
-			<h3><a href="$inspirationLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.</h3>
-			<p>Please study the inspiration link and answer the question below.</p>
+			<b>Problem: <font color="green">$schema</font></b>
+			<b><a href="$inspirationLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.</b>
+			<p><b>Please study the inspiration link and answer the question below.</b></p>
 		]]></FormattedContent>
 	</Overview>
 	<Question>

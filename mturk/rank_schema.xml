@@ -4,20 +4,20 @@
 		<FormattedContent><![CDATA[
 			<h1 align="center">Rank a schema</h1>
 			<h2>Instructions</h2>
+			<p><b>
+				The schema of a problem represents the problem in the form of an outline or model. A problem schema describes the objects in a problem and their relations at a higher level without mentioning the specific domain information of the problem. The examples below demonstrate what good schemas look like.
+			</b></p>
 			<p>
-				The schema of a problem represents the problem in the form of an outline or model. A problem schema describes the objects in a problem and their relations at a higher level without mentioning the specific domain information of the problem. The example below demonstrates what a good schema looks like.
+				<b>Example problem</b>: <i>In cold weather, you often find single dropped gloves lying on the street lonely. Almost everyone, not only kids, has lost one of their gloves, leaving the other useless. It is frustrating and a waste of money. How can we solve the problem of losing gloves? </i>
 			</p>
 			<p>
-				The problem: In cold weather, you often find single dropped gloves lying on the street lonely. Almost everyone, not only kids, has lost one of their gloves, leaving the other useless. It is frustrating and a waste of money. How can we solve the problem of losing gloves? 
-			</p>
-			<p>
-				A bad schema:  Things don't work properly. How do we fix them? 
+				<b>A bad schema</b>: <i>Things don't work properly. How do we fix them?</i>
 				<font color="red">This schema is too general and doesn't describe the outline of the problem.</font><br/>
-				A bad schema: How to prevent people from losing gloves in the cold weather. 
+				<b>A bad schema</b>: <i>How to prevent people from losing gloves in the cold weather. </i>
 				<font color="red">This schema contains too much of the domain information such as "gloves" and "weather".</font>
 			</p>
 			<p>
-				A good schema: Some objects need to work together in a pair. The problem is one of the pair is often lost leaving their partner useless. How can we prevent losing one of the pair? <font color="red">This schema is good because it abstracts "gloves" into "a pair of objects" and captures the relation that "pairs need to work together.</font>
+				<b>A good schema</b>: <i>Some objects need to work together in a pair. The problem is one of the pair is often lost leaving their partner useless. How can we prevent losing one of the pair? </i> <font color="red">This schema is good because it abstracts "gloves" into "a pair of objects" and captures the relation that "pairs need to work together".</font>
 			</p>
 		]]></FormattedContent>
 	</Overview>
@@ -51,9 +51,7 @@
 	</Question>
 	<Overview>
 		<FormattedContent><![CDATA[
-			<p>
-				Below we're presenting a new problem and 3 schemas for it. Please judge the quality of the schemas by answering 2 questions for each.
-			</p>
+			<b>We now present a new problem and 3 schemas for it. Please judge the quality of the schemas by answering 2 questions for each.</b>
 			<h3>Problem: <b><font color="green">$problem</font></b></h3>
 		]]></FormattedContent>
 	</Overview>
