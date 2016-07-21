@@ -19,11 +19,24 @@ public class PostRankSchemaHIT {
 		try {
 			RequesterService service = new RequesterService(new PropertiesClientConfig());
 			HITProperties props = new HITProperties(PROPERTIES_FILE);
-			HIT hit = service.createHIT(props.getTitle(), 
-										props.getDescription(), 
-										props.getRewardAmount(),
-										makeQuestion(problem, schemas),
-										assignmentsNum);
+			HIT hit = service.createHIT(
+			        null, // HITTypeId
+			        props.getTitle(),
+			        props.getDescription(),
+			        null, // keywords 
+			        makeQuestion(problem, schemas),
+			        props.getRewardAmount(),
+			        props.getAssignmentDuration(),
+			        props.getAutoApprovalDelay(),
+			        props.getLifetime(),
+			        assignmentsNum,
+			        null, //requesterAnnotation
+			        null, // qualificationRequirements
+			        new String [] { "Minimal", "HITDetail", "HITQuestion", "HITAssignmentSummary" },
+			        null, // uniqueRequesterToken
+			        null, // assignmentReviewPolicy
+			        null  // hitReviewPolicy
+			);
 			System.out.println("SUCCESS");
 			System.out.println(hit.getHITId());
 			System.out.println(service.getWebsiteURL() + "/mturk/preview?groupId=" + hit.getHITTypeId());

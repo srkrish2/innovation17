@@ -1,4 +1,4 @@
-package schema_stage;
+package inspiration_stage;
 
 import java.io.StringWriter;
 
@@ -11,38 +11,20 @@ import com.amazonaws.mturk.requester.HIT;
 import com.amazonaws.mturk.service.axis.RequesterService;
 import com.amazonaws.mturk.util.PropertiesClientConfig;
 
-/**
- * The MovieSurvey sample application creates a simple HIT using the Amazon
- * Mechanical Turk SDK for Java. The file mturk.properties must be found in the
- * current file path.
- */
-public class PostSchemaHIT {
-
-	private RequesterService service;
-
+public class PostInspirationHIT {
 	/*
 	 * Define the location of the file containing the QAP and the properties of
 	 * the HIT
 	 */
-	private String rootDir = ".";
-	private String propertiesFile = rootDir + "/generate_schema_hit.properties";
-
-	// Define the properties of the HIT to be created.
-	private String question;
-
-	/**
-	 * Constructor
-	 */
-	public PostSchemaHIT(String question) {
-		this.question = question;
-		service = new RequesterService(new PropertiesClientConfig());
-	}
+	private static String rootDir = ".";
+	private static String propertiesFile = rootDir + "/inspiration_hit.properties";
 
 	/**
 	 * Create a HIT that will ask to generate a schema.
 	 * 
 	 */
-	public void createTurkHIT(int assignmentsNum) {
+	public static void post(String question, int assignmentsNum) {
+		RequesterService service = new RequesterService(new PropertiesClientConfig());
 		try {
 			/*
 			 * Loading the HIT properties file. HITProperties is a helper class
@@ -52,9 +34,24 @@ public class PostSchemaHIT {
 			 */
 			HITProperties props = new HITProperties(propertiesFile);
 
-			// Create a HIT using the properties and question files
-			HIT hit = service.createHIT(props.getTitle(), props.getDescription(), props.getRewardAmount(),
-					makeQuestion(question), assignmentsNum);
+			HIT hit = service.createHIT(
+			        null, // HITTypeId
+			        props.getTitle(),
+			        props.getDescription(),
+			        null, // keywords 
+			        makeQuestion(question),
+			        props.getRewardAmount(),
+			        props.getAssignmentDuration(),
+			        props.getAutoApprovalDelay(),
+			        props.getLifetime(),
+			        assignmentsNum,
+			        null, //requesterAnnotation
+			        null, // qualificationRequirements
+			        new String [] { "Minimal", "HITDetail", "HITQuestion", "HITAssignmentSummary" },
+			        null, // uniqueRequesterToken
+			        null, // assignmentReviewPolicy
+			        null  // hitReviewPolicy
+			);
 
 			/*
 			 * We got so far with no error thrown => task successfully submitted
@@ -79,32 +76,29 @@ public class PostSchemaHIT {
 		}
 	}
 
-	private String makeQuestion(String question) throws Exception {
+	private static String makeQuestion(String schema) throws Exception {
 		VelocityEngine ve = new VelocityEngine();
         ve.init();
-        Template t = ve.getTemplate("./generate_schema.xml" );
+        Template t = ve.getTemplate("./generate_inspiration.xml" );
         VelocityContext context = new VelocityContext();
-        context.put("question", question);
+        context.put("schema", schema);
         StringWriter writer = new StringWriter();
         t.merge(context, writer);
 		return writer.toString();
 	}
-	
+
 	/**
 	 * Main method
 	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String question = args[0];
+		String schema = args[0];
 		int assignmentsNum = Integer.parseInt(args[1]);
-//		String question = "i have a problem with peeling mango";
-//		int assignmentsNum = 10;
+//		 String schema = "How do you blah blah abstract";
+//		 int assignmentsNum = 3;
 
 		// Create an instance of this class.
-		PostSchemaHIT app = new PostSchemaHIT(question);
-
-		// Create the new HIT.
-		app.createTurkHIT(assignmentsNum);
+		PostInspirationHIT.post(schema, assignmentsNum);
 	}
 }

@@ -21,8 +21,24 @@ public class PostIdeaHIT {
 			sourceLink = sourceLink.replace("&", "&amp;");
 			imageLink = imageLink.replace("&", "&amp;");
 
-			HIT hit = service.createHIT(props.getTitle(), props.getDescription(), props.getRewardAmount(),
-					makeQuestion(problem, sourceLink, imageLink, explanation), assignmentsNum);
+			HIT hit = service.createHIT(
+			        null, // HITTypeId
+			        props.getTitle(),
+			        props.getDescription(),
+			        null, // keywords 
+			        makeQuestion(problem, sourceLink, imageLink, explanation),
+			        props.getRewardAmount(),
+			        props.getAssignmentDuration(),
+			        props.getAutoApprovalDelay(),
+			        props.getLifetime(),
+			        assignmentsNum,
+			        null, //requesterAnnotation
+			        null, // qualificationRequirements
+			        new String [] { "Minimal", "HITDetail", "HITQuestion", "HITAssignmentSummary" },
+			        null, // uniqueRequesterToken
+			        null, // assignmentReviewPolicy
+			        null  // hitReviewPolicy
+			);
 
 			/*
 			 * Format: 

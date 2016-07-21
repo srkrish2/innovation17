@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import idea_stage.IdeaHITResults;
 import idea_stage.PostIdeaHIT;
-import idea_stage.PostRankIdeaHIT;
 import inspiration_stage.InspirationHITResults;
 import inspiration_stage.PostInspirationHIT;
 import inspiration_stage.PostRankInspirationHIT;
@@ -56,9 +55,6 @@ public class MTurkSDK {
 			break;
 		case "IdeaHITResults":
 			IdeaHITResults.main(args);
-			break;
-		case "PostRankIdeaHIT":
-			PostRankIdeaHIT.main(args);
 			break;
 		case "PostSuggestionHIT":
 			PostSuggestionHIT.main(args);
