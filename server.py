@@ -11,7 +11,7 @@ import mongodb_controller as mc
 from threading import Thread
 import update_managers
 import authorization
-from utility_functions import convert_input_count, get_input_problem_dict
+from utility_functions import convert_input_count
 from constants import *
 import renderers
 import well_ranked_counters

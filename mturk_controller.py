@@ -66,10 +66,9 @@ class InspirationHITCreator(HITCreator):
 
 
 class IdeaHITCreator(HITCreator):
-    def __init__(self, prob, src_link, img_link, exp, goal):
+    def __init__(self, prob, src_link, exp, goal):
         self.problem = prob
         self.source_link = src_link
-        self.image_link = img_link
         self.explanation = exp
         self.count_goal = goal
 
@@ -77,7 +76,7 @@ class IdeaHITCreator(HITCreator):
         return "IdeaHITCreator"
 
     def get_jar_args(self):
-        return ['PostIdeaHIT', self.problem, self.source_link, self.image_link, self.explanation,
+        return ['PostIdeaHIT', self.problem, self.source_link, self.explanation,
                 str(self.count_goal)]
 
 

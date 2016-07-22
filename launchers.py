@@ -31,10 +31,9 @@ def post_idea_task(problem_id, count_goal):
     for inspiration in mc.get_accepted_inspirations(problem_id):
         problem_description = mc.get_problem_description(inspiration[PROBLEM_ID])
         source_link = inspiration[INSPIRATION_LINK]
-        image_link = inspiration[INSPIRATION_ADDITIONAL]
         explanation = inspiration[INSPIRATION_REASON]
         idea_hit_creator =\
-            mturk_controller.IdeaHITCreator(problem_description, source_link, image_link, explanation, count_goal)
+            mturk_controller.IdeaHITCreator(problem_description, source_link, explanation, count_goal)
         hit_id = idea_hit_creator.post()
         # add the hit_id to schema
         if hit_id == "FAIL":

@@ -7,11 +7,11 @@
 			<p>
 				<b>Below we present a problem</b>:
 			</p>
-			<p><i><font color="green">$problem or $schema</font></i></p>
+			<p><i><font color="green">$schema</font></i></p>
 			<p><b>
-				Find an inspiration in <a href="http://www.google.com">Google</a> that can help us solve the problem.
+				Find an inspiration in <a href="http://www.google.com" target="blank">Google</a> that can help us solve the problem.
 				Good inspirations include methods, technologies, knowledge which can potentially inspire creative solutions.
-			</p>
+			</b></p>
 		]]></FormattedContent>
 	</Overview>
 	<Question>

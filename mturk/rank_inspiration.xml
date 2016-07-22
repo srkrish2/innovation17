@@ -8,8 +8,8 @@
 				Below we present a problem. In order to solve this problem creatively, we have asked workers to find
 				inspirations for this problem. We would like you to judge the quality of the inspirations.</b>
 			</p>
-			<b>Problem: <font color="green">$schema</font></b>
-			<b><a href="$inspirationLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.</b>
+			<p><b>Problem: <font color="green">$schema</font></b></p>
+			<p><b><a href="$inspirationLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.</b></p>
 			<p><b>Please study the inspiration link and answer the question below.</b></p>
 		]]></FormattedContent>
 	</Overview>

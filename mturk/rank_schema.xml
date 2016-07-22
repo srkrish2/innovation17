@@ -2,7 +2,7 @@
 <QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
 	<Overview>
 		<FormattedContent><![CDATA[
-			<h1 align="center">Rank a schema</h1>
+			<h1 align="center">Rank 3 schemas</h1>
 			<h2>Instructions</h2>
 			<p><b>
 				The schema of a problem represents the problem in the form of an outline or model. A problem schema describes the objects in a problem and their relations at a higher level without mentioning the specific domain information of the problem. The examples below demonstrate what good schemas look like.
@@ -52,7 +52,7 @@
 	<Overview>
 		<FormattedContent><![CDATA[
 			<b>We now present a new problem and 3 schemas for it. Please judge the quality of the schemas by answering 2 questions for each.</b>
-			<h3>Problem: <b><font color="green">$problem</font></b></h3>
+			<p><b>Problem</b>: <i><font color="green">$problem</font></i></p>
 		]]></FormattedContent>
 	</Overview>
 	#foreach( $schema in $schemas )

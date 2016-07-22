@@ -12,11 +12,8 @@
 			<p><strong>
 				<a href="$sourceLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.
 			</strong></p>
-			#if ($hasImage)
-				<img src="$imageLink" alt="Worker's image" />
-			#end
 			<p><strong>The explanation from the previous worker regarding why this link can help with solving the problem:</strong></p>
-			<p>$explanation</p>
+			<p><i>$explanation</i></p>
 		]]></FormattedContent>
 	</Overview>
 	<Question>

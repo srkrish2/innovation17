@@ -32,7 +32,7 @@
 				The pattern describes the structure and essence of the problem without mentioning the specific domain information such as gloves. In this task, we would like you to generate a pattern for the following problem:
 			</p>
 			<p><i><font color="green">$problem</font></i></p>
-			<b>We know this task can be challenging. Please follow the steps that can help you generate a good pattern.</b>
+			<p><b>We know this task can be challenging. Please follow the steps that can help you generate a good pattern.</b></p>
 		]]></FormattedContent>
 	</Overview>
 	<Question>
@@ -62,7 +62,7 @@
 		 	<Text>
 		 		Step 3: Now please generate a pattern for the problem.
 				Tip 1: You can map the objects between our problem and the one you came up with to generate the shared structure.
-				Tip 2: The pattern should describe the characteristics of the objects in the problem and the relation structure between objects.
+				Tip 2: The pattern should describe the characteristics of the objects in the problem and the relation structure between objects.
 			</Text>
 		</QuestionContent>
 		<AnswerSpecification>
