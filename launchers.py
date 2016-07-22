@@ -28,7 +28,7 @@ def post_inspiration_task(problem_id, count_goal):
 
 
 def post_idea_task(problem_id, count_goal):
-    for inspiration in mc.get_accepted_inspirations(problem_id):
+    for inspiration in mc.get_inspirations_for_idea_task(problem_id):
         problem_description = mc.get_problem_description(inspiration[PROBLEM_ID])
         source_link = inspiration[INSPIRATION_LINK]
         explanation = inspiration[INSPIRATION_REASON]

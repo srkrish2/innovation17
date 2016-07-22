@@ -7,14 +7,14 @@ PREVIOUS_URL_KEY = "previous_url"
 # ranking settings.
 # the following define how many turkers to ask to rank an item
 # to disable ranking for a stage, set the constant to 0 (so we won't post rank hit and won't filter anything by rank)
-HOW_MANY_SCHEMA_RANKS = 2
+HOW_MANY_SCHEMA_RANKS = 3
 HOW_MANY_INSPIRATION_RANKS = 2
 HOW_MANY_IDEA_RANKS = 0  # don't change this before adding supporting code :)
 HOW_MANY_SUGGESTION_RANKS = 2
 
 # HIT evaluation details - don't change these if you're just trying to switch ranking on/off
-HOW_MANY_SCHEMAS_IN_ONE_RANK_HIT = 2
-HOW_MANY_SUGGESTIONS_IN_ONE_RANK_HIT = 2
+HOW_MANY_SCHEMAS_IN_ONE_RANK_HIT = 3
+HOW_MANY_SUGGESTIONS_IN_ONE_RANK_HIT = 3
 MIN_CATEGORY_RANK = 1
 
 # Lazy mode settings. Since lazy users don't choose how many schemas/inspiration/ideas to get, we define that here.

@@ -31,7 +31,8 @@
 	    <IsRequired>true</IsRequired>
 	    <QuestionContent>
 	    	<Text>
-	    		2. Generate a solution for the problem by using the inspiration provided. Describe your solution as detailed as possible. It should be elaborate enough that the engineers know how to design the product based on your solution description.
+	    		2. Generate a solution for the problem by using the inspiration provided. Please be as detailed and realistic as possible.
+				Your ideas will only be used for internal analysis in our study. You own the intellectual property.
 			</Text>
 	    </QuestionContent>
 	    <AnswerSpecification>

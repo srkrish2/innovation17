@@ -533,10 +533,11 @@ def get_problems_by_user(username):
     return problems_collection.find({OWNER_USERNAME: username})
 
 
-def get_accepted_inspirations(problem_id):
+def get_inspirations_for_idea_task(problem_id):
     return inspirations_collection.find({
         PROBLEM_ID: problem_id,
-        STATUS: STATUS_ACCEPTED
+        STATUS: STATUS_ACCEPTED,
+        WELL_RANKED: True
     })
 
 
