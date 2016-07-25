@@ -3,7 +3,7 @@ import mturk_controller
 from constants import *
 from multiprocessing.pool import ThreadPool
 import waiters
-from utility_functions import generate_id, get_input_problem_dict, check_if_logged_in
+from utility_functions import generate_id, get_input_problem_dict, check_if_logged_in, is_valid_url
 
 
 def launch_schema_hit(problem_id, description, assignments_num):
@@ -32,16 +32,17 @@ def post_idea_task(problem_id, count_goal):
         problem_description = mc.get_problem_description(inspiration[PROBLEM_ID])
         source_link = inspiration[INSPIRATION_LINK]
         explanation = inspiration[INSPIRATION_REASON]
-        idea_hit_creator =\
-            mturk_controller.IdeaHITCreator(problem_description, source_link, explanation, count_goal)
-        hit_id = idea_hit_creator.post()
-        # add the hit_id to schema
-        if hit_id == "FAIL":
-            print "post_idea_task: FAIL!"
-            continue
         inspiration_id = inspiration[INSPIRATION_ID]
-        schema_id = inspiration[SCHEMA_ID]
-        mc.insert_new_idea_hit(problem_id, schema_id, inspiration_id, count_goal, hit_id)
+        if is_valid_url(source_link):
+            idea_hit_creator =\
+                mturk_controller.IdeaHITCreator(problem_description, source_link, explanation, count_goal)
+            hit_id = idea_hit_creator.post()
+            # add the hit_id to schema
+            if hit_id == "FAIL":
+                print "post_idea_task: FAIL!"
+                continue
+            schema_id = inspiration[SCHEMA_ID]
+            mc.insert_new_idea_hit(problem_id, schema_id, inspiration_id, count_goal, hit_id)
         mc.set_inspiration_processed_status(inspiration_id)
 
 

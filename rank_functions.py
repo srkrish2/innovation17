@@ -2,6 +2,7 @@ from constants import *
 import mongodb_controller as mc
 import mturk_controller
 import mt_to_db_pullers
+from utility_functions import is_valid_url
 
 
 def post_rank_hit_for_new_schemas(problem_id):
@@ -34,13 +35,14 @@ def post_rank_hit_for_new_inspirations(problem_id):
         schema_id = inspiration_dict[SCHEMA_ID]
         schema_text = mc.get_schema_text(schema_id)
         inspiration_link = inspiration_dict[INSPIRATION_LINK]
-        rank_hit_creator = mturk_controller.RankInspirationHITCreator(schema_text, inspiration_link,
-                                                                      HOW_MANY_INSPIRATION_RANKS)
-        rank_item_hit_id = rank_hit_creator.post()
-        if rank_item_hit_id == "FAIL":
-            print "FAIL when posting rank hit!"
-            continue
-        mc.insert_new_rank_inspiration_hit(inspiration_id, rank_item_hit_id, problem_id)
+        if is_valid_url(inspiration_link):
+            rank_hit_creator = mturk_controller.RankInspirationHITCreator(schema_text, inspiration_link,
+                                                                          HOW_MANY_INSPIRATION_RANKS)
+            rank_item_hit_id = rank_hit_creator.post()
+            if rank_item_hit_id == "FAIL":
+                print "FAIL when posting rank hit!"
+                continue
+            mc.insert_new_rank_inspiration_hit(inspiration_id, rank_item_hit_id, problem_id)
         mc.set_inspiration_posted_for_rank(inspiration_id)
 
 

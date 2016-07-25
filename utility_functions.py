@@ -86,3 +86,7 @@ def get_input_problem_dict():
 
 def generate_id():
     return ''.join(random.sample(string.hexdigits, 8))
+
+
+def is_valid_url(url):
+    return re.match(r"http://.*|https://.*", url) is not None
