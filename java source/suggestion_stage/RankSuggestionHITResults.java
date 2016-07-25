@@ -18,7 +18,7 @@ public class RankSuggestionHITResults {
 			HIT hit = service.getHIT(hitId);
 			System.out.println("SUCCESS");
 			
-			if (hit.getNumberOfAssignmentsAvailable() > 0) {
+			if (hit.getNumberOfAssignmentsAvailable() > 0 || hit.getNumberOfAssignmentsPending() > 0) {
 				System.out.println(0);
 				return;
 			}
@@ -36,9 +36,10 @@ public class RankSuggestionHITResults {
 		        	(List<QuestionFormAnswersType.AnswerType>) qfa.getAnswer();
 		        String assignmentId = assignment.getAssignmentId();
 		        
-		        System.out.println(answers.size());
-		        for (QuestionFormAnswersType.AnswerType answer : answers) {
-		        	System.out.println(RequesterService.getAnswerValue(assignmentId, answer));
+		        // Note: we don't care about explanations
+		        System.out.println(answers.size()/2);
+		        for (int i = 0; i < answers.size(); i += 2) {
+		        	System.out.println(RequesterService.getAnswerValue(assignmentId, answers.get(i)));
 		        }
 		        
 		        System.out.println(assignmentId);

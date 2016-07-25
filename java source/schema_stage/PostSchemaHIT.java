@@ -28,13 +28,13 @@ public class PostSchemaHIT {
 	private String propertiesFile = rootDir + "/generate_schema_hit.properties";
 
 	// Define the properties of the HIT to be created.
-	private String question;
+	private String problem;
 
 	/**
 	 * Constructor
 	 */
-	public PostSchemaHIT(String question) {
-		this.question = question;
+	public PostSchemaHIT(String problem) {
+		this.problem = problem;
 		service = new RequesterService(new PropertiesClientConfig());
 	}
 
@@ -57,7 +57,7 @@ public class PostSchemaHIT {
 			        props.getTitle(),
 			        props.getDescription(),
 			        null, // keywords 
-			        makeQuestion(question),
+			        makeQuestion(problem),
 			        props.getRewardAmount(),
 			        props.getAssignmentDuration(),
 			        props.getAutoApprovalDelay(),
@@ -94,12 +94,12 @@ public class PostSchemaHIT {
 		}
 	}
 
-	private String makeQuestion(String question) throws Exception {
+	private String makeQuestion(String problem) throws Exception {
 		VelocityEngine ve = new VelocityEngine();
         ve.init();
         Template t = ve.getTemplate("./generate_schema.xml" );
         VelocityContext context = new VelocityContext();
-        context.put("question", question);
+        context.put("problem", problem);
         StringWriter writer = new StringWriter();
         t.merge(context, writer);
 		return writer.toString();
@@ -111,13 +111,13 @@ public class PostSchemaHIT {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String question = args[0];
+		String problem = args[0];
 		int assignmentsNum = Integer.parseInt(args[1]);
 //		String question = "i have a problem with peeling mango";
 //		int assignmentsNum = 1;
 
 		// Create an instance of this class.
-		PostSchemaHIT app = new PostSchemaHIT(question);
+		PostSchemaHIT app = new PostSchemaHIT(problem);
 
 		// Create the new HIT.
 		app.createTurkHIT(assignmentsNum);

@@ -27,8 +27,7 @@ public class RankInspirationHITResults {
 			
 			HIT hit = service.getHIT(hitId);
 			System.out.println("SUCCESS");
-			
-			if (hit.getNumberOfAssignmentsAvailable() > 0) {
+			if (hit.getNumberOfAssignmentsAvailable() > 0 || hit.getNumberOfAssignmentsPending() > 0) {
 				System.out.println(0);
 				return;
 			}

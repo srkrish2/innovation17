@@ -13,20 +13,19 @@ import com.amazonaws.mturk.util.PropertiesClientConfig;
 
 public class PostIdeaHIT {
 	
-	public static void post(String problem, String sourceLink, String imageLink, String explanation, int assignmentsNum) {
+	public static void post(String problem, String sourceLink, String explanation, int assignmentsNum) {
 		RequesterService service = new RequesterService(new PropertiesClientConfig());
 		try {
 			HITProperties props = new HITProperties("./idea_hit.properties");
 			
 			sourceLink = sourceLink.replace("&", "&amp;");
-			imageLink = imageLink.replace("&", "&amp;");
 
 			HIT hit = service.createHIT(
 			        null, // HITTypeId
 			        props.getTitle(),
 			        props.getDescription(),
 			        null, // keywords 
-			        makeQuestion(problem, sourceLink, imageLink, explanation),
+			        makeQuestion(problem, sourceLink, explanation),
 			        props.getRewardAmount(),
 			        props.getAssignmentDuration(),
 			        props.getAutoApprovalDelay(),
@@ -55,7 +54,7 @@ public class PostIdeaHIT {
 		}
 	}
 	
-	private static String makeQuestion(String problem, String sourceLink, String imageLink, String explanation)
+	private static String makeQuestion(String problem, String sourceLink, String explanation)
 	 throws Exception {
 		VelocityEngine ve = new VelocityEngine();
         ve.init();
@@ -63,9 +62,6 @@ public class PostIdeaHIT {
         VelocityContext context = new VelocityContext();
         context.put("problem", problem);
         context.put("sourceLink", sourceLink);
-        if (imageLink.isEmpty()) context.put("hasImage", false);
-        else context.put("hasImage", true);
-        context.put("imageLink", imageLink);
         context.put("explanation", explanation);
         StringWriter writer = new StringWriter();
         t.merge(context, writer);
@@ -75,14 +71,13 @@ public class PostIdeaHIT {
 	public static void main(String[] args) {
 		String problem = args[0];
 		String sourceLink = args[1];
-		String imageLink = args[2];
-		String explanation = args[3];
-		int assignmentsNum = Integer.parseInt(args[4]);
+		String explanation = args[2];
+		int assignmentsNum = Integer.parseInt(args[3]);
 //		String problem = "How to strip noises from the road but keep the sound of other cars";
 //		String sourceLink = "http://google.com/";
 //		String imageLink = "https://www.gravatar.com/avatar/89927e2f4bde24991649b353a37678b9?s=32&d=identicon&r=PG";
 //		String explanation = "Why this inspiration is good";
 //		int assignmentsNum = 1;
-		PostIdeaHIT.post(problem, sourceLink, imageLink, explanation, assignmentsNum);
+		PostIdeaHIT.post(problem, sourceLink, explanation, assignmentsNum);
 	}
 }
