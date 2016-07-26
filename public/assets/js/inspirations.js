@@ -28,6 +28,30 @@
 	$(document).on('click','.cancelidea',function(e){
 		$('.ui.modal').modal('hide');
 	});
+	$(document).on('click','.rj-all, .ac-all',function(e){
+		
+		$.ajax({
+			type: "POST",
+			url: '/batch_rj',
+			data: JSON.stringify({
+				"to_reject": $(e.currentTarget).hasClass('ac-all'),
+				"type": itemType,
+				"parent_id":$('.ui.divided.items').attr('class').split(' ')[3]
+			}),
+			success: function(sdata){
+				if($(e.currentTarget).hasClass('ac-all'))
+				{
+					$('.ui.buttons :not(.hidden) > .ui.button.ac').addClass('active');
+					$('.ui.buttons :not(.hidden) > .ui.button.rj').removeClass('active');
+				}
+				else {
+					$('.ui.buttons :not(.hidden) > .ui.button.rj').addClass('active');
+					$('.ui.buttons :not(.hidden) > .ui.button.ac').removeClass('active');
+				}
+			}
+		})
+		
+	});
 	$(document).on('click','.rj, .ac, .reactivate',function(e){
 		var itemType = "inspiration", toreject=$(e.currentTarget).hasClass('red'), item_id = $(e.currentTarget.parentElement.parentElement.parentElement).attr('class').split(' ')[1];//the fourth class name
 		$(e.currentTarget).prop('disabled',true);

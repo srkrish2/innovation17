@@ -21,18 +21,33 @@
         </div>
       </label> 
     </div>
-    <div class="field">
-      {% if problem_id %}
-      <textarea type="text" name="description" 
-      {% if operation=="view" %}
-      disabled
-      {% endif %}
-      >{{description}} </textarea>
-      {% else %}
-      <textarea type="text" name="description" placeholder="Project description..."></textarea>
-      {% endif %}
+    <div class="fields">
+      <div class="twelve wide field">
+        {% if problem_id %}
+        <textarea type="text" name="description" 
+        {% if operation=="view" %}
+        disabled
+        {% endif %}
+        >{{description}} </textarea>
+        {% else %}
+        <textarea type="text" name="description" placeholder="Vehicles very well insulated to reduce noise. However, because of the noise reduction, drivers are distracted or not aware of their surroundings. Engineers would like to put microphones around the car so that it can hear audio events (e.g. approaching ambulances).  The size of the microphone is a couple of millimeters.  How the microphones should be encased/housed so that they capture external audio events while encounter minimal noise(mostly wind noise)?"></textarea>
+        {% endif %}
+      </div>
+      <div class="four wide field">
+        <div class="ui info message">
+          <i class="close icon"></i>
+          <div class="header">
+            Have you elaborated on the following aspects?
+          </div>
+          <ul class="list">
+            <li>What is the purpose/goal of the problem</li>
+            <li>What are the uncompromisable constraints</li>
+          </ul>
+        </div>
+      </div>
+      
     </div>
-    <div class="two fields">
+    <!-- <div class="two fields">
       <div class="field">
         <div class="ui fluid search selection dropdown">
           <i class="tag icon"></i>
@@ -54,8 +69,8 @@
           </a>
         </div>
       </div>
-    </div>
-    <div class="two fields">
+    </div> -->
+    <div class="three fields">
       <div class="field">
         {% if problem_id %}
         <input type="text" name="schemagoal" id="schemagoal" value={{count_goal}}
@@ -64,7 +79,7 @@
         {% endif %}
         >
         {% else %}
-        <input type="text" name="schemagoal" id="schemagoal" placeholder="Target number of schemas to get">
+        <input type="text" name="schemagoal" id="schemagoal" placeholder="Rough goal of crowdsourced ideas">
         {% endif %}
       </div>
 
@@ -74,19 +89,31 @@
         <div class="ui save-loader small inline mini text loader"></div> 
       </div>
       <div class="ui blue button submit">Submit
-        <div class="ui submit-loader small inline mini loader"></div> 
+        <div class="ui submit-loader small inline mini loader">
+        </div> 
       </div>
       {% endif %}
-      <div class="ui toggle checkbox"
-      >
-      <input type="checkbox" name="public" {% if lazy %}checked{% endif %}>
-      <label>Lazy mode</label>
+      <div class="ui toggle checkbox">
+        <input type="checkbox" name="public" {% if lazy %}checked{% endif %}>
+        <label>Lazy mode</label>
+      </div>
+    </div>
+    <div class="input field">
+      <div class="ui fluid multiple search selection dropdown">
+        <i class="tag icon"></i>
+        <input type="hidden" name="language">
+        <span class="text">Language</span>
+        <div class="menu">
+          <div class="item">English</div>
+          <div class="item">Russian</div>
+          <div class="item">Chinese</div>
+        </div>
+      </div>
     </div>
   </div>
+  <div class="ui error message"></div>
+</div>
 
-</div>
-<div class="ui error message"></div>
-</div>
 
 <script src="/static/semantic/dist/semantic.js"></script>
 <script src="/static/assets/js/new_project.js"></script>
