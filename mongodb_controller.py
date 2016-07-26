@@ -730,7 +730,7 @@ def set_inspiration_processed_status(inspiration_id):
 # client
 client = pymongo.MongoClient()
 # database
-db = client.crowd_db
+db = client.chi_db
 # collections
 users_collection = db.users
 problems_collection = db.problems
