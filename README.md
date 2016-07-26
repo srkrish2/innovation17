@@ -5,6 +5,7 @@ Dependencies:
 - [MongoDB](http://www.mongodb.org/display/DOCS/Getting+Started)
 - [PyMongo](http://api.mongodb.com/python/current/installation.html)
 - [Jinja2](http://jinja.pocoo.org/docs/dev/intro/#installation)
+- [dateutil](https://pypi.python.org/pypi/python-dateutil)
 
 ## Running the server
 1. In one terminal, type `mongod` to start the database
