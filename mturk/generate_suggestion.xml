@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1 align="center">Help improve a problem solution</h1>
+			<h2>Instructions</h2>
+			<p><b>
+				We have a problem as described below. Previous workers provided a good solution. 
+				However, some aspects of the solution need to be improved. We would like you to improve this solution 
+				by solving some of the limitations.
+			</b></p>
+			<h3>Problem: <font color="green">$problem</font></h3>
+			<h3>Solution: <font color="blue">$idea</font></h3>
+			<h3>Limitation: <font color="red">$feedback</font></h3>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+	    <QuestionIdentifier>1</QuestionIdentifier>
+	    <IsRequired>true</IsRequired>
+	    <QuestionContent>
+	        <Text>Solve the limitation.</Text>
+	    </QuestionContent>
+	    <AnswerSpecification>
+	        <FreeTextAnswer/>
+	    </AnswerSpecification>
+	</Question>
+</QuestionForm>

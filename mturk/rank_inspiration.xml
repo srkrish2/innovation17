@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1 align="center">Rank an inspiration</h1>
+			<h2> Instructions </h2>
+			<p><b>
+				Below we present a problem. In order to solve this problem creatively, we have asked workers to find
+				inspirations for this problem. We would like you to judge the quality of the inspirations.</b>
+			</p>
+			<p><b>Problem: <font color="green">$schema</font></b></p>
+			<p><b><a href="$inspirationLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.</b></p>
+			<p><b>Please study the inspiration link and answer the question below.</b></p>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+		<QuestionIdentifier>1</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+			<Text>
+				Does the link include a good inspiration? A good inspiration refers to methods, technologies, or knowledge that can potentially inspire creative solutions for a problem.
+			</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+			<SelectionAnswer>
+				<MinSelectionCount>1</MinSelectionCount>
+				<MaxSelectionCount>1</MaxSelectionCount>
+				<StyleSuggestion>radiobutton</StyleSuggestion>
+				<Selections>
+					<Selection>
+						<SelectionIdentifier>2</SelectionIdentifier>
+						<Text>Yes, it applies to the problem.</Text>
+					</Selection>
+					<Selection>
+						<SelectionIdentifier>1</SelectionIdentifier>
+						<Text>Probably, I can see the potential.</Text>
+					</Selection>
+					<Selection>
+						<SelectionIdentifier>0</SelectionIdentifier>
+						<Text>No, it is doesn't seem relevant to the problem at all.</Text>
+					</Selection>
+				</Selections>
+			</SelectionAnswer>
+		</AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>2</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>
+		 		Explain your answer (we will use your explanation to verify whether you read the inspiration or not)
+	 		</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+</QuestionForm>

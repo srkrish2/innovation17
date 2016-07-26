@@ -11,7 +11,7 @@ import mongodb_controller as mc
 from threading import Thread
 import update_managers
 import authorization
-from utility_functions import convert_input_count, get_input_problem_dict
+from utility_functions import convert_input_count
 from constants import *
 import renderers
 import well_ranked_counters
@@ -257,22 +257,6 @@ class MoreSuggestionsHandler(object):
         feedbacks = [feedback_dict[TEXT]]
         thread = Thread(target=launchers.post_feedback, args=[idea_dict, idea_id, feedbacks, count_goal])
         thread.start()
-
-
-class SuggestionUpdatesHandler(object):
-    exposed = True
-
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def POST(self):
-        if USERNAME_KEY not in cherrypy.session:
-            raise cherrypy.HTTPError(403)
-        data = cherrypy.request.json
-        problem_id = data[PROBLEM_ID]
-        thread = Thread(target=update_managers.update_hit_results_for_problem, args=[problem_id])
-        thread.start()
-        arr = well_ranked_counters.get_suggestion_counts_for_each_idea(problem_id)
-        return {IDEAS_FIELD: arr}
 
 
 class MoreSchemasHandler(object):

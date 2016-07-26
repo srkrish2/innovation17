@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1 align="center">Generate an idea</h1>
+			<h2>Instructions</h2>
+			<p><strong>
+				Below is a problem we have. In a previous task, we asked workers to find inspirations for this problem.
+				In this task, we would like you to solve this problem by using the inspiration.
+			</strong></p>
+			<p>Problem: <i><font color="green">$problem</font></i></p>
+			<p><strong>
+				<a href="$sourceLink" target="blank">Click here to look at the inspiration</a> It will open up a new tab.
+			</strong></p>
+			<p><strong>The explanation from the previous worker regarding why this link can help with solving the problem:</strong></p>
+			<p><i>$explanation</i></p>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+	    <QuestionIdentifier>1</QuestionIdentifier>
+	    <IsRequired>true</IsRequired>
+	    <QuestionContent>
+	        <Text>1. Summarize the content of the inspiration link.</Text>
+	    </QuestionContent>
+	    <AnswerSpecification>
+	        <FreeTextAnswer/>
+	    </AnswerSpecification>
+	</Question>
+	<Question>
+	    <QuestionIdentifier>2</QuestionIdentifier>
+	    <IsRequired>true</IsRequired>
+	    <QuestionContent>
+	    	<Text>
+	    		2. Generate a solution for the problem by using the inspiration provided. Please be as detailed and realistic as possible.
+				Your ideas will only be used for internal analysis in our study. You own the intellectual property.
+			</Text>
+	    </QuestionContent>
+	    <AnswerSpecification>
+	    	<FreeTextAnswer/>
+	    </AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>3</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>3. Come up with a short title (2-3 words) for your solution.</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+</QuestionForm>

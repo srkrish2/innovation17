@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1 align="center">Rank 3 suggestions</h1>
+			<h2>Instructions</h2>
+			<p><b>
+				We have a problem and a solution for it as described below.
+				However, the solution has a limitation, and previous workers suggested multiple ways of
+				 solving these limitations. We would like you to help us judge the effectiveness of the suggestions.
+			</b></p>
+			<h3>Problem: <font color="green">$problem</font></h3>
+			<h3>Solution: <font color="blue">$idea</font></h3>
+			<h3>Limitation: <font color="red">$feedback</font></h3>
+			<p>
+				Below are three suggestions to solve this limitation.
+				An effective solution should solve the limitation in a realistic and doable way.
+			</p>
+		]]></FormattedContent>
+	</Overview>
+	#foreach( $suggestion in $suggestions )
+	<Question>
+		<QuestionIdentifier>1</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+			<Text>
+				$suggestion
+			</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+			<SelectionAnswer>
+				<MinSelectionCount>1</MinSelectionCount>
+				<MaxSelectionCount>1</MaxSelectionCount>
+				<StyleSuggestion>radiobutton</StyleSuggestion>
+				<Selections>
+					<Selection>
+						<SelectionIdentifier>1</SelectionIdentifier>
+						<Text>Effective</Text>
+					</Selection>
+					<Selection>
+						<SelectionIdentifier>0</SelectionIdentifier>
+						<Text>Not effective</Text>
+					</Selection>
+				</Selections>
+			</SelectionAnswer>
+		</AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>2</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>
+				Explain your answer.
+			</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+    #end
+</QuestionForm>

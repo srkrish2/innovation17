@@ -11,6 +11,10 @@ Dependencies:
 2. In another terminal, go to your cloned directory of this repo and type `python server.py` to start the server
 3. In browser, go to [http://localhost:8080](http://localhost:8080)
 
+## Using mturk sandbox
+- You can run mturk tests without payments via https://requestersandbox.mturk.com
+- To configure the code, edit `mturk/mturk.properties`
+
 ## Frontend - server communication
 ### /problems page parser input
 ```

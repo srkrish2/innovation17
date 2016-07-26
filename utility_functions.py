@@ -31,7 +31,7 @@ def convert_input_count(user_input):
         try:
             count = int(user_input)
         except ValueError:
-            print "Casting fail!!!"
+            print "Casting fail! Input:", user_input
             count = -1
     else:
         count = user_input
@@ -86,3 +86,7 @@ def get_input_problem_dict():
 
 def generate_id():
     return ''.join(random.sample(string.hexdigits, 8))
+
+
+def is_valid_url(url):
+    return re.match(r"http://.*|https://.*", url) is not None

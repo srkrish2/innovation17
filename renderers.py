@@ -109,7 +109,10 @@ class InspirationsPageRenderer(StagePageRenderer):
         return 'inspirations_card.html'
 
     def get_items(self, problem_id):
-        inspiration_dicts = list(mc.get_well_ranked_inspirations(problem_id))
+        if HOW_MANY_INSPIRATION_RANKS > 0:
+            inspiration_dicts = list(mc.get_well_ranked_inspirations(problem_id))
+        else:
+            inspiration_dicts = list(mc.get_inspirations(problem_id))
         for inspiration in inspiration_dicts:
             problem_text = mc.get_problem_description(problem_id)
             schema_text = mc.get_schema_text(inspiration[SCHEMA_ID])
@@ -124,7 +127,10 @@ class IdeasPageRenderer(StagePageRenderer):
         return 'ideas.html'
 
     def get_items(self, problem_id):
-        idea_dicts = list(mc.get_well_ranked_ideas(problem_id))
+        if HOW_MANY_IDEA_RANKS > 0:
+            idea_dicts = list(mc.get_well_ranked_ideas(problem_id))
+        else:
+            idea_dicts = list(mc.get_ideas(problem_id))
         for idea in idea_dicts:
             problem_text = mc.get_problem_description(problem_id)
             inspiration_id = idea[mc.INSPIRATION_ID]
@@ -144,7 +150,11 @@ class SuggestionsPageRenderer(StagePageRenderer):
 
     def get_items(self, problem_id):
         result = []
-        for idea_dict in mc.get_well_ranked_ideas(problem_id):
+        if HOW_MANY_IDEA_RANKS > 0:
+            idea_dicts = mc.get_well_ranked_ideas(problem_id)
+        else:
+            idea_dicts = mc.get_ideas(problem_id)
+        for idea_dict in idea_dicts:
             idea_id = idea_dict[mc.IDEA_ID]
             idea = {
                 mc.IDEA_ID: idea_id,
@@ -160,9 +170,10 @@ def get_feedbacks_with_suggestions(idea_id):
     feedbacks_with_suggestions = []
     for feedback_dict in mc.get_feedback_dicts(idea_id):
         feedback_id = feedback_dict[mc.FEEDBACK_ID]
-        suggestions = []
-        for suggestion in mc.get_suggestions_for_feedback(feedback_id):
-            suggestions.append(suggestion)
+        if HOW_MANY_SUGGESTION_RANKS > 0:
+            suggestions = list(mc.get_well_ranked_suggestions_for_feedback(feedback_id))
+        else:
+            suggestions = list(mc.get_suggestions_for_feedback(feedback_id))
         feedback_dict[SUGGESTIONS_FIELD] = suggestions
         if len(suggestions) > 0:
             feedbacks_with_suggestions.append(feedback_dict)

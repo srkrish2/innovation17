@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1 align="center">Generate a schema</h1>
+			<h1>Instructions</h1>
+			<p>
+				<b>
+					Problems share patterns which describe the structure and essence of problems abstractly.
+					In this task, we would like you to generate a pattern for a problem. We will first demonstrate
+					the process of generating a pattern through an example.
+					<font color="red"> Read the instruction carefully, otherwise you risk being rejected.</font>
+				</b>
+			</p>
+			<p>
+				<b>An example problem:</b>
+				<i>In cold weather, you often find single dropped gloves lying on the street lonely.
+				Almost everyone, not only kids, has lost one of their gloves, leaving the other useless. It is frustrating
+				and a waste of money. How can we solve the problem of losing gloves?</i>
+			</p>
+			<p>
+				<b>A similar problem:</b>
+				<i>Women like wearing earrings. But they get lost very easily. There's nothing more frustrating than
+				looking in the mirror and realizing you've lost an earring or going to grab a pair from your dresser and finding
+				only one. How can we solve the problem of losing earrings?</i>
+			</p>
+			<p>
+				<b>By comparing the gloves-dropping problem with the earrings dropping problem, we can generate a pattern for the gloves-dropping problem like this:</b>
+				<i>Some objects need to work together in a pair. The problem is one of the pair is often lost leaving their partner useless. How can we prevent losing one of the pair?</i>
+			</p>
+			<p>
+				The pattern describes the structure and essence of the problem without mentioning the specific domain information such as gloves. In this task, we would like you to generate a pattern for the following problem:
+			</p>
+			<p><i><font color="green">$problem</font></i></p>
+			<p><b>We know this task can be challenging. Please follow the steps that can help you generate a good pattern.</b></p>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+	    <QuestionIdentifier>1</QuestionIdentifier>
+	    <IsRequired>true</IsRequired>
+	    <QuestionContent>
+	        <Text>Step 1: Please describe the above problem in your own words: how do you describe it to a friend? Copy and paste is not allowed. </Text>
+	    </QuestionContent>
+	    <AnswerSpecification>
+	        <FreeTextAnswer/>
+	    </AnswerSpecification>
+	</Question>
+	<Question>
+	    <QuestionIdentifier>2</QuestionIdentifier>
+	    <IsRequired>true</IsRequired>
+	    <QuestionContent>
+	    	<Text>Step 2: Can you think of a similar problem in a different domain? </Text>
+	    </QuestionContent>
+	    <AnswerSpecification>
+	    	<FreeTextAnswer/>
+	    </AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>3</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>
+		 		Step 3: Now please generate a pattern for the problem.
+				Tip 1: You can map the objects between our problem and the one you came up with to generate the shared structure.
+				Tip 2: The pattern should describe the characteristics of the objects in the problem and the relation structure between objects.
+			</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+</QuestionForm>
+		  
