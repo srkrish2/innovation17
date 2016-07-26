@@ -219,6 +219,17 @@ USER_EMAIL = "email"
 USER_PASSWORD = "password"
 # }
 
+# TRANSLATION: {
+# PROBLEM_ID
+TRANSLATION_ID = "translation_id"
+LANGUAGE = "language"
+DETAILS = "details"  #: {STEP: 1, TIME_CREATED: 1, WORKER_ID: 1, TEXT: 1},
+STEP = "step"
+INITIAL = "initial"
+IMPROVED = "improved"
+APPROVED = "approved"
+# }
+
 
 # FIELD CONSTANTS
 STAGE_UNPUBLISHED = "unpublished"
@@ -231,3 +242,6 @@ STATUS_REJECTED = 0
 STATUS_ACCEPTED = 1
 STATUS_PROCESSED = 2
 STATUS_NEW = 1
+
+
+
