@@ -131,7 +131,7 @@ def save_schema(data):
         WORKER_ID: data[WORKER_ID],
         STATUS: 1,
         TIME_CREATED: datetime.datetime.now().strftime(READABLE_TIME_FORMAT),
-        PROBLEM_ID: data[PROBLEM_ID]`
+        PROBLEM_ID: data[PROBLEM_ID]
     }
     mc.add_schema(schema)
 
