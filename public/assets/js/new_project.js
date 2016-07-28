@@ -41,7 +41,8 @@ var VALIDATION_RULES = {
 
 function init() {
     $(SELECTOR).form(VALIDATION_RULES);
-    $('.ui.fluid.search.selection.dropdown').dropdown();
+    $('.ui.fluid.search.selection.dropdown').dropdown('set selected','english');
+    $('a[data-value="english"] > .delete').remove();
     $('#addtags').keyup(function(e){
         if (e.which == 188 || e.which == 13 || e.which == 186) { 
             var tag = "";
@@ -99,15 +100,15 @@ $(document).on('click','.ui.save, .ui.submit',function(e){
             "title": title,
             "lazy": lazy,
             "description": description,
-            "schema_assignments_num": schemagoal
+            "schema_assignments_num": schemagoal,
+            "language":$('.ui.fluid.search.selection.dropdown').dropdown('get value').split(',')
         };
         var URL_link = null;
         $(e.currentTarget).prop('disabled',true);
         if($(e.currentTarget).hasClass('save')){
-
-                URL_link = "/save_problem";//save a new_problem
-}
-else {
+        URL_link = "/save_problem";//save a new_problem
+    }
+    else {
             URL_link = "/submit_problem";//post - make it public
             $('.ui.loader.submit-loader').addClass('active');
         }
