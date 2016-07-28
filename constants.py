@@ -89,6 +89,9 @@ STATUS = "status"
 # PROBLEM_ID
 WELL_RANKED = "well_ranked"
 POSTED_FOR_RANK = "posted_for_rank"
+# --optional--
+SUMMARY = "summary"
+SIMILAR = "similar"
 # }
 
 # RANK_SCHEMA_HIT: {
@@ -221,9 +224,15 @@ USER_PASSWORD = "password"
 
 # TRANSLATION: {
 # PROBLEM_ID
+# ORIGINAL
 TRANSLATION_ID = "translation_id"
 LANGUAGE = "language"
-DETAILS = "details"  #: {STEP: 1, TIME_CREATED: 1, WORKER_ID: 1, TEXT: 1},
+DETAILS = "details"  #: {STEP, ACCEPT_TIME, SUBMIT_TIME, ASSIGNMENT_ID}, also SUMMARY1, SUMMARY2 for 3rd step
+ASSIGNMENT_ID = "assignment_id"
+SUMMARY1 = "summary1"
+SUMMARY2 = "summary2"
+ACCEPT_TIME = "accept_time"
+SUBMIT_TIME = "submit_time"
 STEP = "step"
 INITIAL = "initial"
 IMPROVED = "improved"
@@ -243,5 +252,18 @@ STATUS_ACCEPTED = 1
 STATUS_PROCESSED = 2
 STATUS_NEW = 1
 
+FLAG_INITIAL = "initial"
+FLAG_IMPROVE = "improve"
+FLAG_VERIFY = "verify"
 
+ENGLISH = "english"
+RUSSIAN = "russian"
+CHINESE = "chinese"
+SCHEMA = "schema"
+INSPIRATION = "inspiration"
+IDEA = "idea"
 
+ANSWERS = "answers"
+
+languages = {"en": ENGLISH, "ru": RUSSIAN, "ch": CHINESE}
+stages = {"sc": SCHEMA, "in": INSPIRATION, "id": IDEA}

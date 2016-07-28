@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Problem solving part 2</title>
+</head>
+<body>
+	<textarea hidden class="problem_id">{{problem_id}}</textarea>
+	<div style="width:700px; margin-left:20px; font-family: Helvetica, Arial;">
+		<h1 align="center">Problem solving part 2</h1>
+		<hr>
+		<h3>
+			Now that you have found a good inspiration, we would like to show you more information about the problem.
+			As you will notice, instead of an abstract version we now present the actual problem.
+			Please use the inspiration from the previous step to generate a solution.
+		</h3>
+		<hr>
+		<p><b>Problem</b>: <i><font color="green">{{problem}}</font></i>
+		<p><strong>
+			<a href="{{source_link}}" target="blank">Click here to view your inspiration</a>. It will open up a new tab.
+		</strong></p>
+		<p>
+			1. Read your inspiration again carefully and generate a solution for the problem.
+			Your solution has to be <b>based on the inspiration</b>. A good solution should be novel and practical.
+			Describe your solution in as much detail as possible so that people can imagine how it works.
+			<font color="red">Your ideas will only be used for internal analysis in our study. You own the intellectual property.</font> 
+		</p>
+		<textarea rows="15" cols="100" class="idea"></textarea>
+		<br/><br/>
+		<p>
+			2. Explain briefly how you applied your inspiration.
+		</p>
+		<textarea rows="5" cols="100" class="explanation"></textarea>
+		<br/><br/>
+		<input type="submit" value="Finish the task" class="submit">
+		<br/><br/>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+		<script type="text/javascript" src="/static/assets/js/generate_idea.js"></script>
+	</div>
+</body>
+</html>

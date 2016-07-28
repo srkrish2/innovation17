@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Survey</title>
+</head>
+<body>
+	<span hidden class="problem_id">{{problem_id}}</span>
+	<div style="width:700px; margin-left:20px; font-family: Helvetica, Arial;">
+    <h1 align="center">Demographics survey</h1>
+		<hr>
+		<h3>
+				We will not associate this data with your username, this is just for statistics.
+		</h3>
+		<hr>
+    Age: <input type="number" name="age" min="1" max="99">
+    <br/><br/>
+    Gender:<br/>
+    <input type="radio" name="gender" value="male"> Male<br>
+    <input type="radio" name="gender" value="female"> Female<br>
+    <input type="radio" name="gender" value="other"> Other<br>
+    <br/>
+    Education:<br/>
+    <input type="radio" name="education" value="lt_hs"> Less than HS diploma<br>
+    <input type="radio" name="education" value="hs"> High school<br>
+    <input type="radio" name="education" value="bs"> Bachelor's degree<br>
+    <input type="radio" name="education" value="ms"> Master's degree<br>
+    <input type="radio" name="education" value="associate"> Associciate degree<br>
+    <input type="radio" name="education" value="phd"> PhD<br>
+    <br/>
+    Expertise: <br/>
+    <textarea rows="1" cols="100" class="expertise"></textarea>
+    <br/><br/>
+		<input type="submit" value="Submit" class="submit">
+		<br/><br/>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/assets/js/generate_schema.js"></script>
+</body>
+</html>

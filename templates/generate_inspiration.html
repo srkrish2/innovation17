@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Problem solving part 1</title>
+</head>
+<body>
+	<textarea hidden class="problem_id">{{problem_id}}</textarea>
+	<div style="width:700px; margin-left:20px; font-family: Helvetica, Arial;">
+		<h1 align="center">Problem solving part 1</h1>
+		<hr>
+		<h3>
+				In this task, we will ask you to search for inspiration and generate a solution for a problem
+			by using the inspiration you found. The task is composed of two parts: searching for an inspiration and
+			solving a problem.
+		</h3>
+		<hr>
+		<p>
+			<b>We have a problem as described below</b>:
+		</p>
+		<p><i><font color="green">{{problem}}</font></i></p>
+		<p><b>
+			Find an inspiration in <a href="http://www.google.com">Google</a> that can help us solve the problem.
+			An inspiration is a webpage that includes methods, technologies, knowledge which can potentially inspire creative solutions for the problem.
+			It's very important for us that you use <a href="http://www.google.com">http://www.google.com/</a> as your search engine for this task.</b>
+		</p>
+		<p>
+			1. Once you find the inspiration, copy and paste the webpage link of the inspiration to the text box below.
+		</p>
+		<input size="100" class="source_link">
+		<br/>
+
+		<p>
+			2. If the website you found contains an image of the inspiration, please copy the image link and paste it to the text box below.To copy image link, right click the image and: <br/>
+			- In Google Chrome, select "Copy Image URL." <br/>
+			- In Safari, select "Copy Image Address." <br/>
+			- In Internet Explorer, select "Properties." Then, highlight the address under "Address (URL)" and copy (Ctrl+C). <br/>
+			- In Mozilla Firefox, select "Copy Image Location."
+		</p>
+		<input size="100" class="image_link">
+		<br/><br/>
+		
+		<p>
+			3. Please summarize the inspiration in a few sentences.
+		</p>
+		<textarea rows="7" cols="100" class="summary"></textarea>
+		<br/><br/>
+		<p>
+			4. Please describe why you think the inspiration you found might help with solving the problem.
+		</p>
+		<textarea rows="7" cols="100" class="reason"></textarea>
+		<br/><br/>
+		<p>
+			Enter your name as in upwork so that we can identify and reward you.<br/>
+		</p>
+		<textarea rows="1" cols="100" class="worker_id"></textarea>
+		<br/><br/>
+		<input type="submit" value="Move on to part 2" class="submit">
+		<p><font color="red" size="2">
+      Make sure you have followed the instructions
+      and found a good inspiration for the problem. You won't be able to come back to this page.
+    </font></p>
+		<br/><br/>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+		<script type="text/javascript" src="/static/assets/js/generate_inspiration.js"></script>
+	</div>
+</body>
+</html>

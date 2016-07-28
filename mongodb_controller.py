@@ -727,6 +727,18 @@ def set_inspiration_processed_status(inspiration_id):
     inspirations_collection.update_one(query_filter, update)
 
 
+def insert_translation(doc):
+    translations_collection.insert_one(doc)
+
+
+def update_translation(query, doc):
+    translations_collection.update_one(query, {"$set": doc})
+
+
+def find_translation(query):
+    return translations_collection.find_one(query)
+
+
 # client
 client = pymongo.MongoClient()
 # database
@@ -751,3 +763,6 @@ suggestion_hits_collection = db.suggestion_hits
 suggestions_collection = db.suggestions
 rank_suggestion_hits_collection = db.rank_suggestion_hits
 suggestion_ranks_collection = db.suggestion_ranks
+
+translations_collection = db.translations
+

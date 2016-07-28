@@ -7,7 +7,7 @@ import mturk_controller
 
 def add_readable_time(mturk_dict):
     # pop epoch time
-    epoch_time_ms = long(mturk_dict.pop(mc.TIME_CREATED))
+    epoch_time_ms = long(mturk_dict.pop(TIME_CREATED))
     epoch_time = epoch_time_ms / 1000.0
     readable_time = datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)
     # add readable time

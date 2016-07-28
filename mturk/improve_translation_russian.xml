@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1 align="center">Поправьте перевод</h1>
+			<p><b>
+				Предыдущий участник перевел абзац с описанием проблемы с английского на русский. 
+				Улучшите перевод, исправляя какие либо несоответствия.
+				Вводите ваши исправления в том же текстовом поле.
+			</b></p>
+			<p><font color="red">
+				Вы будете автоматически отвергнуты, если проведете над этим заданием слишком мало времени. 
+				Выполненное вами задание будет проверено еще одним участником.
+			</font></p>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+		<QuestionIdentifier>Translation</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>
+		 		Исправьте предыдущий перевод в том же текстовом поле.
+	 		</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer>
+		    <DefaultText>$initial</DefaultText>
+		    </FreeTextAnswer>
+		</AnswerSpecification>
+	</Question>
+</QuestionForm>

@@ -216,6 +216,32 @@ def render_profile():
     return template.render()
 
 
+def render_upwork_page(language): #, stage, problem_id):
+    translation_doc = mc.find_translation({APPROVED: True, LANGUAGE: language})
+    template = env.get_template('generate_schema.html')
+    return template.render(problem=translation_doc[IMPROVED], problem_id=123)
+
+
+def render_schema1():
+    template = env.get_template('generate_schema.html')
+    return template.render(problem="$problem1", problem_id="123")
+
+
+def render_schema2():
+    template = env.get_template('generate_schema2.html')
+    return template.render(problem="$problem2", problem_id=123)
+
+
+def render_inspiration():
+    template = env.get_template('generate_inspiration.html')
+    return template.render(problem="$schema", problem_id=123)
+
+
+def render_idea():
+    template = env.get_template('generate_idea.html')
+    return template.render(problem="$problem", source_link="$source_link", problem_id=123)
+
+
 def error_page_404(status, message, traceback, version):
     if message is not None:
         return "404 Page not found! Message: {}".format(message)

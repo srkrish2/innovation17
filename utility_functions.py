@@ -5,6 +5,7 @@ from dateutil.tz import tzlocal
 import re
 import random
 import string
+import datetime
 
 
 def check_problem_access(problem_slug):
@@ -90,3 +91,8 @@ def generate_id():
 
 def is_valid_url(url):
     return re.match(r"http://.*|https://.*", url) is not None
+
+
+def convert_epoch_to_readable(epoch_time_ms):
+    epoch_time = long(epoch_time_ms) / 1000.0
+    return datetime.datetime.fromtimestamp(epoch_time).strftime(READABLE_TIME_FORMAT)

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1 align="center">Проверьте перевод</h1>
+			<p><b>
+				Ваша задача — проверить, описывают ли два абзаца одну и ту же проблему.
+			</b></p>
+			<p>Ниже представлен абзац на английском языке.</p>
+			<p><font color="green"><i>$english</i></font></p>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+		<QuestionIdentifier>English summary</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>
+		 		Перескажите абзац одним предложением на английском языке.
+	 		</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+	<Overview>
+		<FormattedContent><![CDATA[
+			<p>Ниже представлен абзац на русском языке.</p>
+			<p><font color="blue"><i>$improved</i></font></p>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+		<QuestionIdentifier>Translated summary</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>
+		 		Перескажите проблему одним предложением на русском языке.
+	 		</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>Is it good?</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+			<Text>
+				Описывают ли два абзаца одну и ту же проблему?
+			</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+			<SelectionAnswer>
+				<MinSelectionCount>1</MinSelectionCount>
+				<MaxSelectionCount>1</MaxSelectionCount>
+				<StyleSuggestion>radiobutton</StyleSuggestion>
+				<Selections>
+					<Selection>
+						<SelectionIdentifier>YES</SelectionIdentifier>
+						<Text>Да</Text>
+					</Selection>
+					<Selection>
+						<SelectionIdentifier>NO</SelectionIdentifier>
+						<Text>Нет</Text>
+					</Selection>
+				</Selections>
+			</SelectionAnswer>
+		</AnswerSpecification>
+	</Question>
+</QuestionForm>

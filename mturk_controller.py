@@ -452,3 +452,55 @@ class GeneratedSuggestionRanks(ResultPuller):
             }
             rank_dicts.append(rank_dict)
         return rank_dicts
+
+
+class TranslationHITCreator(HITCreator):
+    def __init__(self, text1, text2, flag, language):
+        self.text1 = text1
+        self.text2 = text2
+        self.flag = flag
+        self.language = language
+
+    def get_creator_name(self):
+        return "TranslationHITCreator"
+
+    def get_jar_args(self):
+        return ["PostTranslationHIT", self.flag, self.language, self.text1, self.text2]
+
+
+class GeneratedTranslations(ResultPuller):
+
+    def get_command_name(self):
+        return "TranslationResults"
+
+    def get_data(self, jar_output_file):
+        # output format:
+        #  "SUCCESS" -- already handled
+        #  assignments num or RESTART
+        #  answers_num
+        #  answers
+        #  assignment_id
+        #  worker_id
+        #  accept_time
+        #  submit_time
+        assignments_num = int(jar_output_file.readline().rstrip())
+        if assignments_num == 0:
+            return
+        # we're expecting just one
+        answers_num = jar_output_file.readline().rstrip()
+        if answers_num == RESTART:
+            return RESTART
+        answers = []
+        for i in xrange(int(answers_num)):
+            answers.append(jar_output_file.readline().rstrip())
+        assignment_id = jar_output_file.readline().rstrip()
+        worker_id = jar_output_file.readline().rstrip()
+        accept_time = jar_output_file.readline().rstrip()
+        submit_time = jar_output_file.readline().rstrip()
+        return {
+            ASSIGNMENT_ID: assignment_id,
+            ACCEPT_TIME: accept_time,
+            SUBMIT_TIME: submit_time,
+            WORKER_ID: worker_id,
+            ANSWERS: answers
+        }

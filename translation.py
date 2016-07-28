@@ -1,7 +1,9 @@
 import mongodb_controller as mc
-from utility_functions import generate_id
+from utility_functions import generate_id, convert_epoch_to_readable
 import mturk_controller
 from constants import *
+import time
+import datetime
 
 
 def get_translation(problem_id, description, language):
@@ -13,28 +15,50 @@ def get_translation(problem_id, description, language):
 
 def run_translation_stages(problem_id, description, language):
     translation_id = generate_id()
-    mturk_controller.post_translation_hit(description, FLAG_INITIAL, language)
-    insert_new_translation_doc(problem_id, language, translation_id)
-    result = None
-    while result is None:
-        result = mturk_controller.get_translation_result(hit_id)
-    add_initial_translation(result, translation_id)
+    while True:
+        hit_creator = mturk_controller.TranslationHITCreator(description, "", FLAG_INITIAL, language)
+        hit_id = hit_creator.post()
+        insert_new_translation_doc(problem_id, language, translation_id)
+        result_puller = mturk_controller.GeneratedTranslations()
+        result = result_puller.get_results(hit_id)
+        while result is None:
+            time.sleep(PERIOD)
+            result = result_puller.get_results(hit_id)
+        if result != FAIL and result != RESTART:
+            break
+    initial = add_initial_translation(result, translation_id)
 
-    initial = result[TEXT]
-    mturk_controller.post_translation_hit(initial, FLAG_IMPROVE, language)
-    result = None
-    while result is None:
-        result = mturk_controller.get_translation_result(hit_id)
-    update_translation(result, translation_id, 1)
+    while True:
+        hit_creator = mturk_controller.TranslationHITCreator(description, initial, FLAG_IMPROVE, language)
+        hit_id = hit_creator.post()
+        result = result_puller.get_results(hit_id)
+        while result is None:
+            time.sleep(PERIOD)
+            result = result_puller.get_results(hit_id)
+        if result != FAIL and result != RESTART:
+            break
+    improved = add_improved_translation(result, translation_id)
 
-    improved = result[TEXT]
-    mturk_controller.post_translation_hit(improved, FLAG_VERIFY, language)
-    result = None
-    while result is None:
-        result = mturk_controller.get_translation_result(hit_id)
-    approved = result[TEXT] == "YES"
-    update_translation(result, translation_id, 2)
+    while True:
+        hit_creator = mturk_controller.TranslationHITCreator(description, improved, FLAG_VERIFY, language)
+        hit_id = hit_creator.post()
+        result = result_puller.get_results(hit_id)
+        while result is None:
+            time.sleep(PERIOD)
+            result = result_puller.get_results(hit_id)
+        if result != FAIL and result != RESTART:
+            break
+    approved = add_translation_verification(result, translation_id)
     return approved
+
+
+
+    # if stage == SCHEMA:
+    #     problem_translation = find_translation(problem_id, language)
+    # if stage == INSPIRATION:
+    #     find_schema(problem_id, language)
+    # if stage == IDEA:
+    #     find_inspiration(problem_id, language)
 
 
 def insert_new_translation_doc(problem_id, language, translation_id):
@@ -44,82 +68,68 @@ def insert_new_translation_doc(problem_id, language, translation_id):
         TRANSLATION_ID: translation_id,
         DETAILS: []
     }
-    translations_collection.insert_one(doc)
+    mc.insert_translation(doc)
 
 
 def add_initial_translation(mturk_dict, translation_id):
     query = {
         TRANSLATION_ID: translation_id
     }
-    doc = translations_collection.find_one(query)
-    doc[DETAILS].append(
-        {
-            STEP: 0,
-            TIME_CREATED: mturk_dict[TIME_CREATED],
-            WORKER_ID: mturk_dict[WORKER_ID],
-        }
-    )
-    doc[INITIAL] = mturk_dict[TEXT]
-    translations_collection.update_one(query, {"$set": doc})
+    doc = mc.find_translation(query)
+    doc[INITIAL] = mturk_dict.pop(ANSWERS)[0]
+    mturk_dict[SUBMIT_TIME] = convert_epoch_to_readable(mturk_dict[SUBMIT_TIME])
+    mturk_dict[ACCEPT_TIME] = convert_epoch_to_readable(mturk_dict[ACCEPT_TIME])
+    mturk_dict[STEP] = 0
+    doc[DETAILS].append(mturk_dict)
+    mc.update_translation(query, doc)
+    return doc[INITIAL]
 
 
 def add_improved_translation(mturk_dict, translation_id):
     query = {
         TRANSLATION_ID: translation_id
     }
-    doc = translations_collection.find_one(query)
-    doc[DETAILS].append(
-        {
-            STEP: 1,
-            TIME_CREATED: mturk_dict[TIME_CREATED],
-            WORKER_ID: mturk_dict[WORKER_ID],
-        }
-    )
-    doc[IMPROVED] = mturk_dict[TEXT]
-    translations_collection.update_one(query, {"$set": doc})
+    doc = mc.find_translation(query)
+    doc[IMPROVED] = mturk_dict.pop(ANSWERS)[0]
+    mturk_dict[SUBMIT_TIME] = convert_epoch_to_readable(mturk_dict[SUBMIT_TIME])
+    mturk_dict[ACCEPT_TIME] = convert_epoch_to_readable(mturk_dict[ACCEPT_TIME])
+    mturk_dict[STEP] = 1
+    doc[DETAILS].append(mturk_dict)
+    mc.update_translation(query, doc)
+    return doc[IMPROVED]
 
 
 def add_translation_verification(mturk_dict, translation_id):
     query = {
         TRANSLATION_ID: translation_id
     }
-    doc = translations_collection.find_one(query)
-    doc[DETAILS].append(
-        {
-            STEP: 2,
-            TIME_CREATED: mturk_dict[TIME_CREATED],
-            WORKER_ID: mturk_dict[WORKER_ID],
-        }
-    )
-    doc[APPROVED] = mturk_dict[TEXT] == "YES"
-    translations_collection.update_one(query, {"$set": doc})
+    doc = mc.find_translation(query)
+    answers = mturk_dict.pop(ANSWERS)
+    mturk_dict[SUMMARY1] = answers[0]
+    mturk_dict[SUMMARY2] = answers[1]
+    doc[APPROVED] = answers[2] == "YES"
+
+    mturk_dict[SUBMIT_TIME] = convert_epoch_to_readable(mturk_dict[SUBMIT_TIME])
+    mturk_dict[ACCEPT_TIME] = convert_epoch_to_readable(mturk_dict[ACCEPT_TIME])
+    mturk_dict[STEP] = 2
+    doc[DETAILS].append(mturk_dict)
+    mc.update_translation(query, doc)
+    return doc[APPROVED]
 
 
-def render_upwork_page(language, stage, problem_id):
-    languages = {"en": ENGLISH, "ru": RUSSIAN, "ch": CHINESE}
-    stages = {"sc": SCHEMA, "in": INSPIRATION, "id": IDEA}
-    try:
-        language = languages[language]
-        stage = stages[stage]
-        if stage == SCHEMA:
-            problem_translation = find_translation(problem_id, language)
-        if stage == INSPIRATION:
-            find_schema(problem_id, language)
-        if stage == IDEA:
-            find_inspiration(problem_id, language)
-    except KeyError or TypeError:
-        return "404 Page not found!"
+def save_schema(data):
+    schema = {
+        TEXT: data[SCHEMA],
+        SUMMARY: data[SUMMARY],
+        SIMILAR: data[SIMILAR],
+        WELL_RANKED: True,
+        SCHEMA_ID: generate_id(),
+        WORKER_ID: data[WORKER_ID],
+        STATUS: 1,
+        TIME_CREATED: datetime.datetime.now().strftime(READABLE_TIME_FORMAT),
+        PROBLEM_ID: data[PROBLEM_ID]
+    }
+    mc.add_schema(schema)
 
 
-
-import pymongo
-# client
-client = pymongo.MongoClient()
-# database
-db = client.chi_db
-# collections
-translations_collection = db.translations
-# insert_new_translation_doc(123,"chinese",456)
-# add_initial_translation({TIME_CREATED:1,WORKER_ID:7, TEXT:'initial'}, 456)
-# add_improved_translation({TIME_CREATED:2,WORKER_ID:7, TEXT:'improved'}, 456)
-add_translation_verification({TIME_CREATED:2,WORKER_ID:7, TEXT:'YES'}, 456)
+# run_translation_stages(123,"wind noise description","russian")

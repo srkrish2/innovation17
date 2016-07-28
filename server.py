@@ -28,6 +28,31 @@ class HtmlPageLoader(object):
             cherrypy.request.params['problem_slug'] = vpath.pop(0)
             # print "new vpath =", vpath
             return self
+        if len(vpath) == 2:
+            if vpath[0] == "task":
+                cherrypy.request.params['lang'] = vpath.pop(1)
+
+    @cherrypy.expose
+    def schema1(self):
+        return renderers.render_schema1()
+
+    @cherrypy.expose
+    def schema2(self):
+        return renderers.render_schema2()
+
+    @cherrypy.expose
+    def inspiration(self):
+        return renderers.render_inspiration()
+
+    @cherrypy.expose
+    def idea(self):
+        return renderers.render_idea()
+
+    @cherrypy.expose
+    def task(self, lang):
+        if lang not in languages:
+            raise cherrypy.HTTPError(404)
+        return renderers.render_upwork_page(languages[lang])
 
     @cherrypy.expose
     def index(self):
@@ -114,6 +139,8 @@ class SubmitProblemHandler(object):
         description = input_problem_dict[DESCRIPTION]
         schema_assignments_num = input_problem_dict[SCHEMA_ASSIGNMENTS_NUM]
         mc.set_schema_stage(problem_id)
+        # MOCK
+        extra_languages = [RUSSIAN, CHINESE]
         if input_problem_dict[LAZY]:
             thread = Thread(target=launchers.start_lazy_problem, args=[description, schema_assignments_num, problem_id])
             thread.start()
@@ -330,6 +357,17 @@ class GetFeedbacksHandler(object):
         return {FEEDBACKS_FIELD: result}
 
 
+class SubmitTaskHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
+        data = cherrypy.request.json
+        # translation.save_schema(data)
+        return {SUCCESS: True}
+
+
 if __name__ == '__main__':
     # server configurations
     conf = {
@@ -386,6 +424,9 @@ if __name__ == '__main__':
         },
         '/get_feedbacks': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/submit_task': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -406,6 +447,8 @@ if __name__ == '__main__':
     webapp.more_schemas = MoreSchemasHandler()
     webapp.more_suggestions = MoreSuggestionsHandler()
     webapp.get_feedbacks = GetFeedbacksHandler()
+
+    webapp.submit_task = SubmitTaskHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 
