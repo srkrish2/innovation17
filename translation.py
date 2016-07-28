@@ -6,6 +6,7 @@ import time
 import datetime
 
 
+
 def get_translation(problem_id, description, language):
     obtained_final_translation = False
     while not obtained_final_translation:
@@ -61,6 +62,7 @@ def run_translation_stages(problem_id, description, language):
     #     find_inspiration(problem_id, language)
 
 
+
 def insert_new_translation_doc(problem_id, language, translation_id):
     doc = {
         PROBLEM_ID: problem_id,
@@ -85,6 +87,7 @@ def add_initial_translation(mturk_dict, translation_id):
     return doc[INITIAL]
 
 
+
 def add_improved_translation(mturk_dict, translation_id):
     query = {
         TRANSLATION_ID: translation_id
@@ -97,6 +100,7 @@ def add_improved_translation(mturk_dict, translation_id):
     doc[DETAILS].append(mturk_dict)
     mc.update_translation(query, doc)
     return doc[IMPROVED]
+
 
 
 def add_translation_verification(mturk_dict, translation_id):
@@ -127,7 +131,7 @@ def save_schema(data):
         WORKER_ID: data[WORKER_ID],
         STATUS: 1,
         TIME_CREATED: datetime.datetime.now().strftime(READABLE_TIME_FORMAT),
-        PROBLEM_ID: data[PROBLEM_ID]
+        PROBLEM_ID: data[PROBLEM_ID]`
     }
     mc.add_schema(schema)
 
