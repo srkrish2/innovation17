@@ -22,23 +22,33 @@ import translation
 class HtmlPageLoader(object):
 
     def _cp_dispatch(self, vpath):
-        if len(vpath) == 3:
+        if vpath[0] == "task":
+            vpath.pop(0)
+            if len(vpath) == 3:
+                cherrypy.request.params['lang'] = vpath.pop(0)  # first
+                cherrypy.request.params['worker_id'] = vpath.pop()  # last
+                # print "new vpath =", vpath
+                return self
+
+        elif len(vpath) == 3:
             if vpath.pop(0) != "problem":
                 vpath.pop(-1)
             cherrypy.request.params['problem_slug'] = vpath.pop(0)
-            # print "new vpath =", vpath
             return self
-        if len(vpath) == 2:
-            if vpath[0] == "task":
-                cherrypy.request.params['lang'] = vpath.pop(1)
 
     @cherrypy.expose
-    def schema1(self):
-        return renderers.render_schema1()
+    def sc1(self, lang, worker_id):
+        if lang not in languages:
+            raise cherrypy.HTTPError(404)
+        return renderers.render_schema1(languages[lang], worker_id)
 
     @cherrypy.expose
-    def schema2(self):
+    def sc2(self):
         return renderers.render_schema2()
+
+    @cherrypy.expose
+    def survey(self):
+        return renderers.render_survey()
 
     @cherrypy.expose
     def inspiration(self):
@@ -47,12 +57,6 @@ class HtmlPageLoader(object):
     @cherrypy.expose
     def idea(self):
         return renderers.render_idea()
-
-    @cherrypy.expose
-    def task(self, lang):
-        if lang not in languages:
-            raise cherrypy.HTTPError(404)
-        return renderers.render_upwork_page(languages[lang])
 
     @cherrypy.expose
     def index(self):
@@ -364,8 +368,19 @@ class SubmitTaskHandler(object):
     @cherrypy.tools.json_out()
     def POST(self):
         data = cherrypy.request.json
+        print data
+        type = data[TYPE]
+        if type == SCHEMA1:
+            cherrypy.session[PROBLEM1] = data[PROBLEM_ID]
+            cherrypy.session[WORKER_ID] = data[WORKER_ID]
+            cherrypy.session[LANGUAGE] = data[LANGUAGE]
+            return {"url": "/sc2"}
+        if type == SCHEMA2:
+            cherrypy.session[PROBLEM2] = data[PROBLEM_ID]
+            return {"url": "/survey"}
+        if type == SURVEY:
+            return {SUCCESS: True}
         # translation.save_schema(data)
-        return {SUCCESS: True}
 
 
 if __name__ == '__main__':

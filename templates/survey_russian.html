@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Анкета</title>
+</head>
+<body>
+	<textarea hidden class="language">russian</textarea>
+  <textarea hidden class="worker_id">{{worker_id}}</textarea>
+	<div style="width:700px; margin-left:20px; font-family: Helvetica, Arial;">
+    <h1 align="center">Анкета</h1>
+		<hr>
+		<h3>
+				Мы собираем эту информации исключительно для статистики.
+		</h3>
+		<hr>
+    1. Возраст: <input type="number" name="age" min="1" max="99">
+    <br/><br/>
+    2. Пол:<br/>
+    <input type="radio" name="gender" value="male"> М<br>
+    <input type="radio" name="gender" value="female"> Ж<br>
+    <br/>
+    3. Образование:<br/>
+    <input type="radio" name="education" value="lt_hs"> Неоконченное среднее<br>
+    <input type="radio" name="education" value="hs"> Среднее<br>
+    <input type="radio" name="education" value="bs"> Окончил бакалавриат <br>
+    <input type="radio" name="education" value="ms"> Окончил магистратуру <br>
+    <input type="radio" name="education" value="phd"> Кандидат/доктор наук <br>
+    <br/>
+    4. Область компетенции: <br/>
+    <textarea rows="1" cols="100" class="expertise"></textarea>
+    <br/><br/>
+    5. Проживали ли вы когда-либо за границей?<br/>
+    <input type="radio" name="foreign_lived" value="no"> Нет<br>
+    <input type="radio" name="foreign_lived" value="lt_month"> Меньше месяца<br>
+    <input type="radio" name="foreign_lived" value="few_months"> Несколько месяцев<br>
+    <input type="radio" name="foreign_lived" value="few_years"> Несколько лет<br>
+    <br/>
+    6. Насколько часто вам приходилось общаться с людьми из других стран?<br/>
+    <input type="radio" name="foreign_interact" value="never"> Никогда<br>
+    <input type="radio" name="foreign_interact" value="several_times"> Несколько раз<br>
+    <input type="radio" name="foreign_interact" value="frequently"> Часто <br>
+    <br/>
+		<input type="submit" value="Submit" class="submit">
+		<br/><br/>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/assets/js/survey.js"></script>
+</body>
+</html>

@@ -216,20 +216,40 @@ def render_profile():
     return template.render()
 
 
-def render_upwork_page(language): #, stage, problem_id):
-    translation_doc = mc.find_translation({APPROVED: True, LANGUAGE: language})
-    template = env.get_template('generate_schema.html')
-    return template.render(problem=translation_doc[IMPROVED], problem_id=123)
+def render_schema1(language, worker_id):
+    if PROBLEM1 in cherrypy.session:
+        raise cherrypy.HTTPError(403)
+    translation_dict = mc.find_translation({LANGUAGE: language, APPROVED: True})
+    problem_id = translation_dict[PROBLEM_ID]
 
-
-def render_schema1():
-    template = env.get_template('generate_schema.html')
-    return template.render(problem="$problem1", problem_id="123")
+    filename = "generate_schema1_{}.html".format(language)
+    template = env.get_template(filename)
+    return template.render(problem=translation_dict[IMPROVED], problem_id=problem_id, worker_id=worker_id)
 
 
 def render_schema2():
-    template = env.get_template('generate_schema2.html')
-    return template.render(problem="$problem2", problem_id=123)
+    if PROBLEM2 in cherrypy.session:
+        raise cherrypy.HTTPError(403)
+    language = cherrypy.session[LANGUAGE]
+    problem1 = cherrypy.session[PROBLEM1]
+    worker_id = cherrypy.session[WORKER_ID]
+    translation_dict = mc.find_translation({LANGUAGE: language, APPROVED: True, PROBLEM_ID: {"$ne": problem1}})
+    problem_id = translation_dict[PROBLEM_ID]
+
+    filename = "generate_schema2_{}.html".format(language)
+    template = env.get_template(filename)
+    return template.render(problem=translation_dict[IMPROVED], problem_id=problem_id,  worker_id=worker_id)
+
+
+def render_survey():
+    # print str(dict(cherrypy.session))
+    if WORKER_ID not in cherrypy.session:
+        raise cherrypy.HTTPError(403)
+    language = cherrypy.session[LANGUAGE]
+    worker_id = cherrypy.session[WORKER_ID]
+    filename = "survey_{}.html".format(language)
+    template = env.get_template(filename)
+    return template.render(worker_id=worker_id)
 
 
 def render_inspiration():

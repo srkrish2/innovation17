@@ -71,6 +71,7 @@ SLUG = "slug"
 PROBLEM_ID = "problem_id"
 SCHEMA_ASSIGNMENTS_NUM = "schema_assignments_num"
 LAZY = "lazy"
+WITH_TRANSLATION = "with_translation"
 # }
 
 # SCHEMA_HIT: {
@@ -268,3 +269,10 @@ ANSWERS = "answers"
 
 languages = {"en": ENGLISH, "ru": RUSSIAN, "ch": CHINESE}
 stages = {"sc": SCHEMA, "in": INSPIRATION, "id": IDEA}
+
+PROBLEM1 = "problem1"
+PROBLEM2 = "problem2"
+TYPE = "type"
+SCHEMA1 = "schema1"
+SCHEMA2 = "schema2"
+SURVEY = "survey"

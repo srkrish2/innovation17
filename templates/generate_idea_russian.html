@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Поиск решений ч. 2</title>
+</head>
+<body>
+    <textarea hidden class="problem_id">{{problem_id}}</textarea>
+  <textarea hidden class="worker_id">{{worker_id}}</textarea>
+  <textarea hidden class="language">russian</textarea>
+    <div style="width:700px; margin-left:20px; font-family: Helvetica, Arial;">
+        <h1 align="center">Поиск решений ч. 2</h1>
+        <hr>
+        <h3>
+            Теперь, найдя вдохновение, вам нужно использовать это вдохновение для решения <font color="green">нашей настоящей проблемы</font>. Ниже представлена наша настоящая проблема вместо предыдущего абстрактного описания проблемы. Пожалуйста, используйте вдохновение, которое вы нашли в первой части задания.
+        </h3>
+        <hr>
+        <p><b>Проблема</b>: <i><font color="green">{{problem}}</font></i>
+        <p><strong>
+            <a href="{{source_link}}" target="blank">Перейдите по этой ссылке, чтобы увидеть вдохновение</a>. Страница откроется в новой вкладке.
+        </strong></p>
+        <p>
+            1. Еще раз внимательно прочтите вдохновение и придумайте решение для настоящей проблемы. Ваше решение должно быть <b>основано на вашем вдохновении</b>. Решение должно быть оригинальным и практичным. Опишите детали решения максимально подробно, чтобы люди могли представить, как это работает.
+            <font color="red">Ваше решение будет использовано только для анализа в научной работе. Вся интеллектуальная собственность принадлежит вам.</font> 
+        </p>
+        <textarea rows="15" cols="100" class="idea"></textarea>
+        <br/><br/>
+        <p>
+            2. Кратко опишите, как вы использовали вдохновение для создания решения.
+        </p>
+        <textarea rows="5" cols="100" class="explanation"></textarea>
+        <br/><br/>
+        <input type="submit" value="Закончить задание и заполнить короткую анкету о себе" class="submit">
+        <br/><br/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/assets/js/generate_idea.js"></script>
+    </div>
+</body>
+</html>

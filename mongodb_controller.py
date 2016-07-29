@@ -353,6 +353,7 @@ def rank_inspiration_hit_set_submitted(hit_id):
 
 ############################ FIND ONE ##########################
 
+
 def does_user_have_problem(username, problem_slug):
     query = {
         OWNER_USERNAME: username,
@@ -737,6 +738,10 @@ def update_translation(query, doc):
 
 def find_translation(query):
     return translations_collection.find_one(query)
+
+
+def find_problem(query):
+    return problems_collection.find_one(query)
 
 
 # client

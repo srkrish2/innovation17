@@ -6,13 +6,16 @@
 </head>
 <body>
 	<textarea hidden class="problem_id">{{problem_id}}</textarea>
+  <textarea hidden class="worker_id">{{worker_id}}</textarea>
+  <textarea hidden class="language">english</textarea>
 	<div style="width:700px; margin-left:20px; font-family: Helvetica, Arial;">
 		<h1 align="center">Problem solving part 2</h1>
 		<hr>
 		<h3>
-			Now that you have found a good inspiration, we would like to show you more information about the problem.
-			As you will notice, instead of an abstract version we now present the actual problem.
-			Please use the inspiration from the previous step to generate a solution.
+			Now that you have found a good inspiration, we would like you to use that inspiration to generate a solution
+      <font color="green">for our actual problem</font>. Below we present the actual problem rather than the previous
+      abstract description. Please remember to use the inspiration from the previous step to generate your solution
+      for the problem described below.
 		</h3>
 		<hr>
 		<p><b>Problem</b>: <i><font color="green">{{problem}}</font></i>
@@ -32,7 +35,7 @@
 		</p>
 		<textarea rows="5" cols="100" class="explanation"></textarea>
 		<br/><br/>
-		<input type="submit" value="Finish the task" class="submit">
+		<input type="submit" value="Submit the task and answer a few questions about yourself" class="submit">
 		<br/><br/>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 		<script type="text/javascript" src="/static/assets/js/generate_idea.js"></script>

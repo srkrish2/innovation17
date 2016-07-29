@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Поиск решений ч. 1</title>
+</head>
+<body>
+    <textarea hidden class="problem_id">{{problem_id}}</textarea>
+  <textarea hidden class="language">russian</textarea>
+  <textarea hidden class="worker_id">{{worker_id}}</textarea>
+    <div style="width:700px; margin-left:20px; font-family: Helvetica, Arial;">
+        <h1 align="center">Поиск решений ч. 1</h1>
+        <hr>
+        <h3>
+            В этом задании вам предстоит найти "вдохновение" в интернете и решить проблему, используя вдохновение, которое вы нашли. Задание разбито на две части: поиск вдохновения и решение проблемы.
+        </h3>
+        <hr>
+        <p>
+            <b>Далее представлена наша проблема</b>:
+        </p>
+        <p><i><font color="green">{{problem}}</font></i></p>
+        <p><b>
+            Пользуясть <a href="http://www.yandex.ru">Яндексом</a>, найдите вдохновение, которое поможет решить нашу проблему. Под вдохновением мы имеем ввиду страницу онлайн, на которой описаны методы, технологии или знания из разных областей, которые могут вдохновить на решение проблемы. Нам очень важно, чтобы вы использовали <a href="http://www.yandex.ru">http://www.yandex.ru</a> в качестве вашего поисковика для этого задания.</b>
+        </p>
+        <p>
+            1. Найдите вебсайт с подходящим вдохновением и скопируйте ссылку в текстовое поле ниже.
+        </p>
+        <input size="100" class="source_link">
+        <br/>
+
+        <p>
+            2. Если на сайте, который вы нашли, есть изображение/фото вашего вдохновения, пожалуйста, скопируйте адрес изображения в текстовое поле. Чтобы скопировать адрес изображения, нажмите по нему правой кнопкой мыши, и затем:<br/>
+            - В Google Chrome, нажмите "Копировать URL картинки" ("Copy Image URL") <br/>
+            - В Mozilla Firefox, нажмите "Копировать ссылку на изображение" ("Copy Image Location") <br/>
+            - В Opera, нажмите "Копировать адрес изображения" <br/>
+            - В Internet Explorer, нажмите "Свойства", затем выделите и скопируйте "Адрес (URL)" <br/>
+        </p>
+        <input size="100" class="image_link">
+        <br/><br/>
+        
+        <p>
+            3. В несколько предложений, перескажите вдохновение, которое вы нашли.
+        </p>
+        <textarea rows="7" cols="100" class="summary"></textarea>
+        <br/><br/>
+        <p>
+            4. Опишите, почему вы считаете, что вдохновение, которое вы нашли, может быть полезно.
+        </p>
+        <textarea rows="7" cols="100" class="reason"></textarea>
+        <br/><br/>
+        <input type="submit" value="Перейти к следующей части" class="submit">
+        <p><font color="red" size="2">
+          Убедитесь, что вы внимательно выполнили все инструкции и нашли хорошее вдохновение. У вас не будет возможности вернуться к этой странице.
+        </font></p>
+        <br/><br/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/assets/js/generate_inspiration.js"></script>
+    </div>
+</body>
+</html>

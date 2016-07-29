@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Survey</title>
+</head>
+<body>
+	<textarea hidden class="language">english</textarea>
+  <textarea hidden class="worker_id">{{worker_id}}</textarea>
+	<div style="width:700px; margin-left:20px; font-family: Helvetica, Arial;">
+    <h1 align="center">Demographics survey</h1>
+		<hr>
+		<h3>
+				We collect this data just for statistics.
+		</h3>
+		<hr>
+    1. Age: <input type="number" name="age" min="1" max="99">
+    <br/><br/>
+    2. Gender:<br/>
+    <input type="radio" name="gender" value="male"> Male<br>
+    <input type="radio" name="gender" value="female"> Female<br>
+    <br/>
+    3. Education:<br/>
+    <input type="radio" name="education" value="lt_hs"> Less than HS diploma<br>
+    <input type="radio" name="education" value="hs"> High school<br>
+    <input type="radio" name="education" value="bs"> Bachelor's degree<br>
+    <input type="radio" name="education" value="ms"> Master's degree<br>
+    <input type="radio" name="education" value="phd"> PhD<br>
+    <br/>
+    4. Expertise: <br/>
+    <textarea rows="1" cols="100" class="expertise"></textarea>
+    <br/><br/>
+    5. Have you lived in another country before?<br/>
+    <input type="radio" name="foreign_lived" value="no"> No<br>
+    <input type="radio" name="foreign_lived" value="lt_month"> Less than a month<br>
+    <input type="radio" name="foreign_lived" value="few_months"> A few months<br>
+    <input type="radio" name="foreign_lived" value="few_years"> A few years<br>
+    <br/>
+    6. How much have you talked to people from other countries?<br/>
+    <input type="radio" name="foreign_interact" value="never"> Never<br>
+    <input type="radio" name="foreign_interact" value="several_times"> Several times<br>
+    <input type="radio" name="foreign_interact" value="frequently"> Frequently<br>
+    <br/>
+		<input type="submit" value="Submit" class="submit">
+		<br/><br/>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/assets/js/survey.js"></script>
+</body>
+</html>

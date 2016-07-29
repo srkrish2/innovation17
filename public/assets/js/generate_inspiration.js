@@ -22,10 +22,15 @@ $(".submit").click(function() {
             contentType: 'application/json; charset=utf-8',
             success : function() {
                 window.location.replace("/idea");
-//                $('body').replaceWith("Your input has been recorded, thank you.")
             }
         })
     } else {
-        window.alert("Please fill out all fields")
+        if (language == "english") {
+            window.alert("Please fill out all fields")
+        } else if (language == "chinese") {
+            window.alert("请回答所有问题")
+        } else if (language == "russian") {
+            window.alert("Пожалуйста, заполните все поля")
+        }
     }
 });

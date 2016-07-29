@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>解决问题，第二部分</title>
+</head>
+<body>
+	<textarea hidden class="problem_id">{{problem_id}}</textarea>
+  <textarea hidden class="worker_id">{{worker_id}}</textarea>
+  <textarea hidden class="language">chinese</textarea>
+	<div style="width:700px; margin-left:20px; font-family: Helvetica, Arial;">
+		<h1 align="center">解决问题，第二部分</h1>
+		<hr>
+		<h3>
+			现在你已经找到了一个有用的灵感，请利用这个灵感来解决这个问题. 请务必要使用你在上一步找到的灵感来为以下描述的问题来想出一个解决方案。
+		</h3>
+		<hr>
+		<p><b>问题</b>: <i><font color="green">{{problem}}</font></i>
+		<p><strong>
+			<a href="{{source_link}}" target="blank">点击这里来打开你找到的灵感</a>。点击链接会打开一个新的网页。
+		</strong></p>
+		<p>
+			1. 仔细阅读你找到的灵感之后为所给问题提供一个解决方案。
+			你的方案必须 <b>利用你找到的灵感</b>。 一个好的方案应该有创新型并且实用。请尽量详细的描述你的解决方案。基于你的描述，其它人应该能够知道如何操作实现该方案。
+			
+			<font color="red">你的方案仅用于研究分析，你拥有方案的知识产权。</font> 
+		</p>
+		<textarea rows="15" cols="100" class="idea"></textarea>
+		<br/><br/>
+		<p>
+			2. 简单解释你是如何把你所找到的灵感运用到你的方案当中的。
+		</p>
+		<textarea rows="5" cols="100" class="explanation"></textarea>
+		<br/><br/>
+		<input type="submit" value="提交任务并回答几个自我介绍的小问题" class="submit">
+		<br/><br/>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+		<script type="text/javascript" src="/static/assets/js/generate_idea.js"></script>
+	</div>
+</body>
+</html>
