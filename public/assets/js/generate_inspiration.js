@@ -1,27 +1,29 @@
 $(".submit").click(function() {
-    var summary = $(".summary").val()
-    var reason = $(".reason").val()
+    var problem_id = $(".problem_id").val()
+    var language = $(".language").val()
+    var worker_id = $(".worker_id").val()
     var source_link = $(".source_link").val()
     var image_link = $(".image_link").val()
-    var worker_id = $(".worker_id").val()
-    var problem_id = $(".problem_id").val()
+    var summary = $(".summary").val()
+    var reason = $(".reason").val()
     var data = {
         "type": "inspiration",
-        "summary": summary,
-        "reason": reason,
+        "problem_id": problem_id,
+        "language": language,
+        "worker_id": worker_id,
         "source_link": source_link,
         "image_link": image_link,
-        "worker_id": worker_id,
-        "problem_id": problem_id
+        "summary": summary,
+        "reason": reason
     }
-    if (summary && reason && source_link && image_link && worker_id && problem_id) {
+    if (source_link && image_link && summary && reason) {
         $.ajax({
             type : "POST",
             url: "/submit_task",
             data: JSON.stringify(data),
             contentType: 'application/json; charset=utf-8',
-            success : function() {
-                window.location.replace("/idea");
+            success : function(data) {
+                window.location.replace(data["url"])
             }
         })
     } else {

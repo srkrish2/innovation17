@@ -11,12 +11,13 @@ import mongodb_controller as mc
 from threading import Thread
 import update_managers
 import authorization
-from utility_functions import convert_input_count
+from utility_functions import convert_input_count, generate_id
 from constants import *
 import renderers
 import well_ranked_counters
 import launchers
 import translation
+import datetime
 
 
 class HtmlPageLoader(object):
@@ -24,7 +25,7 @@ class HtmlPageLoader(object):
     def _cp_dispatch(self, vpath):
         if vpath[0] == "task":
             vpath.pop(0)
-            if len(vpath) == 3:
+            if len(vpath) == 3:  # lang/task_type/worker_id
                 cherrypy.request.params['lang'] = vpath.pop(0)  # first
                 cherrypy.request.params['worker_id'] = vpath.pop()  # last
                 # print "new vpath =", vpath
@@ -51,11 +52,15 @@ class HtmlPageLoader(object):
         return renderers.render_survey()
 
     @cherrypy.expose
-    def inspiration(self):
-        return renderers.render_inspiration()
+    def ps1(self, lang, worker_id):
+        return renderers.render_inspiration(languages[lang], worker_id, False)
 
     @cherrypy.expose
-    def idea(self):
+    def ns_ps1(self, lang, worker_id):
+        return renderers.render_inspiration(languages[lang], worker_id, True)
+
+    @cherrypy.expose
+    def ps2(self):
         return renderers.render_idea()
 
     @cherrypy.expose
@@ -371,16 +376,70 @@ class SubmitTaskHandler(object):
         print data
         type = data[TYPE]
         if type == SCHEMA1:
-            cherrypy.session[PROBLEM1] = data[PROBLEM_ID]
-            cherrypy.session[WORKER_ID] = data[WORKER_ID]
-            cherrypy.session[LANGUAGE] = data[LANGUAGE]
+            adjust_schema_dict(data)
+            mc.add_schema(data)
             return {"url": "/sc2"}
-        if type == SCHEMA2:
-            cherrypy.session[PROBLEM2] = data[PROBLEM_ID]
+
+        elif type == SCHEMA2:
+            adjust_schema_dict(data)
+            mc.add_schema(data)
+            return {"url": "/survey"}
+
+        elif type == INSPIRATION:
+            print str(dict(cherrypy.session))
+            adjust_inspiration_dict(data)
+            cherrypy.session[INSPIRATION_LINK] = data[INSPIRATION_LINK]
+            cherrypy.session[INSPIRATION_ID] = data[INSPIRATION_ID]
+            mc.add_inspiration(data)
+            return {"url": "/ps2"}
+
+        elif type == IDEA:
+            adjust_idea_dict(data)
+            mc.add_idea(data)
             return {"url": "/survey"}
         if type == SURVEY:
+            del data[TYPE]
+            if PROBLEM1 in cherrypy.session:
+                data[TASK] = SCHEMA
+            elif NO_SCHEMA in cherrypy.session:
+                data[TASK] = PS_NS_TASK
+            elif PROBLEM_ID in cherrypy.session:
+                data[TASK] = PS_TASK
+            mc.insert_worker(data)
             return {SUCCESS: True}
-        # translation.save_schema(data)
+
+
+def adjust_schema_dict(d):
+    # adjust dict to insert into db
+    d[TEXT] = d.pop(SCHEMA)
+    d[WELL_RANKED] = True
+    d[SUBMIT_TIME] = datetime.datetime.now()
+    d[ACCEPT_TIME] = cherrypy.session[ACCEPT_TIME]
+    d[TIME_SPENT] = str(d[SUBMIT_TIME] - d[ACCEPT_TIME]).split('.')[0]
+    d[INSPIRED_NUM] = 0
+    d[SCHEMA_ID] = generate_id()
+
+
+def adjust_inspiration_dict(d):
+    d[INSPIRATION_ID] = generate_id()
+    d[NO_SCHEMA] = cherrypy.session[NO_SCHEMA]
+    if not d[NO_SCHEMA]:
+        d[SCHEMA_ID] = cherrypy.session[SCHEMA_ID]
+    d[SUBMIT_TIME] = datetime.datetime.now()
+    d[ACCEPT_TIME] = cherrypy.session[ACCEPT_TIME]
+    d[TIME_SPENT] = str(d[SUBMIT_TIME] - d[ACCEPT_TIME]).split('.')[0]
+    d[WELL_RANKED] = True
+
+
+def adjust_idea_dict(d):
+    d[IDEA_ID] = generate_id()
+    d[NO_SCHEMA] = cherrypy.session[NO_SCHEMA]
+    d[INSPIRATION_ID] = cherrypy.session[INSPIRATION_ID]
+    d[TEXT] = d.pop(IDEA)
+    d[SUBMIT_TIME] = datetime.datetime.now()
+    d[ACCEPT_TIME] = cherrypy.session[ACCEPT_TIME]
+    d[TIME_SPENT] = str(d[SUBMIT_TIME] - d[ACCEPT_TIME]).split('.')[0]
+    d[WELL_RANKED] = True
 
 
 if __name__ == '__main__':

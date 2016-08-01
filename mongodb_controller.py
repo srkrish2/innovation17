@@ -104,8 +104,8 @@ def add_inspiration(inspiration):
 
 def add_idea(idea):
     # replace title with slug
-    title = idea.pop(TITLE)
-    idea[SLUG] = slugify(title)
+    # title = idea.pop(TITLE)
+    # idea[SLUG] = slugify(title)
     ideas_collection.insert_one(idea)
 
 
@@ -732,8 +732,16 @@ def insert_translation(doc):
     translations_collection.insert_one(doc)
 
 
+def insert_worker(doc):
+    workers_collection.insert_one(doc)
+
+
 def update_translation(query, doc):
     translations_collection.update_one(query, {"$set": doc})
+
+
+def update_schema(query, d):
+    schemas_collection.update_one(query, d)
 
 
 def find_translation(query):
@@ -742,6 +750,10 @@ def find_translation(query):
 
 def find_problem(query):
     return problems_collection.find_one(query)
+
+
+def find_schema(query):
+    return schemas_collection.find_one(query)
 
 
 # client
@@ -770,4 +782,4 @@ rank_suggestion_hits_collection = db.rank_suggestion_hits
 suggestion_ranks_collection = db.suggestion_ranks
 
 translations_collection = db.translations
-
+workers_collection = db.workers

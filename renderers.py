@@ -5,6 +5,7 @@ from jinja2 import Environment, PackageLoader
 from utility_functions import check_problem_access, make_links_list, convert_object_id_to_readable_time
 import well_ranked_counters
 import abc
+import datetime
 
 env = Environment(loader=PackageLoader('renderers', '/templates'))
 
@@ -222,6 +223,11 @@ def render_schema1(language, worker_id):
     translation_dict = mc.find_translation({LANGUAGE: language, APPROVED: True})
     problem_id = translation_dict[PROBLEM_ID]
 
+    cherrypy.session[ACCEPT_TIME] = datetime.datetime.now()
+    cherrypy.session[PROBLEM1] = problem_id
+    cherrypy.session[WORKER_ID] = worker_id
+    cherrypy.session[LANGUAGE] = language
+
     filename = "generate_schema1_{}.html".format(language)
     template = env.get_template(filename)
     return template.render(problem=translation_dict[IMPROVED], problem_id=problem_id, worker_id=worker_id)
@@ -236,6 +242,9 @@ def render_schema2():
     translation_dict = mc.find_translation({LANGUAGE: language, APPROVED: True, PROBLEM_ID: {"$ne": problem1}})
     problem_id = translation_dict[PROBLEM_ID]
 
+    cherrypy.session[ACCEPT_TIME] = datetime.datetime.now()
+    cherrypy.session[PROBLEM2] = problem_id
+
     filename = "generate_schema2_{}.html".format(language)
     template = env.get_template(filename)
     return template.render(problem=translation_dict[IMPROVED], problem_id=problem_id,  worker_id=worker_id)
@@ -247,19 +256,59 @@ def render_survey():
         raise cherrypy.HTTPError(403)
     language = cherrypy.session[LANGUAGE]
     worker_id = cherrypy.session[WORKER_ID]
+
     filename = "survey_{}.html".format(language)
     template = env.get_template(filename)
     return template.render(worker_id=worker_id)
 
 
-def render_inspiration():
-    template = env.get_template('generate_inspiration.html')
-    return template.render(problem="$schema", problem_id=123)
+def render_inspiration(language, worker_id, no_schema):
+    ns_suffix = "ns_" if no_schema else ""
+    if no_schema:
+        translation_dict = mc.find_translation({
+            LANGUAGE: language, APPROVED: True, NS_USE_COUNT: {"$lt": NS_USE_LIMIT}
+        })
+        problem_id = translation_dict[PROBLEM_ID]
+        problem = translation_dict[IMPROVED]
+    else:
+        schema_dict = mc.find_schema({
+            LANGUAGE: language, INSPIRED_NUM: {"$lt": HOW_MANY_INSPIRATIONS_PER_SCHEMA}
+        })
+        mc.update_schema({SCHEMA_ID: schema_dict[SCHEMA_ID]}, {"$inc": {INSPIRED_NUM: 1}})
+        problem_id = schema_dict[PROBLEM_ID]
+        problem = schema_dict[TEXT]
+        cherrypy.session[SCHEMA_ID] = schema_dict[SCHEMA_ID]
+
+    cherrypy.session[ACCEPT_TIME] = datetime.datetime.now()
+    cherrypy.session[NO_SCHEMA] = True if no_schema else False
+    cherrypy.session[LANGUAGE] = language
+    cherrypy.session[PROBLEM_ID] = problem_id
+    cherrypy.session[WORKER_ID] = worker_id
+
+    filename = 'generate_{}inspiration_{}.html'.format(ns_suffix, language)
+    template = env.get_template(filename)
+    return template.render(problem=problem, problem_id=problem_id, worker_id=worker_id)
 
 
 def render_idea():
-    template = env.get_template('generate_idea.html')
-    return template.render(problem="$problem", source_link="$source_link", problem_id=123)
+    cherrypy.session[ACCEPT_TIME] = datetime.datetime.now()
+    language = cherrypy.session[LANGUAGE]
+    worker_id = cherrypy.session[WORKER_ID]
+    no_schema = cherrypy.session[NO_SCHEMA]
+    source_link = cherrypy.session[INSPIRATION_LINK]
+    problem_id = cherrypy.session[PROBLEM_ID]
+    ns_suffix = "ns_" if no_schema else ""
+    if language == ENGLISH:
+        problem = mc.get_problem_description(problem_id)
+    else:
+        translation_dict = mc.find_translation({
+            LANGUAGE: language, APPROVED: True, PROBLEM_ID: problem_id
+        })
+        problem = translation_dict[IMPROVED]
+    filename = 'generate_{}idea_{}.html'.format(ns_suffix, language)
+    template = env.get_template(filename)
+    return template.render(problem=problem, source_link=source_link,
+                           problem_id=problem_id, worker_id=worker_id)
 
 
 def error_page_404(status, message, traceback, version):

@@ -6,7 +6,6 @@ import time
 import datetime
 
 
-
 def get_translation(problem_id, description, language):
     obtained_final_translation = False
     while not obtained_final_translation:
@@ -53,22 +52,13 @@ def run_translation_stages(problem_id, description, language):
     return approved
 
 
-
-    # if stage == SCHEMA:
-    #     problem_translation = find_translation(problem_id, language)
-    # if stage == INSPIRATION:
-    #     find_schema(problem_id, language)
-    # if stage == IDEA:
-    #     find_inspiration(problem_id, language)
-
-
-
 def insert_new_translation_doc(problem_id, language, translation_id):
     doc = {
         PROBLEM_ID: problem_id,
         LANGUAGE: language,
         TRANSLATION_ID: translation_id,
-        DETAILS: []
+        DETAILS: [],
+        NS_USE_COUNT: 0
     }
     mc.insert_translation(doc)
 
@@ -87,7 +77,6 @@ def add_initial_translation(mturk_dict, translation_id):
     return doc[INITIAL]
 
 
-
 def add_improved_translation(mturk_dict, translation_id):
     query = {
         TRANSLATION_ID: translation_id
@@ -100,7 +89,6 @@ def add_improved_translation(mturk_dict, translation_id):
     doc[DETAILS].append(mturk_dict)
     mc.update_translation(query, doc)
     return doc[IMPROVED]
-
 
 
 def add_translation_verification(mturk_dict, translation_id):
@@ -119,21 +107,3 @@ def add_translation_verification(mturk_dict, translation_id):
     doc[DETAILS].append(mturk_dict)
     mc.update_translation(query, doc)
     return doc[APPROVED]
-
-
-def save_schema(data):
-    schema = {
-        TEXT: data[SCHEMA],
-        SUMMARY: data[SUMMARY],
-        SIMILAR: data[SIMILAR],
-        WELL_RANKED: True,
-        SCHEMA_ID: generate_id(),
-        WORKER_ID: data[WORKER_ID],
-        STATUS: 1,
-        TIME_CREATED: datetime.datetime.now().strftime(READABLE_TIME_FORMAT),
-        PROBLEM_ID: data[PROBLEM_ID]
-    }
-    mc.add_schema(schema)
-
-
-# run_translation_stages(123,"wind noise description","russian")

@@ -90,9 +90,10 @@ STATUS = "status"
 # PROBLEM_ID
 WELL_RANKED = "well_ranked"
 POSTED_FOR_RANK = "posted_for_rank"
-# --optional--
+# ----new----
 SUMMARY = "summary"
 SIMILAR = "similar"
+INSPIRED_NUM = "inspired_num"
 # }
 
 # RANK_SCHEMA_HIT: {
@@ -276,3 +277,13 @@ TYPE = "type"
 SCHEMA1 = "schema1"
 SCHEMA2 = "schema2"
 SURVEY = "survey"
+NO_SCHEMA = "no_schema"
+TIME_SPENT = "time_spent"
+TASK = "task"
+PS_TASK = "problem_solving"
+PS_NS_TASK = "problem_solving_no_schema"
+NS_USE_COUNT = "ns_use_count"
+NS_USE_LIMIT = 20
+
+HOW_MANY_INSPIRATIONS_PER_SCHEMA = 2
+HOW_MANY_INSPIRATIONS_PER_PROBLEM = 4
