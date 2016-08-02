@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1 align="center">翻译</h1>
+			<p><b>
+				下面一段话描述了一个问题。
+			</b></p>
+			<p><b>Problem: </b><font color="green"><i>$english</i></font></p>
+			<p>
+				请把他翻译成中文。请确保准确无误的翻译每个细节。我们会让其它人来检验你的翻译。
+				<font color="red">
+				如果我们发现你花了很少的时间在这个任务上，你的答案将会被拒绝
+			</font></p>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+		<QuestionIdentifier>Translation</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>
+			    请在下面的文本框翻译
+	 		</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+	<Overview>
+		<FormattedContent><![CDATA[
+			<p><font color="red"><b>
+				不要重复做我们发布的类似的翻译任务。
+			</b></font></p>
+		]]></FormattedContent>
+	</Overview>
+</QuestionForm>

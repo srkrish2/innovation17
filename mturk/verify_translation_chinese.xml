@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+		<FormattedContent><![CDATA[
+			<h1 align="center">比较翻译内容</h1>
+			<p><b>
+				      判断两段话是否描述同一个问题。
+
+			</b></p>
+			<p>下面是英文内容</p>
+			<p><font color="green"><i>$english</i></font></p>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+		<QuestionIdentifier>English summary</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>
+		 		用一个英文句子来总结这段话描述的问题
+	 		</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+	<Overview>
+		<FormattedContent><![CDATA[
+			<p>下面是中文内容</p>
+			<p><font color="blue"><i>$improved</i></font></p>
+		]]></FormattedContent>
+	</Overview>
+	<Question>
+		<QuestionIdentifier>Translated summary</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+		 	<Text>
+		 		     用一个中文句子来总结这段话描述的问题
+
+	 		</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+		    <FreeTextAnswer/>
+		</AnswerSpecification>
+	</Question>
+	<Question>
+		<QuestionIdentifier>Is it good?</QuestionIdentifier>
+		<IsRequired>true</IsRequired>
+		<QuestionContent>
+			<Text>
+				这两段话描述的是同一个问题吗？
+			</Text>
+		</QuestionContent>
+		<AnswerSpecification>
+			<SelectionAnswer>
+				<MinSelectionCount>1</MinSelectionCount>
+				<MaxSelectionCount>1</MaxSelectionCount>
+				<StyleSuggestion>radiobutton</StyleSuggestion>
+				<Selections>
+					<Selection>
+						<SelectionIdentifier>YES</SelectionIdentifier>
+						<Text>是</Text>
+					</Selection>
+					<Selection>
+						<SelectionIdentifier>NO</SelectionIdentifier>
+						<Text>不是</Text>
+					</Selection>
+				</Selections>
+			</SelectionAnswer>
+		</AnswerSpecification>
+	</Question>
+</QuestionForm>

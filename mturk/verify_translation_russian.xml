@@ -6,7 +6,7 @@
 			<p><b>
 				Ваша задача — проверить, описывают ли два абзаца одну и ту же проблему.
 			</b></p>
-			<p>Ниже представлен абзац на английском языке.</p>
+			<p>Ниже представлен первый абзац - на английском языке.</p>
 			<p><font color="green"><i>$english</i></font></p>
 		]]></FormattedContent>
 	</Overview>
@@ -15,7 +15,7 @@
 		<IsRequired>true</IsRequired>
 		<QuestionContent>
 		 	<Text>
-		 		Перескажите абзац одним предложением на английском языке.
+		 		Перескажите первый абзац одним предложением на английском языке.
 	 		</Text>
 		</QuestionContent>
 		<AnswerSpecification>
@@ -24,7 +24,7 @@
 	</Question>
 	<Overview>
 		<FormattedContent><![CDATA[
-			<p>Ниже представлен абзац на русском языке.</p>
+			<p>Ниже представлен второй абзац - на русском языке.</p>
 			<p><font color="blue"><i>$improved</i></font></p>
 		]]></FormattedContent>
 	</Overview>
@@ -33,7 +33,7 @@
 		<IsRequired>true</IsRequired>
 		<QuestionContent>
 		 	<Text>
-		 		Перескажите проблему одним предложением на русском языке.
+		 		Перескажите второй абзац одним предложением на русском языке.
 	 		</Text>
 		</QuestionContent>
 		<AnswerSpecification>

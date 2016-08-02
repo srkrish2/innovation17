@@ -34,6 +34,7 @@ $(document).on('click','.ui.button.submit.login',function(e){
             "name": name,
             "password": password
         };
+        console.log("data is"+data)
         $.ajax({
             type : "POST",
             url: POST_URL,
@@ -43,7 +44,6 @@ $(document).on('click','.ui.button.submit.login',function(e){
 
             success : function(data) {
                 $(e.currentTarget).prop('disabled',false);
-                console.log('wait a second');
                 if (data["success"]) {
                     window.location.replace("/"+data["url"]);
                 } else {

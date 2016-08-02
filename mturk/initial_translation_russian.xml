@@ -10,7 +10,6 @@
 			<p><font color="red">
 				Ваш перевод должен сохранить все детали из оригинала и будет перепроверен вторым переводчиком. <br/>
 				Вы будете автоматически отвергнуты, если проведете над этим заданием слишком мало времени. <br/>
-				Не принимайте наши HIT с переводом дважды. <br/>
 			</font></p>
 		]]></FormattedContent>
 	</Overview>
@@ -26,4 +25,11 @@
 		    <FreeTextAnswer/>
 		</AnswerSpecification>
 	</Question>
+	<Overview>
+		<FormattedContent><![CDATA[
+			<p><font color="red"><b>
+				Не принимайте наши HIT с переводом дважды.
+			</b></font></p>
+		]]></FormattedContent>
+	</Overview>
 </QuestionForm>

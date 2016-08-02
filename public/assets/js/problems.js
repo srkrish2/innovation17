@@ -1,6 +1,6 @@
 (function(global){
     var begin = new Date().getTime();
-    makePostRequest();
+//    makePostRequest();
     $(document).on('click','div.button.publish',function(e){
         e.preventDefault();
         $(e.currentTarget).prop('disabled',true);

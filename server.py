@@ -149,14 +149,18 @@ class SubmitProblemHandler(object):
         schema_assignments_num = input_problem_dict[SCHEMA_ASSIGNMENTS_NUM]
         mc.set_schema_stage(problem_id)
         # MOCK
+        data = cherrypy.request.json
+        print data["languages"]
         extra_languages = [RUSSIAN, CHINESE]
         if input_problem_dict[LAZY]:
             thread = Thread(target=launchers.start_lazy_problem, args=[description, schema_assignments_num, problem_id])
             thread.start()
         elif len(extra_languages) > 0:
+            import time
             for language in extra_languages:
                 thread = Thread(target=translation.get_translation, args=[problem_id, description, language])
                 thread.start()
+                time.sleep(10)
         else:
             thread = Thread(target=launchers.launch_schema_hit, args=[problem_id, description, schema_assignments_num])
             thread.start()
