@@ -181,11 +181,14 @@ class IdeaTaskHandler(object):
     @cherrypy.tools.json_in()
     def POST(self):
         if USERNAME_KEY not in cherrypy.session:
+            # print 184
             raise cherrypy.HTTPError(403)
         owner_username = cherrypy.session[USERNAME_KEY]
         data = cherrypy.request.json
+        print data
         problem_id = data['problem_id']
         if not mc.does_user_have_problem_with_id(owner_username, problem_id):
+            # print 190
             raise cherrypy.HTTPError(403)
         count_goal = convert_input_count(data['count_goal'])
         if count_goal == -1:
