@@ -23,7 +23,7 @@
 			url: "/post_rating",
 			contentType: 'application/json; charset=utf-8',
 			data: JSON.stringify({
-				'idea_id': $(e.currentTarget).parents('tr').attr('class'),
+				'id': $(e.currentTarget).parents('tr').attr('class'),
 				'type':'idea',
 				'novelty': $('.ui.rating.novelty').rating('get rating'),
 				'usefulness': $('.ui.rating.usefulness').rating('get rating')

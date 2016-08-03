@@ -19,7 +19,7 @@
 			url: "/post_rating",
 			contentType: 'application/json; charset=utf-8',
 			data: JSON.stringify({
-				'inspiration_id': $(e.currentTarget).parents('.item.inspiration').attr('class').split(' ')[2],
+				'id': $(e.currentTarget).parents('.item.inspiration').attr('class').split(' ')[2],
 				'type':'inspiration',
 				'novelty': $('.ui.rating.novelty').rating('get rating'),
 				'usefulness': $('.ui.rating.usefulness').rating('get rating')
