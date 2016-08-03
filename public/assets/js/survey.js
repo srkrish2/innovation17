@@ -7,6 +7,7 @@ $(".submit").click(function() {
     var expertise = $(".expertise").val()
     var foreign_lived = $("input[name='foreign_lived']:checked").val()
     var foreign_interact = $("input[name='foreign_interact']:checked").val()
+    var languages = $(".languages").val()
     var data = {
         "type": "survey",
         "worker_id": worker_id,
@@ -16,7 +17,8 @@ $(".submit").click(function() {
         "education": education,
         "expertise": expertise,
         "foreign_lived": foreign_lived,
-        "foreign_interact": foreign_interact
+        "foreign_interact": foreign_interact,
+        "languages": languages
     }
     if (age && gender && education && expertise && foreign_lived && foreign_interact) {
         $.ajax({

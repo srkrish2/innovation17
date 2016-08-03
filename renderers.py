@@ -220,8 +220,14 @@ def render_profile():
 def render_schema1(language, worker_id):
     if PROBLEM1 in cherrypy.session:
         raise cherrypy.HTTPError(403)
-    translation_dict = mc.find_translation({LANGUAGE: language, APPROVED: True})
-    problem_id = translation_dict[PROBLEM_ID]
+    if language == ENGLISH:
+        problem_dict = mc.find_problem({})
+        problem_id = problem_dict[PROBLEM_ID]
+        problem = problem_dict[DESCRIPTION]
+    else:
+        translation_dict = mc.find_translation({LANGUAGE: language, APPROVED: True})
+        problem_id = translation_dict[PROBLEM_ID]
+        problem = translation_dict[IMPROVED]
 
     cherrypy.session[ACCEPT_TIME] = datetime.datetime.now()
     cherrypy.session[PROBLEM1] = problem_id
@@ -230,7 +236,7 @@ def render_schema1(language, worker_id):
 
     filename = "generate_schema1_{}.html".format(language)
     template = env.get_template(filename)
-    return template.render(problem=translation_dict[IMPROVED], problem_id=problem_id, worker_id=worker_id)
+    return template.render(problem=problem, problem_id=problem_id, worker_id=worker_id)
 
 
 def render_schema2():
@@ -239,15 +245,21 @@ def render_schema2():
     language = cherrypy.session[LANGUAGE]
     problem1 = cherrypy.session[PROBLEM1]
     worker_id = cherrypy.session[WORKER_ID]
-    translation_dict = mc.find_translation({LANGUAGE: language, APPROVED: True, PROBLEM_ID: {"$ne": problem1}})
-    problem_id = translation_dict[PROBLEM_ID]
+    if language == ENGLISH:
+        problem_dict = mc.find_problem({PROBLEM_ID: {"$ne": problem1}})
+        problem_id = problem_dict[PROBLEM_ID]
+        problem = problem_dict[DESCRIPTION]
+    else:
+        translation_dict = mc.find_translation({LANGUAGE: language, APPROVED: True, PROBLEM_ID: {"$ne": problem1}})
+        problem_id = translation_dict[PROBLEM_ID]
+        problem = translation_dict[IMPROVED]
 
     cherrypy.session[ACCEPT_TIME] = datetime.datetime.now()
     cherrypy.session[PROBLEM2] = problem_id
 
     filename = "generate_schema2_{}.html".format(language)
     template = env.get_template(filename)
-    return template.render(problem=translation_dict[IMPROVED], problem_id=problem_id,  worker_id=worker_id)
+    return template.render(problem=problem, problem_id=problem_id,  worker_id=worker_id)
 
 
 def render_survey():
@@ -263,11 +275,11 @@ def render_survey():
 
 
 def render_inspiration(language, worker_id, no_schema):
-    ns_suffix = "ns_" if no_schema else ""
     if no_schema:
         translation_dict = mc.find_translation({
             LANGUAGE: language, APPROVED: True, NS_USE_COUNT: {"$lt": NS_USE_LIMIT}
         })
+        mc.update_translation({TRANSLATION_ID: translation_dict[TRANSLATION_ID]}, {"$inc": {NS_USE_COUNT: 1}})
         problem_id = translation_dict[PROBLEM_ID]
         problem = translation_dict[IMPROVED]
     else:
@@ -285,7 +297,7 @@ def render_inspiration(language, worker_id, no_schema):
     cherrypy.session[PROBLEM_ID] = problem_id
     cherrypy.session[WORKER_ID] = worker_id
 
-    filename = 'generate_{}inspiration_{}.html'.format(ns_suffix, language)
+    filename = 'generate_inspiration_{}.html'.format(language)
     template = env.get_template(filename)
     return template.render(problem=problem, problem_id=problem_id, worker_id=worker_id)
 

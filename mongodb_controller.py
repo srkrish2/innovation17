@@ -736,8 +736,8 @@ def insert_worker(doc):
     workers_collection.insert_one(doc)
 
 
-def update_translation(query, doc):
-    translations_collection.update_one(query, {"$set": doc})
+def update_translation(query, update):
+    translations_collection.update_one(query, update)
 
 
 def update_schema(query, d):

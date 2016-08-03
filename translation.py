@@ -82,7 +82,7 @@ def add_initial_translation(mturk_dict, translation_id):
     mturk_dict[ACCEPT_TIME] = convert_epoch_to_readable(mturk_dict[ACCEPT_TIME])
     mturk_dict[STEP] = 0
     doc[DETAILS].append(mturk_dict)
-    mc.update_translation(query, doc)
+    mc.update_translation(query, {"$set": doc})
     return doc[INITIAL]
 
 
@@ -96,7 +96,7 @@ def add_improved_translation(mturk_dict, translation_id):
     mturk_dict[ACCEPT_TIME] = convert_epoch_to_readable(mturk_dict[ACCEPT_TIME])
     mturk_dict[STEP] = 1
     doc[DETAILS].append(mturk_dict)
-    mc.update_translation(query, doc)
+    mc.update_translation(query, {"$set": doc})
     return doc[IMPROVED]
 
 
@@ -114,5 +114,5 @@ def add_translation_verification(mturk_dict, translation_id):
     mturk_dict[ACCEPT_TIME] = convert_epoch_to_readable(mturk_dict[ACCEPT_TIME])
     mturk_dict[STEP] = 2
     doc[DETAILS].append(mturk_dict)
-    mc.update_translation(query, doc)
+    mc.update_translation(query, {"$set": doc})
     return doc[APPROVED]
