@@ -58,7 +58,7 @@ function tenMinAlert(){
     } else if (language == "chinese") {
         window.alert("你已经工作了 "+TIMER_MIN+" 分钟。还有十分钟剩余，请在十分钟之内完成这个任务。")
     } else if (language == "russian") {
-        window.alert("Прошло "+TIMER_MIN+" мин с начала задания. Постарайтесь в течении следующих 10 миню")
+        window.alert("Прошло "+TIMER_MIN+" мин с начала задания. Постарайтесь в течении следующих 10 мин.")
     }
 }
 setTimeout(tenMinAlert,TIMER_MIN*1000*60);

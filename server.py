@@ -413,6 +413,17 @@ class SubmitTaskHandler(object):
             return {SUCCESS: True}
 
 
+class PostRatingHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
+        data = cherrypy.request.json
+        print data
+        type = data[TYPE]
+        
+
 def adjust_schema_dict(d):
     # adjust dict to insert into db
     d[TEXT] = d.pop(SCHEMA)
@@ -505,6 +516,9 @@ if __name__ == '__main__':
         },
         '/submit_task': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/post_rating': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -525,6 +539,7 @@ if __name__ == '__main__':
     webapp.more_schemas = MoreSchemasHandler()
     webapp.more_suggestions = MoreSuggestionsHandler()
     webapp.get_feedbacks = GetFeedbacksHandler()
+    webapp.post_rating = PostRatingHandler()
 
     webapp.submit_task = SubmitTaskHandler()
 

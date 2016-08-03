@@ -116,9 +116,12 @@ class InspirationsPageRenderer(StagePageRenderer):
             inspiration_dicts = list(mc.get_inspirations(problem_id))
         for inspiration in inspiration_dicts:
             problem_text = mc.get_problem_description(problem_id)
-            schema_text = mc.get_schema_text(inspiration[SCHEMA_ID])
-            inspiration[PROBLEM_TEXT_FIELD] = problem_text
+            try:
+                schema_text = mc.get_schema_text(inspiration[SCHEMA_ID])
+            except:
+                schema_text = "no_schema"
             inspiration[SCHEMA_TEXT_FIELD] = schema_text
+            inspiration[PROBLEM_TEXT_FIELD] = problem_text
         return inspiration_dicts
 
 

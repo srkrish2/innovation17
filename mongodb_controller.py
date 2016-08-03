@@ -472,8 +472,11 @@ def get_schema_text(schema_id):
 
 
 def get_schema_text_from_inspiration(inspiration_id):
-    schema_id = inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})[SCHEMA_ID]
-    return get_schema_text(schema_id)
+    try:
+        schema_id = inspirations_collection.find_one({INSPIRATION_ID: inspiration_id})[SCHEMA_ID]
+        return get_schema_text(schema_id)
+    except:
+        return "no_schema"
 
 
 def get_inspiration_summary(inspiration_id):
@@ -780,6 +783,7 @@ suggestion_hits_collection = db.suggestion_hits
 suggestions_collection = db.suggestions
 rank_suggestion_hits_collection = db.rank_suggestion_hits
 suggestion_ranks_collection = db.suggestion_ranks
+ratings_collection = db.ratings
 
 translations_collection = db.translations
 workers_collection = db.workers
