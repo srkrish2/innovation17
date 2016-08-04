@@ -2,7 +2,42 @@
 	//if($('.suggestion-list').length) makePostRequest();
 	//var interval = setInterval(makePostRequest,10000);
 	var currentIdea;
-	var currentTotal = 0
+	var currentTotal = 0;
+	$('.rateit.button').popup({
+		hoverable: true,
+		position: 'bottom left',
+		delay: {
+			show: 300,
+			hide: 800
+		}
+	});
+	$('.ui.rating')
+	.rating({
+		maxRating: 5,
+		clearable: true
+	});
+	$(document).on('click', '.rate.submit', function(e){
+		$(e.currentTarget).prop('disabled',true);
+		$.ajax({
+			type: "/POST",
+			url: "/post_rating",
+			contentType: 'application/json; charset=utf-8',
+			data: JSON.stringify({
+				'id': $(e.currentTarget).parents('tr').attr('class'),
+				'type':'idea',
+				'novelty': $('.ui.rating.novelty').rating('get rating'),
+				'usefulness': $('.ui.rating.usefulness').rating('get rating')
+			}),
+			success: function(sdata){
+				console.log('submmited ratingof inspiration');
+				$(e.currentTarget).prop('disabled',false);
+			},
+			error: function(e){
+				console.log("error! "+e);
+				$(e.currentTarget).prop('disabled',false);
+			}
+		});
+	})
 	$(document).on('click','.proceed',function(e){
 		$('.ui.modal.launchnext .teal.ui.label').html($(e.currentTarget.parentElement).siblings()[0].innerHTML);
 		$('.ui.modal.launchnext').modal('show');

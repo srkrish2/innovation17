@@ -1,4 +1,39 @@
 (function(global){
+	$('.rateit.button').popup({
+		hoverable: true,
+		position: 'bottom left',
+		delay: {
+			show: 300,
+			hide: 800
+		}
+	});
+	$('.ui.rating')
+	.rating({
+		maxRating: 5,
+		clearable: true
+	});
+	$(document).on('click', '.rate.submit', function(e){
+		$(e.currentTarget).prop('disabled',true);
+		$.ajax({
+			type: "/POST",
+			url: "/post_rating",
+			contentType: 'application/json; charset=utf-8',
+			data: JSON.stringify({
+				'id': $(e.currentTarget).parents('.item.inspiration').attr('class').split(' ')[2],
+				'type':'inspiration',
+				'novelty': $('.ui.rating.novelty').rating('get rating'),
+				'usefulness': $('.ui.rating.usefulness').rating('get rating')
+			}),
+			success: function(sdata){
+				console.log('submmited ratingof inspiration');
+				$(e.currentTarget).prop('disabled',false);
+			},
+			error: function(e){
+				console.log("error! "+e);
+				$(e.currentTarget).prop('disabled',false);
+			}
+		});
+	})
 	$(document).on('click','.proceed',function(e){
 		$('.ui.modal').modal('show');
 	});
@@ -10,7 +45,7 @@
 			url: '/post_idea_task',
 			contentType: 'application/json; charset=utf-8',
 			data: JSON.stringify({
-				'problem_id':$('.divided').attr('class').split(' ')[3],//length of class list is 4
+				'problem_id':$('.divided').attr('class').split(' ')[4],//length of class list is 4
 				'count_goal': $('.count_goal').val()
 			}),
 			success: function(sdata){
@@ -53,7 +88,7 @@
 		
 	});
 	$(document).on('click','.rj, .ac, .reactivate',function(e){
-		var itemType = "inspiration", toreject=$(e.currentTarget).hasClass('red'), item_id = $(e.currentTarget.parentElement.parentElement.parentElement).attr('class').split(' ')[1];//the fourth class name
+		var itemType = "inspiration", toreject=$(e.currentTarget).hasClass('red'), item_id = $(e.currentTarget.parentElement.parentElement.parentElement).attr('class').split(' ')[2];//the fourth class name
 		$(e.currentTarget).prop('disabled',true);
 		$.ajax({
 			type: 'POST',

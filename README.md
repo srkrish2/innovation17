@@ -5,6 +5,7 @@ Dependencies:
 - [MongoDB](http://www.mongodb.org/display/DOCS/Getting+Started)
 - [PyMongo](http://api.mongodb.com/python/current/installation.html)
 - [Jinja2](http://jinja.pocoo.org/docs/dev/intro/#installation)
+- [dateutil](https://pypi.python.org/pypi/python-dateutil)
 
 ## Running the server
 1. In one terminal, type `mongod` to start the database
@@ -12,8 +13,8 @@ Dependencies:
 3. In browser, go to [http://localhost:8080](http://localhost:8080)
 
 ## Using mturk sandbox
-- You can run mturk tests without payments via https://requestersandbox.mturk.com
-- To configure the code, edit `mturk/mturk.properties`
+- By default this code will run on mturk sandbox - mturk without payments
+- To switch from sandbox to real, edit `mturk/mturk.properties`
 
 ## Frontend - server communication
 ### /problems page parser input

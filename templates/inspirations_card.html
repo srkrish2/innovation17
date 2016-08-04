@@ -4,7 +4,7 @@
 <div class="ui container center middle aligned first-page-element">
 	<div class="ui divided items problem_id {{problem_id}}">
 		{% for inspiration in items %}
-		<div class="item {{inspiration.inspiration_id}}">
+		<div class="item inspiration {{inspiration.inspiration_id}}">
 			<div class="image"><img src={{inspiration.image_link}} alt=""></div>
 			<div class="content">
 				<a href="" class="header">{{inspiration.summary}}</a>
@@ -16,6 +16,26 @@
 				</div>
 			</div>
 			<div class="action">
+				<div class="ui button orange rateit">Rate it!</div>
+				<div class="ui popup flowing hidden">
+					<table class="ui cell padded unstackable table">
+						<tbody>
+							<tr class="reaction-id item ">	
+								<td class="description">How novel is this inspiration?</td>			
+								<td class='rating novelty'>
+									<div class="ui star rating novel" data-rating='3'></div>
+								</td>
+							</tr>
+							<tr class="rating usefulness">
+								<td class="description usefulness">Can this inspiration potentially inspire good solution to your problem?</td>
+								<td class="rating usefulness">
+									<div class="ui star rating usefulness" data-rating='3'></div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="ui blue button submit rate" style="display: block">Submit</div>
+				</div>
 				{% if inspiration.status == 1 or inspiration.status ==0 %}
 				{% if inspiration.status == 1 %}
 				<div class="ui buttons">
@@ -48,7 +68,7 @@
 			</div>
 		</div>
 		{% endfor %}
-		
+
 	</div>
 	<div class="ui button acall">Accept all</div>
 	<div class="ui red button rjall">Reject all</div>
