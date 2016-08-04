@@ -5,66 +5,79 @@
 	<div class="ui divided items problem_id {{problem_id}}">
 		{% for inspiration in items %}
 		<div class="item inspiration {{inspiration.inspiration_id}}">
-			<div class="image"><img src={{inspiration.image_link}} alt=""></div>
-			<div class="content">
-				<a href="" class="header">{{inspiration.summary}}</a>
-				<div class="description">{{inspiration.reason}}</div>
-				<div class="extra"><a href={{inspiration.source_link}} target="_blank">Source</a></div>
-				<div class="schema_description ui accordion">
-					<div class="title"><i class="dropdown icon"></i>Schema description</div>
-					<div class="extra content">{{inspiration.schema_text}}</div>
+			<div class="grid ui fixed container">
+				<div class="four wide column">
+					<div class="ui medium image"><img src={{inspiration.image_link}} alt=""></div>
 				</div>
-			</div>
-			<div class="action">
-				<div class="ui button orange rateit">Rate it!</div>
-				<div class="ui popup flowing hidden">
-					<table class="ui cell padded unstackable table">
-						<tbody>
-							<tr class="reaction-id item ">	
-								<td class="description">How novel is this inspiration?</td>			
-								<td class='rating novelty'>
-									<div class="ui star rating novel" data-rating='3'></div>
-								</td>
-							</tr>
-							<tr class="rating usefulness">
-								<td class="description usefulness">Can this inspiration potentially inspire good solution to your problem?</td>
-								<td class="rating usefulness">
-									<div class="ui star rating usefulness" data-rating='3'></div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-					<div class="ui blue button submit rate" style="display: block">Submit</div>
+				<div class="eight wide column">
+					<div class="content">
+						<a href="" class="header">{{inspiration.summary}}</a>
+						<div class="description">{{inspiration.reason}}</div>
+						<div class="extra"><a href={{inspiration.source_link}} target="_blank">Source</a></div>
+						<div class="schema_description ui accordion">
+							<div class="title"><i class="dropdown icon"></i>Schema description</div>
+							<div class="extra content">{{inspiration.schema_text}}</div>
+						</div>
+					</div>
 				</div>
-				{% if inspiration.status == 1 or inspiration.status ==0 %}
-				{% if inspiration.status == 1 %}
-				<div class="ui buttons">
-					<div class="ui button ac active">Accept</div>
-					<div class="or"></div>
-					<div class="ui button red rj">Reject</div>
+				<div class="four wide column">
+					<div class="action">
+						<div class="ui buttons vertical">
+							<div class="ui button orange rateit">Rate it!</div>
+							<div class="ui popup flowing hidden">
+								<table class="ui cell padded unstackable table">
+									<tbody>
+										<tr class="reaction-id item ">	
+											<td class="description">How novel is this inspiration?</td>			
+											<td class='rating novelty'>
+												<div class="ui star rating novel" data-rating='3'></div>
+											</td>
+										</tr>
+										<tr class="rating usefulness">
+											<td class="description usefulness">Can this inspiration potentially inspire good solution to your problem?</td>
+											<td class="rating usefulness">
+												<div class="ui star rating usefulness" data-rating='3'></div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								<div class="ui blue button submit rate" style="display: block">Submit</div>
+							</div>
+							{% if inspiration.status == 1 or inspiration.status ==0 %}
+							{% if inspiration.status == 1 %}
+							<div class="ui buttons">
+								<div class="ui button ac active">Accept</div>
+								<div class="or"></div>
+								<div class="ui button red rj">Reject</div>
+							</div>
+							<div class="processed hidden">
+							<div class="ui button label">Processed</div>
+								<div class="ui button blue reactivate">Activate</div>
+							</div>
+							{% elif inspiration.status ==0 %}
+							<div class="ui buttons decision">
+								<div class="ui ac button">Accept</div>
+								<div class="or"></div>
+								<div class="ui button active red rj">Reject</div>
+							</div>
+							{% endif %}
+							{% else %}
+							<div class="ui buttons decision hidden">
+								<div class="ui button ac active">Accept</div>
+								<div class="or"></div>
+								<div class="ui button red rj">Reject</div>
+							</div>
+							<div class="processed">
+								<div class="ui button label">Processed</div>
+								<div class="ui button label blue reactivate">Activate</div>
+							</div>
+							{% endif %}
+						</div>
+					</div>
 				</div>
-				<div class="processed hidden">
-					<div class="ui label">Processed</div>
-					<div class="ui button blue reactivate">Activate</div>
-				</div>
-				{% elif inspiration.status ==0 %}
-				<div class="ui buttons decision">
-					<div class="ui ac button">Accept</div>
-					<div class="or"></div>
-					<div class="ui button active red rj">Reject</div>
-				</div>
-				{% endif %}
-				{% else %}
-				<div class="ui buttons decision hidden">
-					<div class="ui button ac active">Accept</div>
-					<div class="or"></div>
-					<div class="ui button red rj">Reject</div>
-				</div>
-				<div class="processed">
-					<div class="ui label">Processed</div>
-					<div class="ui button label blue reactivate">Activate</div>
-				</div>
-				{% endif %}
+				
+				
+
 			</div>
 		</div>
 		{% endfor %}
