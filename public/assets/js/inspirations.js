@@ -21,8 +21,8 @@
 			data: JSON.stringify({
 				'id': $(e.currentTarget).parents('.item.inspiration').attr('class').split(' ')[2],
 				'type':'inspiration',
-				'novelty': $('.ui.rating.novelty').rating('get rating'),
-				'usefulness': $('.ui.rating.usefulness').rating('get rating')
+				'novelty': $(e.currentTarget).siblings('table').find('.ui.rating.novel').rating('get rating'),
+				'usefulness': $(e.currentTarget).siblings('table').find('.ui.rating.usefulness').rating('get rating')
 			}),
 			success: function(sdata){
 				console.log('submmited ratingof inspiration');
