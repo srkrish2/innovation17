@@ -25,7 +25,7 @@
 			data: JSON.stringify({
 				'id': $(e.currentTarget).parents('tr').attr('class'),
 				'type':'idea',
-				'novelty': $('.ui.rating.novelty').rating('get rating'),
+				'novelty': $('.ui.rating.novel').rating('get rating'),
 				'usefulness': $('.ui.rating.usefulness').rating('get rating')
 			}),
 			success: function(sdata){
