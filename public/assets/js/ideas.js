@@ -19,7 +19,7 @@
 	$(document).on('click', '.rate.submit', function(e){
 		$(e.currentTarget).prop('disabled',true);
 		$.ajax({
-			type: "/POST",
+			type: "POST",
 			url: "/post_rating",
 			contentType: 'application/json; charset=utf-8',
 			data: JSON.stringify({
