@@ -739,6 +739,10 @@ def insert_worker(doc):
     workers_collection.insert_one(doc)
 
 
+def insert_rating(doc):
+    ratings_collection.insert_one(doc)
+
+
 def update_translation(query, update):
     translations_collection.update_one(query, update)
 
@@ -757,6 +761,22 @@ def find_problem(query):
 
 def find_schema(query):
     return schemas_collection.find_one(query)
+
+
+def insert_i_translation(doc):
+    i_translations.insert_one(doc)
+
+
+def find_inspiration(query):
+    return inspirations_collection.find_one(query)
+
+
+def update_inspiration(query, update):
+    inspirations_collection.update_one(query, update)
+
+
+def count_inspirations(query):
+    return inspirations_collection.count(query)
 
 
 # client
@@ -783,7 +803,9 @@ suggestion_hits_collection = db.suggestion_hits
 suggestions_collection = db.suggestions
 rank_suggestion_hits_collection = db.rank_suggestion_hits
 suggestion_ranks_collection = db.suggestion_ranks
-ratings_collection = db.ratings
 
+ratings_collection = db.ratings
 translations_collection = db.translations
 workers_collection = db.workers
+
+i_translations = db.i_translations

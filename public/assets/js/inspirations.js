@@ -25,7 +25,6 @@
 				'usefulness': $(e.currentTarget).siblings('table').find('.ui.rating.usefulness').rating('get rating')
 			}),
 			success: function(sdata){
-				console.log('submmited ratingof inspiration');
 				$(e.currentTarget).prop('disabled',false);
 			},
 			error: function(e){

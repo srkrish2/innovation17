@@ -1,4 +1,4 @@
-var TIMER_MIN = 1
+var TIMER_MIN = 20
 var language = $(".language").val()
 
 $(".submit").click(function() {

@@ -221,8 +221,6 @@ def render_profile():
 
 
 def render_schema1(language, worker_id):
-    if PROBLEM1 in cherrypy.session:
-        raise cherrypy.HTTPError(403)
     if language == ENGLISH:
         problem_dict = mc.find_problem({})
         problem_id = problem_dict[PROBLEM_ID]
@@ -243,8 +241,6 @@ def render_schema1(language, worker_id):
 
 
 def render_schema2():
-    if PROBLEM2 in cherrypy.session:
-        raise cherrypy.HTTPError(403)
     language = cherrypy.session[LANGUAGE]
     problem1 = cherrypy.session[PROBLEM1]
     worker_id = cherrypy.session[WORKER_ID]
@@ -282,20 +278,18 @@ def render_inspiration(language, worker_id, no_schema):
         translation_dict = mc.find_translation({
             LANGUAGE: language, APPROVED: True, NS_USE_COUNT: {"$lt": NS_USE_LIMIT}
         })
-        mc.update_translation({TRANSLATION_ID: translation_dict[TRANSLATION_ID]}, {"$inc": {NS_USE_COUNT: 1}})
         problem_id = translation_dict[PROBLEM_ID]
         problem = translation_dict[IMPROVED]
     else:
         schema_dict = mc.find_schema({
             LANGUAGE: language, INSPIRED_NUM: {"$lt": HOW_MANY_INSPIRATIONS_PER_SCHEMA}
         })
-        mc.update_schema({SCHEMA_ID: schema_dict[SCHEMA_ID]}, {"$inc": {INSPIRED_NUM: 1}})
         problem_id = schema_dict[PROBLEM_ID]
         problem = schema_dict[TEXT]
         cherrypy.session[SCHEMA_ID] = schema_dict[SCHEMA_ID]
 
     cherrypy.session[ACCEPT_TIME] = datetime.datetime.now()
-    cherrypy.session[NO_SCHEMA] = True if no_schema else False
+    cherrypy.session[NO_SCHEMA] = no_schema
     cherrypy.session[LANGUAGE] = language
     cherrypy.session[PROBLEM_ID] = problem_id
     cherrypy.session[WORKER_ID] = worker_id
@@ -341,3 +335,12 @@ def unanticipated_error():
     cherrypy.response.body = [
         "<html><body>Sorry, an error occurred. Please contact the admin</body></html>"
     ]
+
+
+def render_trans_insp(language):
+    template = env.get_template("upwork_translate.html")
+    inspiration_dict = mc.find_inspiration({LANGUAGE: language, "translated": {"$exists": False}})
+    id = inspiration_dict[INSPIRATION_ID]
+    chinese = inspiration_dict[SUMMARY]
+    count = mc.count_inspirations({LANGUAGE: language, "translated": {"$exists": False}})
+    return template.render(chinese=chinese, count=count, id=id, language=language, type=INSPIRATION)
