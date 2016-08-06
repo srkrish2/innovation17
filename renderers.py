@@ -263,7 +263,6 @@ def render_survey():
 
 
 def render_inspiration(language, worker_id, no_schema):
-    ns_suffix = "ns_" if no_schema else ""
     if no_schema:
         translation_dict = mc.find_translation({
             LANGUAGE: language, APPROVED: True, NS_USE_COUNT: {"$lt": NS_USE_LIMIT}
@@ -285,7 +284,7 @@ def render_inspiration(language, worker_id, no_schema):
     cherrypy.session[PROBLEM_ID] = problem_id
     cherrypy.session[WORKER_ID] = worker_id
 
-    filename = 'generate_{}inspiration_{}.html'.format(ns_suffix, language)
+    filename = 'generate_inspiration_{}.html'.format(language)
     template = env.get_template(filename)
     return template.render(problem=problem, problem_id=problem_id, worker_id=worker_id)
 
