@@ -124,6 +124,22 @@ class HtmlPageLoader(object):
     def suggestions(self, problem_slug):
         return renderers.render_suggestions_page(problem_slug)
 
+    @cherrypy.expose
+    def trans_insp_ch(self):
+        return renderers.render_trans_insp(CHINESE)
+
+    @cherrypy.expose
+    def trans_insp_ru(self):
+        return renderers.render_trans_insp(CHINESE)
+
+    @cherrypy.expose
+    def trans_idea_ch(self):
+        return renderers.render_trans_insp(CHINESE)
+
+    @cherrypy.expose
+    def trans_insp_ru(self):
+        return renderers.render_trans_insp(CHINESE)
+
 
 class SaveProblemHandler(object):
     exposed = True
@@ -226,11 +242,14 @@ class IdeaTaskHandler(object):
     @cherrypy.tools.json_in()
     def POST(self):
         if USERNAME_KEY not in cherrypy.session:
+            # print 184
             raise cherrypy.HTTPError(403)
         owner_username = cherrypy.session[USERNAME_KEY]
         data = cherrypy.request.json
+        print data
         problem_id = data['problem_id']
         if not mc.does_user_have_problem_with_id(owner_username, problem_id):
+            # print 190
             raise cherrypy.HTTPError(403)
         count_goal = convert_input_count(data['count_goal'])
         if count_goal == -1:
@@ -413,6 +432,40 @@ class SubmitTaskHandler(object):
             return {SUCCESS: True}
 
 
+class PostRatingHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
+        data = cherrypy.request.json
+        mc.insert_rating(data)
+
+
+class SubmitTranslationHandler(object):
+    exposed = True
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
+        data = cherrypy.request.json
+        # print data
+        language = data[LANGUAGE]
+        mc.insert_i_translation(data)
+        if data[TYPE] == INSPIRATION:
+            mc.update_inspiration({INSPIRATION_ID: data["id"]}, {"$set": {"translated": True}})
+            inspiration_dict = mc.find_inspiration({LANGUAGE: language, "translated": {"$exists": False}})
+            if inspiration_dict is None:
+                return {"has_more": False}
+            id = inspiration_dict[INSPIRATION_ID]
+            original = inspiration_dict[SUMMARY]
+            return {
+                "id": id,
+                "original": original,
+                "has_more": True
+            }
+
+
 def adjust_schema_dict(d):
     # adjust dict to insert into db
     d[TEXT] = d.pop(SCHEMA)
@@ -429,6 +482,14 @@ def adjust_inspiration_dict(d):
     d[NO_SCHEMA] = cherrypy.session[NO_SCHEMA]
     if not d[NO_SCHEMA]:
         d[SCHEMA_ID] = cherrypy.session[SCHEMA_ID]
+        mc.update_schema({SCHEMA_ID: d[SCHEMA_ID]}, {"$inc": {INSPIRED_NUM: 1}})
+    else:
+        query = {
+            PROBLEM_ID: d[PROBLEM_ID],
+            LANGUAGE: d[LANGUAGE],
+            APPROVED: True
+        }
+        mc.update_translation(query, {"$inc": {NS_USE_COUNT: 1}})
     d[SUBMIT_TIME] = datetime.datetime.now()
     d[ACCEPT_TIME] = cherrypy.session[ACCEPT_TIME]
     d[TIME_SPENT] = str(d[SUBMIT_TIME] - d[ACCEPT_TIME]).split('.')[0]
@@ -505,6 +566,12 @@ if __name__ == '__main__':
         },
         '/submit_task': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/post_rating': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        },
+        '/submit_translation': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
     # class for serving static homepage
@@ -525,8 +592,10 @@ if __name__ == '__main__':
     webapp.more_schemas = MoreSchemasHandler()
     webapp.more_suggestions = MoreSuggestionsHandler()
     webapp.get_feedbacks = GetFeedbacksHandler()
+    webapp.post_rating = PostRatingHandler()
 
     webapp.submit_task = SubmitTaskHandler()
+    webapp.submit_translation = SubmitTranslationHandler()
 
     cherrypy.tree.mount(webapp, '/', conf)
 

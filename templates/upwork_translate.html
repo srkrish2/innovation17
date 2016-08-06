@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Translation task</title>
+</head>
+<body>
+  <textarea hidden class="id">{{id}}</textarea>
+  <textarea hidden class="type">{{type}}</textarea>
+  <textarea hidden class="count">{{count}}</textarea>
+  <textarea hidden class="language">{{language}}</textarea>
+  <div style="width:700px; margin-left:20px; font-family: Helvetica, Arial;">
+    <h1 align="center">{{count}} left</h1>
+    <p class="original">{{original}}</p>
+    <textarea rows="20" cols="100" class="translation"></textarea>
+    <br/>
+    <input type="submit" value="Submit" class="submit">
+		<br/><br/>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script type="text/javascript" src="/static/assets/js/upwork_translate.js"></script>
+</body>
+</html>

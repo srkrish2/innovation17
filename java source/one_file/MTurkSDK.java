@@ -16,6 +16,8 @@ import suggestion_stage.PostRankSuggestionHIT;
 import suggestion_stage.PostSuggestionHIT;
 import suggestion_stage.RankSuggestionHITResults;
 import suggestion_stage.SuggestionHITResults;
+import translation_stage.PostTranslationHIT;
+import translation_stage.TranslationResults;
 
 public class MTurkSDK {
 	
@@ -68,8 +70,14 @@ public class MTurkSDK {
 		case "RankSuggestionHITResults":
 			RankSuggestionHITResults.main(args);
 			break;
+		case "PostTranslationHIT":
+			PostTranslationHIT.main(args);
+			break;
+		case "TranslationResults":
+			TranslationResults.main(args);
+			break;
 		default:
-			System.out.println("Did not recognize: "+command);
+			System.out.println("Command not recognized: "+command);
 			break;
 		}
 	}
