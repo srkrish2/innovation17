@@ -20,7 +20,7 @@
 							<div class="title"><i class="dropdown icon"></i>Inspiration</div>
 							<div class="extra content">{{idea.inspiration_text}}</div>
 						</div>
-						<div class="schema_description ui accordion">
+						<div class="schema_description ui accordion hidden">
 							<div class="title"><i class="dropdown icon"></i>Schema</div>
 							<div class="extra content">{{idea.schema_text}}</div>
 						</div>
@@ -30,22 +30,74 @@
 					<td>
 						<div class="ui button orange rateit">Rate it!</div>
 						<div class="ui popup flowing hidden">
-							<table class="ui cell padded unstackable table">
-								<tbody>
-									<tr class="reaction-id item ">	
-										<td class="description">How novel is this solution?</td>			
-										<td class='rating novelty'>
-											<div class="ui star rating novel" data-rating='3'></div>
-										</td>
-									</tr>
-									<tr class="rating usefulness">
-										<td class="description usefulness">Can this solution potentially solve your problem effectively?</td>
-										<td class="rating usefulness">
-											<div class="ui star rating usefulness" data-rating='3'></div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
+							<div class="ui form">
+								<div class="inline fields">
+									<label><b>How novel is this solution, e.g. have you thought of such solution before?</b></label>
+									<div class="field">
+										<div class="ui radio checkbox">
+											<input type="radio" name="novel" value=0 checked="checked">
+											<label>Not at all</label>
+										</div>
+									</div>
+									<div class="field">
+										<div class="ui radio checkbox">
+											<input type="radio" name="novel" value=1>
+											<label>A little</label>
+										</div>
+									</div>
+									<div class="field">
+										<div class="ui radio checkbox">
+											<input type="radio" name="novel" value=2>
+											<label>Medium</label>
+										</div>
+									</div>
+									<div class="field">
+										<div class="ui radio checkbox">
+											<input type="radio" name="novel" value=3>
+											<label>Novel</label>
+										</div>
+									</div>
+									<div class="field">
+										<div class="ui radio checkbox">
+											<input type="radio" name="novel" value=4>
+											<label>Very novel</label>
+										</div>
+									</div>
+								</div>
+								<div class="inline fields">
+									<label>Can this solution solve your problem potentially?</label>
+									<div class="field">
+										<div class="ui radio checkbox">
+											<input type="radio" name="useful" value=0 checked="checked">
+											<label>Not at all</label>
+										</div>
+									</div>
+									<div class="field">
+										<div class="ui radio checkbox">
+											<input type="radio" name="useful" value=1>
+											<label>Unlikely</label>
+										</div>
+									</div>
+									<div class="field">
+										<div class="ui radio checkbox">
+											<input type="radio" name="useful" value=2>
+											<label>Not sure</label>
+										</div>
+									</div>
+									<div class="field">
+										<div class="ui radio checkbox">
+											<input type="radio" name="useful" value=3 >
+											<label>Likely</label>
+										</div>
+									</div>
+									<div class="field">
+										<div class="ui radio checkbox">
+											<input type="radio" name="useful" value=4>
+											<label>Definitely</label>
+										</div>
+									</div>
+								</div>
+							</div>
 							<div class="ui blue button submit rate" style="display: block">Submit</div>
 						</div>
 						{% if idea.status == 2 %}

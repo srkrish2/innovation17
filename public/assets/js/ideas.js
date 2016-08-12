@@ -5,17 +5,19 @@
 	var currentTotal = 0;
 	$('.rateit.button').popup({
 		hoverable: true,
-		position: 'bottom left',
+		position: 'bottom right',
 		delay: {
 			show: 300,
 			hide: 800
-		}
+		},
+		boundary: window,
+		jitter: 4
 	});
-	$('.ui.rating')
-	.rating({
-		maxRating: 5,
-		clearable: true
-	});
+	// $('.ui.rating')
+	// .rating({
+	// 	maxRating: 5,
+	// 	clearable: true
+	// });
 	$(document).on('click', '.rate.submit', function(e){
 		$(e.currentTarget).prop('disabled',true);
 		$.ajax({
@@ -25,8 +27,8 @@
 			data: JSON.stringify({
 				'id': $(e.currentTarget).parents('tr').attr('class'),
 				'type':'idea',
-				'novelty': $(e.currentTarget).siblings('table').find('.ui.rating.novel').rating('get rating'),
-				'usefulness': $(e.currentTarget).siblings('table').find('.ui.rating.usefulness').rating('get rating')
+				'novelty': $("input[name=novel]:checked").val(),
+				'usefulness': $("input[name=useful]:checked").val()
 			}),
 			success: function(sdata){
 				console.log('submmited ratingof inspiration');

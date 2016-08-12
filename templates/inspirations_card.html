@@ -14,7 +14,7 @@
 						<a href="" class="header">{{inspiration.summary}}</a>
 						<div class="description">{{inspiration.reason}}</div>
 						<div class="extra"><a href={{inspiration.source_link}} target="_blank">Source</a></div>
-						<div class="schema_description ui accordion">
+						<div class="schema_description ui accordion hidden">
 							<div class="title"><i class="dropdown icon"></i>Schema description</div>
 							<div class="extra content">{{inspiration.schema_text}}</div>
 						</div>
@@ -25,22 +25,80 @@
 						<div class="ui buttons vertical">
 							<div class="ui button orange rateit">Rate it!</div>
 							<div class="ui popup flowing hidden">
-								<table class="ui cell padded unstackable table">
-									<tbody>
-										<tr class="reaction-id item ">	
-											<td class="description">How novel is this inspiration?</td>			
-											<td class='rating novelty'>
-												<div class="ui star rating novel" data-rating='3'></div>
-											</td>
-										</tr>
-										<tr class="rating usefulness">
-											<td class="description usefulness">Can this inspiration potentially inspire good solution to your problem?</td>
-											<td class="rating usefulness">
-												<div class="ui star rating usefulness" data-rating='3'></div>
-											</td>
-										</tr>
-									</tbody>
-								</table>
+								<div class="ui form">
+								<div class="inline">
+									<label><b>How novel is this inspiration?</b></label>
+								</div>
+									<div class="inline fields">
+
+										<div class="field">
+											<div class="ui radio checkbox">
+												<input type="radio" name="novel" value=0 checked="checked">
+												<label>Not at all</label>
+											</div>
+										</div>
+										<div class="field">
+											<div class="ui radio checkbox">
+												<input type="radio" name="novel" value=1>
+												<label>A little</label>
+											</div>
+										</div>
+										<div class="field">
+											<div class="ui radio checkbox">
+												<input type="radio" name="novel" value=2>
+												<label>Medium</label>
+											</div>
+										</div>
+										<div class="field">
+											<div class="ui radio checkbox">
+												<input type="radio" name="novel" value=3>
+												<label>Novel</label>
+											</div>
+										</div>
+										<div class="field">
+											<div class="ui radio checkbox">
+												<input type="radio" name="novel" value=4>
+												<label>Very novel</label>
+											</div>
+										</div>
+									</div>
+									<div class="inline">
+										<label><b>Can this inspiration potentially inspire good solution to your problem?</b></label>
+									</div>
+									<div class="inline fields">
+										
+										<div class="field">
+											<div class="ui radio checkbox">
+												<input type="radio" name="useful" value=0 checked="checked">
+												<label>Not at all</label>
+											</div>
+										</div>
+										<div class="field">
+											<div class="ui radio checkbox">
+												<input type="radio" name="useful" value=1>
+												<label>Unlikely</label>
+											</div>
+										</div>
+										<div class="field">
+											<div class="ui radio checkbox">
+												<input type="radio" name="useful" value=2>
+												<label>Not sure</label>
+											</div>
+										</div>
+										<div class="field">
+											<div class="ui radio checkbox">
+												<input type="radio" name="useful" value=3 >
+												<label>Likely</label>
+											</div>
+										</div>
+										<div class="field">
+											<div class="ui radio checkbox">
+												<input type="radio" name="useful" value=4>
+												<label>Definitely</label>
+											</div>
+										</div>
+									</div>
+								</div>
 								<div class="ui blue button submit rate" style="display: block">Submit</div>
 							</div>
 							{% if inspiration.status == 1 or inspiration.status ==0 %}
@@ -51,7 +109,7 @@
 								<div class="ui button red rj">Reject</div>
 							</div>
 							<div class="processed hidden">
-							<div class="ui button label">Processed</div>
+								<div class="ui button label">Processed</div>
 								<div class="ui button blue reactivate">Activate</div>
 							</div>
 							{% elif inspiration.status ==0 %}
