@@ -19,6 +19,8 @@ class NewAccountHandler(object):
         result = {
             "success": False
         }
+        # block for now
+        return result
         if "@" not in email:
             result["issue"] = "Illegal email"
             print "Illegal email"
