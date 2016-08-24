@@ -1,55 +1,57 @@
 var TIMER_MIN = 20
 var language = $(".language").val()
 
-$(".submit").click(function() {
-    var now = new Date().getTime()
-    var delta = now - start
-    var delta_min = Math.floor( delta / (60 * 1000) )
-    if (delta_min < TIMER_MIN) {
-        if (language == "english") {
-            window.alert("Please spend at least " + TIMER_MIN + " min on this task. It's been "+delta_min+ " min")
-        } else if (language == "chinese") {
-            window.alert("请用至少 " + TIMER_MIN + " 分钟来完成这个任务。你已经工作了 "+delta_min+" 分钟。")
-        } else if (language == "russian") {
-            window.alert("Пожалуйста, проведите над заданием как минимум " + TIMER_MIN + " мин. Прошло "+delta_min + " мин.")
-        }
-        return
-    }
-
-    var summary = $(".summary").val()
-    var similar = $(".similar").val()
-    var schema = $(".schema").val()
-    var worker_id = $(".worker_id").val()
-    var problem_id = $(".problem_id").val()
-    var data = {
-        "type": "schema2",
-        "summary": summary,
-        "similar": similar,
-        "schema": schema,
-        "problem_id": problem_id,
-        "worker_id": worker_id,
-        "language": language
-    }
-    if (summary && similar && schema) {
-        $.ajax({
-            type : "POST",
-            url: "/submit_task",
-            data: JSON.stringify(data),
-            contentType: 'application/json; charset=utf-8',
-            success : function(data) {
-                window.location.replace(data["url"])
+$(document).ready(function(){
+    $(".submit").click(function() {
+        var now = new Date().getTime()
+        var delta = now - start
+        var delta_min = Math.floor( delta / (60 * 1000) )
+        if (delta_min < TIMER_MIN) {
+            if (language == "english") {
+                window.alert("Please spend at least " + TIMER_MIN + " min on this task. It's been "+delta_min+ " min")
+            } else if (language == "chinese") {
+                window.alert("请用至少 " + TIMER_MIN + " 分钟来完成这个任务。你已经工作了 "+delta_min+" 分钟。")
+            } else if (language == "russian") {
+                window.alert("Пожалуйста, проведите над заданием как минимум " + TIMER_MIN + " мин. Прошло "+delta_min + " мин.")
             }
-        })
-    } else {
-        if (language == "english") {
-            window.alert("Please fill out all fields")
-        } else if (language == "chinese") {
-            window.alert("请回答所有问题")
-        } else if (language == "russian") {
-            window.alert("Пожалуйста, заполните все поля")
+            return
         }
-    }
-});
+
+        var summary = $(".summary").val()
+        var similar = $(".similar").val()
+        var schema = $(".schema").val()
+        var worker_id = $(".worker_id").val()
+        var problem_id = $(".problem_id").val()
+        var data = {
+            "type": "schema2",
+            "summary": summary,
+            "similar": similar,
+            "schema": schema,
+            "problem_id": problem_id,
+            "worker_id": worker_id,
+            "language": language
+        }
+        if (summary && similar && schema) {
+            $.ajax({
+                type : "POST",
+                url: "/submit_task",
+                data: JSON.stringify(data),
+                contentType: 'application/json; charset=utf-8',
+                success : function(data) {
+                    window.location.replace(data["url"])
+                }
+            })
+        } else {
+            if (language == "english") {
+                window.alert("Please fill out all fields")
+            } else if (language == "chinese") {
+                window.alert("请回答所有问题")
+            } else if (language == "russian") {
+                window.alert("Пожалуйста, заполните все поля")
+            }
+        }
+    });
+})
 
 var start = new Date().getTime()
 function tenMinAlert(){

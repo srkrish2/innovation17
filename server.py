@@ -30,6 +30,11 @@ class HtmlPageLoader(object):
                 cherrypy.request.params['worker_id'] = vpath.pop()  # last
                 # print "new vpath =", vpath
                 return self
+            if len(vpath) == 4:  # /lang/ps1/schema_id/worker_id
+                cherrypy.request.params['lang'] = vpath.pop(0)  # first
+                cherrypy.request.params['worker_id'] = vpath.pop()  # last
+                cherrypy.request.params['schema_id'] = vpath.pop()  # last
+                return self
 
         elif len(vpath) == 3:
             if vpath.pop(0) != "problem":
@@ -52,12 +57,12 @@ class HtmlPageLoader(object):
         return renderers.render_survey()
 
     @cherrypy.expose
-    def ps1(self, lang, worker_id):
-        return renderers.render_inspiration(languages[lang], worker_id, False)
+    def ps1(self, lang, worker_id, schema_id):
+        return renderers.render_inspiration(languages[lang], worker_id, schema_id)
 
     @cherrypy.expose
     def ns_ps1(self, lang, worker_id):
-        return renderers.render_inspiration(languages[lang], worker_id, True)
+        return renderers.render_inspiration(languages[lang], worker_id)
 
     @cherrypy.expose
     def ps2(self):
@@ -610,9 +615,9 @@ if __name__ == '__main__':
 
     cherrypy.config.update({'error_page.404': renderers.error_page_404,
                             'error_page.403': renderers.error_page_403,
-                            'request.error_response': renderers.unanticipated_error
-                            # 'server.socket_host': '192.168.1.147',
-                            # 'server.socket_port': 8080
+                            'request.error_response': renderers.unanticipated_error,
+                            'server.socket_host': '114.55.103.170',
+                            'server.socket_port': 8888
                             })
 
     cherrypy.engine.start()

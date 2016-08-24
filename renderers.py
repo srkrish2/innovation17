@@ -273,23 +273,24 @@ def render_survey():
     return template.render(worker_id=worker_id)
 
 
-def render_inspiration(language, worker_id, no_schema):
-    if no_schema:
+def render_inspiration(language, worker_id, schema_id=None):
+    if schema_id is None:
         translation_dict = mc.find_translation({
             LANGUAGE: language, APPROVED: True, NS_USE_COUNT: {"$lt": NS_USE_LIMIT}
         })
         problem_id = translation_dict[PROBLEM_ID]
         problem = translation_dict[IMPROVED]
+        cherrypy.session[NO_SCHEMA] = False
     else:
+        cherrypy.session[NO_SCHEMA] = True
         schema_dict = mc.find_schema({
-            LANGUAGE: language, INSPIRED_NUM: {"$lt": HOW_MANY_INSPIRATIONS_PER_SCHEMA}
+            SCHEMA_ID: schema_id
         })
         problem_id = schema_dict[PROBLEM_ID]
         problem = schema_dict[TEXT]
         cherrypy.session[SCHEMA_ID] = schema_dict[SCHEMA_ID]
 
     cherrypy.session[ACCEPT_TIME] = datetime.datetime.now()
-    cherrypy.session[NO_SCHEMA] = no_schema
     cherrypy.session[LANGUAGE] = language
     cherrypy.session[PROBLEM_ID] = problem_id
     cherrypy.session[WORKER_ID] = worker_id
