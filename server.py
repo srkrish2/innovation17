@@ -28,7 +28,7 @@ class HtmlPageLoader(object):
             if len(vpath) == 3:  # lang/task_type/worker_id
                 cherrypy.request.params['lang'] = vpath.pop(0)  # first
                 cherrypy.request.params['worker_id'] = vpath.pop()  # last
-                # print "new vpath =", vpath
+                print "new vpath =", vpath
                 return self
             if len(vpath) == 4:  # /lang/ps1/schema_id/worker_id
                 cherrypy.request.params['lang'] = vpath.pop(0)  # first
@@ -598,7 +598,6 @@ if __name__ == '__main__':
     webapp.more_suggestions = MoreSuggestionsHandler()
     webapp.get_feedbacks = GetFeedbacksHandler()
     webapp.post_rating = PostRatingHandler()
-
     webapp.submit_task = SubmitTaskHandler()
     webapp.submit_translation = SubmitTranslationHandler()
 
@@ -616,8 +615,8 @@ if __name__ == '__main__':
     cherrypy.config.update({'error_page.404': renderers.error_page_404,
                             'error_page.403': renderers.error_page_403,
                             'request.error_response': renderers.unanticipated_error,
-                            'server.socket_host': '114.55.103.170',
-                            'server.socket_port': 8888
+                            'server.socket_host': '127.0.0.1',
+                            'server.socket_port': 8080
                             })
 
     cherrypy.engine.start()
