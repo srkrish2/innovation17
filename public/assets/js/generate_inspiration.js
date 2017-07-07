@@ -1,12 +1,13 @@
-var TIMER_MIN = 20
+var TIMER_MIN = 0 //for testing, original 20
 var language = $(".language").val()
 
 $(document).ready(function(){
     $(".submit").click(function() {
+        window.alert("inside submit")
         var now = new Date().getTime()
         var delta = now - start
         var delta_min = Math.floor( delta / (60 * 1000) )
-        /*
+
         if (delta_min < TIMER_MIN) {
             if (language == "english") {
                 window.alert("Please spend at least " + TIMER_MIN + " min on this task. It's been "+delta_min+ " min")
@@ -17,7 +18,7 @@ $(document).ready(function(){
             }
             return
         }
-        */
+
 
         var problem_id = $(".problem_id").val()
         var worker_id = $(".worker_id").val()

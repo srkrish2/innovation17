@@ -280,9 +280,9 @@ def render_inspiration(language, worker_id, schema_id=None):
         })
         problem_id = translation_dict[PROBLEM_ID]
         problem = translation_dict[IMPROVED]
-        cherrypy.session[NO_SCHEMA] = False
-    else:
         cherrypy.session[NO_SCHEMA] = True
+    else:
+        cherrypy.session[NO_SCHEMA] = False
         schema_dict = mc.find_schema({
             SCHEMA_ID: schema_id
         })

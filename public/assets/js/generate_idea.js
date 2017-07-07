@@ -1,4 +1,4 @@
-var TIMER_MIN = 20
+var TIMER_MIN = 0 //for testing, original 20
 var language = $(".language").val()
 var start = new Date().getTime()
 setTimeout(tenMinAlert,TIMER_MIN*1000*60);
