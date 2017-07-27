@@ -616,7 +616,7 @@ if __name__ == '__main__':
                             'error_page.403': renderers.error_page_403,
                             'request.error_response': renderers.unanticipated_error,
                             'server.socket_host': 'ethings.jios.org',
-                            'server.socket_port': 80
+                            'server.socket_port': 8080
                             })
 
     cherrypy.engine.start()
