@@ -3,7 +3,6 @@ var language = $(".language").val()
 
 $(document).ready(function(){
     $(".submit").click(function() {
-        window.alert("inside submit")
         var now = new Date().getTime()
         var delta = now - start
         var delta_min = Math.floor( delta / (60 * 1000) )
