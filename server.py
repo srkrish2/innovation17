@@ -615,8 +615,8 @@ if __name__ == '__main__':
     cherrypy.config.update({'error_page.404': renderers.error_page_404,
                             'error_page.403': renderers.error_page_403,
                             'request.error_response': renderers.unanticipated_error,
-                            'server.socket_host': 'ethings.jios.org',
-                            #'server.socket_port': 8080
+                            'server.socket_host': '192.168.199.202',
+                            'server.socket_port': 80
                             })
 
     cherrypy.engine.start()
