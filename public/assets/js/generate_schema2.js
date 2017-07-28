@@ -1,4 +1,4 @@
-var TIMER_MIN = 0 //for testing, original 20
+var TIMER_MIN = 20 //for testing, original 20
 var language = $(".language").val()
 
 $(document).ready(function(){
