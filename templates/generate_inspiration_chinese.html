@@ -3,11 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>解决问题，第一部分</title>
+<!--<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>-->
+
+<!--<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>-->
+
+<!--<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />-->
 </head>
 <body>
 	<textarea hidden class="problem_id">{{problem_id}}</textarea>
   <textarea hidden class="language">chinese</textarea>
   <textarea hidden class="worker_id">{{worker_id}}</textarea>
+
+	<!--<div id="dialog" title="Alert">-->
+		<!--<p id="dialogtext"></p>-->
+	<!--</div>-->
+
 	<div style="width:700px; margin-left:20px; font-family: Helvetica, Arial;">
 		<h1 align="center">解决问题 第一步 </h1>
 		<hr>
@@ -51,7 +61,9 @@
 		<input type="submit" value="继续到第二步" class="submit">
 		<p><font color="red" size="2">
          请确保你根据指示操作并且找到了一个有用的启发灵感。一旦点击这个网页，你将不能够再回到这个界面。
-    </font></p>
+    	</font></p>
+		<p id="demo"></p>
+		<p id="fill"></p>
 		<br/><br/>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 		<script type="text/javascript" src="/static/assets/js/generate_inspiration.js"></script>

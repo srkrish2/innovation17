@@ -1,22 +1,36 @@
 var TIMER_MIN = 20 //for testing, original 20
 var language = $(".language").val()
 
+$( function() {
+    $("#dialog").dialog({autoOpen: false});
+});
+
+
+
 $(document).ready(function(){
     $(".submit").click(function() {
-        var now = new Date().getTime()
-        var delta = now - start
-        var delta_min = Math.floor( delta / (60 * 1000) )
+            var now = new Date().getTime()
+            var delta = now - start
+            var delta_min = Math.floor( delta / (60 * 1000) )
 
-        if (delta_min < TIMER_MIN) {
-            if (language == "english") {
-                window.alert("Please spend at least " + TIMER_MIN + " min on this task. It's been "+delta_min+ " min")
-            } else if (language == "chinese") {
-                window.alert("请用至少 " + TIMER_MIN + " 分钟来完成这个任务。你已经工作了 "+delta_min+" 分钟。")
-            } else if (language == "russian") {
-                window.alert("Пожалуйста, проведите над заданием как минимум " + TIMER_MIN + " мин. Прошло "+delta_min + " мин.")
+            var timer = ''
+
+            if (delta_min < TIMER_MIN) {
+                if (language == "english") {
+                    timer = "Please spend at least " + TIMER_MIN + " min on this task. It's been "+delta_min+ " min"
+//                    window.alert("Please spend at least " + TIMER_MIN + " min on this task. It's been "+delta_min+ " min")
+                } else if (language == "chinese") {
+                    timer = "请用至少 " + TIMER_MIN + " 分钟来完成这个任务。你已经工作了 "+delta_min+" 分钟。"
+//                    window.alert("请用至少 " + TIMER_MIN + " 分钟来完成这个任务。你已经工作了 "+delta_min+" 分钟。")
+                } else if (language == "russian") {
+                    timer = "Пожалуйста, проведите над заданием как минимум " + TIMER_MIN + " мин. Прошло "+delta_min + " мин."
+//                    window.alert("Пожалуйста, проведите над заданием как минимум " + TIMER_MIN + " мин. Прошло "+delta_min + " мин.")
+                }
+                $("#demo").html(timer);
+//                $("#dialogtext").html(timer);
+//                $("#dialog1").dialog('open');
+                return
             }
-            return
-        }
 
 
         var problem_id = $(".problem_id").val()
@@ -46,26 +60,37 @@ $(document).ready(function(){
                 }
             })
         } else {
+            var s = ''
             if (language == "english") {
-                window.alert("Please fill out all fields")
+                s = "Please fill out all fields"
+//                window.alert("Please fill out all fields")
             } else if (language == "chinese") {
-                window.alert("请回答所有问题")
+                s = "请回答所有问题"
+//                window.alert("请回答所有问题")
             } else if (language == "russian") {
-                window.alert("Пожалуйста, заполните все поля")
+                s = "Пожалуйста, заполните все поля"
+//                window.alert("Пожалуйста, заполните все поля")
             }
+            $("#fill").html(s);
         }
     });
 })
 
 var start = new Date().getTime()
 function tenMinAlert(){
+    var timer = ''
     if (language == "english") {
-        window.alert("It has been "+TIMER_MIN+" min since you've started. " +
-                 "Please finish the task in the next 10 min to not go overtime.")
+        timer = "It has been "+TIMER_MIN+" min since you've started. " +
+                 "Please finish the task in the next 10 min to not go overtime."
+//        window.alert("It has been "+TIMER_MIN+" min since you've started. " +
+//                 "Please finish the task in the next 10 min to not go overtime.")
     } else if (language == "chinese") {
-        window.alert("你已经工作了 "+TIMER_MIN+" 分钟。还有十分钟剩余，请在十分钟之内完成这个任务。")
+        timer = "你已经工作了 "+TIMER_MIN+" 分钟。还有十分钟剩余，请在十分钟之内完成这个任务。"
+//        window.alert("你已经工作了 "+TIMER_MIN+" 分钟。还有十分钟剩余，请在十分钟之内完成这个任务。")
     } else if (language == "russian") {
-        window.alert("Прошло "+TIMER_MIN+" мин с начала задания. Постарайтесь в течении следующих 10 мин.")
+        timer = "Прошло "+TIMER_MIN+" мин с начала задания. Постарайтесь в течении следующих 10 мин."
+//        window.alert("Прошло "+TIMER_MIN+" мин с начала задания. Постарайтесь в течении следующих 10 мин.")
     }
+    document.getElementById("demo").innerHTML = timer
 }
 setTimeout(tenMinAlert,TIMER_MIN*1000*60);
