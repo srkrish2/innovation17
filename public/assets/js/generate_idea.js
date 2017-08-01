@@ -12,7 +12,9 @@ $(document).ready(function(){
             if (language == "english") {
                 window.alert("Please spend at least " + TIMER_MIN + " min on this task. It's been "+delta_min+ " min")
             } else if (language == "chinese") {
-                window.alert("请用至少 " + TIMER_MIN + " 分钟来完成这个任务。你已经工作了 "+delta_min+" 分钟。")
+                timer = "请用至少 " + TIMER_MIN + " 分钟来完成这个任务。你已经工作了 "+delta_min+" 分钟。"
+                    $("#demo").html(timer);
+//                window.alert("请用至少 " + TIMER_MIN + " 分钟来完成这个任务。你已经工作了 "+delta_min+" 分钟。")
             } else if (language == "russian") {
                 window.alert("Пожалуйста, проведите над заданием как минимум " + TIMER_MIN + " мин. Прошло "+delta_min + " мин.")
             }
@@ -58,7 +60,9 @@ function tenMinAlert(){
         window.alert("It has been "+TIMER_MIN+" min since you've started. " +
                  "Please finish the task in the next 10 min to not go overtime.")
     } else if (language == "chinese") {
-        window.alert("你已经工作了 "+TIMER_MIN+" 分钟。还有十分钟剩余，请在十分钟之内完成这个任务。")
+//        window.alert("你已经工作了 "+TIMER_MIN+" 分钟。还有十分钟剩余，请在十分钟之内完成这个任务。")
+        timer = "你已经工作了 "+TIMER_MIN+" 分钟。还有十分钟剩余，请在十分钟之内完成这个任务。"
+        document.getElementById("demo").innerHTML = timer
     } else if (language == "russian") {
         window.alert("Прошло "+TIMER_MIN+" мин с начала задания. Постарайтесь в течении следующих 10 мин.")
     }
