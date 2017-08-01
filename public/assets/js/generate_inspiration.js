@@ -85,16 +85,16 @@ $(document).ready(function(){
         } else {
             var s = ''
             if (language == "english") {
-                s = "Please fill out all fields"
-//                window.alert("Please fill out all fields")
+//                s = "Please fill out all fields"
+                window.alert("Please fill out all fields")
             } else if (language == "chinese") {
-                s = "请回答所有问题"
+                s = '<font color="red" size="2">' + "请回答所有问题" + '</font>'
+                $("#fill").html(s);
 //                window.alert("请回答所有问题")
             } else if (language == "russian") {
-                s = "Пожалуйста, заполните все поля"
-//                window.alert("Пожалуйста, заполните все поля")
+//                s = "Пожалуйста, заполните все поля"
+                window.alert("Пожалуйста, заполните все поля")
             }
-            $("#fill").html(s);
         }
     });
 })

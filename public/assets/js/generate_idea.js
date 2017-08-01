@@ -12,7 +12,7 @@ $(document).ready(function(){
             if (language == "english") {
                 window.alert("Please spend at least " + TIMER_MIN + " min on this task. It's been "+delta_min+ " min")
             } else if (language == "chinese") {
-                timer = "请用至少 " + TIMER_MIN + " 分钟来完成这个任务。你已经工作了 "+delta_min+" 分钟。"
+                timer = '<font color="red" size="2">' + "请用至少 " + TIMER_MIN + " 分钟来完成这个任务。你已经工作了 "+delta_min+" 分钟。" + '</font>'
                     $("#demo").html(timer);
 //                window.alert("请用至少 " + TIMER_MIN + " 分钟来完成这个任务。你已经工作了 "+delta_min+" 分钟。")
             } else if (language == "russian") {
@@ -47,7 +47,9 @@ $(document).ready(function(){
             if (language == "english") {
                 window.alert("Please fill out all fields")
             } else if (language == "chinese") {
-                window.alert("请回答所有问题")
+//                window.alert("请回答所有问题")
+                s = '<font color="red" size="2">' + "请回答所有问题" + '</font>'
+                $("#fill").html(s);
             } else if (language == "russian") {
                 window.alert("Пожалуйста, заполните все поля")
             }
@@ -61,7 +63,7 @@ function tenMinAlert(){
                  "Please finish the task in the next 10 min to not go overtime.")
     } else if (language == "chinese") {
 //        window.alert("你已经工作了 "+TIMER_MIN+" 分钟。还有十分钟剩余，请在十分钟之内完成这个任务。")
-        timer = "你已经工作了 "+TIMER_MIN+" 分钟。还有十分钟剩余，请在十分钟之内完成这个任务。"
+        timer = '<font color="red" size="2">' + "你已经工作了 "+TIMER_MIN+" 分钟。还有十分钟剩余，请在十分钟之内完成这个任务。" + '</font>'
         document.getElementById("demo").innerHTML = timer
     } else if (language == "russian") {
         window.alert("Прошло "+TIMER_MIN+" мин с начала задания. Постарайтесь в течении следующих 10 мин.")
